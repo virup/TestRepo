@@ -4,7 +4,8 @@ import (
 	"log"
 	"net"
 
-	pb "../rpcdef"
+	pb "server/rpcdef"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
