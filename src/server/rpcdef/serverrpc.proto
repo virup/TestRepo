@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package serversvc;
+
+// The greeting service definition.
+service ServerSvc {
+  // Sends a greeting
+  rpc GetStatus (ServerSvcStatusRequest) returns (ServerSvcStatusResponse) {}
+}
+
+message ServerSvcStatusRequest {
+  string name = 1;
+}
+
+message ServerSvcStatusResponse {
+  string message = 1;
+}
