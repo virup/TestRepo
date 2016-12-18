@@ -31,6 +31,11 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
+import (
+	context "golang.org/x/net/context"
+	grpc "google.golang.org/grpc"
+)
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
@@ -419,6 +424,218 @@ func init() {
 	proto.RegisterType((*EnrollInstructorResponse)(nil), "serversvc.EnrollInstructorResponse")
 	proto.RegisterType((*EnrollUserRequest)(nil), "serversvc.EnrollUserRequest")
 	proto.RegisterType((*EnrollUserResponse)(nil), "serversvc.EnrollUserResponse")
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// Client API for ServerSvc service
+
+type ServerSvcClient interface {
+	// Sends a greeting
+	GetStatus(ctx context.Context, in *ServerSvcStatusRequest, opts ...grpc.CallOption) (*ServerSvcStatusResponse, error)
+	// Session handling
+	GetSessions(ctx context.Context, in *GetSessionsRequest, opts ...grpc.CallOption) (*GetSessionsReply, error)
+	PostSession(ctx context.Context, in *PostSessionRequest, opts ...grpc.CallOption) (*PostSessionReply, error)
+	// Instructor handling
+	EnrollInstructor(ctx context.Context, in *EnrollInstructorRequest, opts ...grpc.CallOption) (*EnrollInstructorResponse, error)
+	// User handling
+	EnrollUser(ctx context.Context, in *EnrollUserRequest, opts ...grpc.CallOption) (*EnrollUserResponse, error)
+}
+
+type serverSvcClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewServerSvcClient(cc *grpc.ClientConn) ServerSvcClient {
+	return &serverSvcClient{cc}
+}
+
+func (c *serverSvcClient) GetStatus(ctx context.Context, in *ServerSvcStatusRequest, opts ...grpc.CallOption) (*ServerSvcStatusResponse, error) {
+	out := new(ServerSvcStatusResponse)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/GetStatus", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) GetSessions(ctx context.Context, in *GetSessionsRequest, opts ...grpc.CallOption) (*GetSessionsReply, error) {
+	out := new(GetSessionsReply)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/GetSessions", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) PostSession(ctx context.Context, in *PostSessionRequest, opts ...grpc.CallOption) (*PostSessionReply, error) {
+	out := new(PostSessionReply)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/PostSession", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) EnrollInstructor(ctx context.Context, in *EnrollInstructorRequest, opts ...grpc.CallOption) (*EnrollInstructorResponse, error) {
+	out := new(EnrollInstructorResponse)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/EnrollInstructor", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) EnrollUser(ctx context.Context, in *EnrollUserRequest, opts ...grpc.CallOption) (*EnrollUserResponse, error) {
+	out := new(EnrollUserResponse)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/EnrollUser", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for ServerSvc service
+
+type ServerSvcServer interface {
+	// Sends a greeting
+	GetStatus(context.Context, *ServerSvcStatusRequest) (*ServerSvcStatusResponse, error)
+	// Session handling
+	GetSessions(context.Context, *GetSessionsRequest) (*GetSessionsReply, error)
+	PostSession(context.Context, *PostSessionRequest) (*PostSessionReply, error)
+	// Instructor handling
+	EnrollInstructor(context.Context, *EnrollInstructorRequest) (*EnrollInstructorResponse, error)
+	// User handling
+	EnrollUser(context.Context, *EnrollUserRequest) (*EnrollUserResponse, error)
+}
+
+func RegisterServerSvcServer(s *grpc.Server, srv ServerSvcServer) {
+	s.RegisterService(&_ServerSvc_serviceDesc, srv)
+}
+
+func _ServerSvc_GetStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ServerSvcStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).GetStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/GetStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).GetStatus(ctx, req.(*ServerSvcStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_GetSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).GetSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/GetSessions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).GetSessions(ctx, req.(*GetSessionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_PostSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PostSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).PostSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/PostSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).PostSession(ctx, req.(*PostSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_EnrollInstructor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnrollInstructorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).EnrollInstructor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/EnrollInstructor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).EnrollInstructor(ctx, req.(*EnrollInstructorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_EnrollUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnrollUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).EnrollUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/EnrollUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).EnrollUser(ctx, req.(*EnrollUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _ServerSvc_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "serversvc.ServerSvc",
+	HandlerType: (*ServerSvcServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetStatus",
+			Handler:    _ServerSvc_GetStatus_Handler,
+		},
+		{
+			MethodName: "GetSessions",
+			Handler:    _ServerSvc_GetSessions_Handler,
+		},
+		{
+			MethodName: "PostSession",
+			Handler:    _ServerSvc_PostSession_Handler,
+		},
+		{
+			MethodName: "EnrollInstructor",
+			Handler:    _ServerSvc_EnrollInstructor_Handler,
+		},
+		{
+			MethodName: "EnrollUser",
+			Handler:    _ServerSvc_EnrollUser_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "serverrpc.proto",
 }
 
 func init() { proto.RegisterFile("serverrpc.proto", fileDescriptor0) }
