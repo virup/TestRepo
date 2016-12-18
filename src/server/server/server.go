@@ -17,10 +17,38 @@ const (
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
 
-// SayHello implements helloworld.GreeterServer
+//  Send hello
 func (s *server) GetStatus(ctx context.Context,
 	in *pb.ServerSvcStatusRequest) (*pb.ServerSvcStatusResponse, error) {
 	return &pb.ServerSvcStatusResponse{Message: "Hello " + in.Name}, nil
+}
+
+func (s *server) GetSessions(ctx context.Context,
+	in *pb.GetSessionsRequest) (*pb.GetSessionsReply, error) {
+
+	var resp pb.GetSessionsReply
+	return &resp, nil
+}
+
+func (s *server) PostSession(ctx context.Context,
+	in *pb.PostSessionRequest) (*pb.PostSessionReply, error) {
+
+	var resp pb.PostSessionReply
+	return &resp, nil
+}
+
+func (s *server) EnrollInstructor(ctx context.Context,
+	in *pb.EnrollInstructorRequest) (*pb.EnrollInstructorResponse, error) {
+
+	var resp pb.EnrollInstructorResponse
+	return &resp, nil
+}
+
+func (s *server) EnrollUser(ctx context.Context,
+	in *pb.EnrollUserRequest) (*pb.EnrollUserResponse, error) {
+
+	var resp pb.EnrollUserResponse
+	return &resp, nil
 }
 
 func main() {

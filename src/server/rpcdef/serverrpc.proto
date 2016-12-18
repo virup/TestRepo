@@ -6,6 +6,21 @@ package serversvc;
 service ServerSvc {
   // Sends a greeting
   rpc GetStatus (ServerSvcStatusRequest) returns (ServerSvcStatusResponse) {}
+
+  // Session handling
+  rpc GetSessions (GetSessionsRequest) returns (GetSessionsReply) {}
+  rpc PostSession(PostSessionRequest) returns (PostSessionReply) {}
+  
+  // Instructor handling
+  rpc EnrollInstructor(EnrollInstructorRequest) returns (EnrollInstructorResponse) {}
+
+  // User handling
+  rpc EnrollUser(EnrollUserRequest) returns (EnrollUserResponse) {}
+}
+
+message ErrorData {
+  string errorCode = 1;
+  string errorStr = 2;
 }
 
 message ServerSvcStatusRequest {
@@ -13,5 +28,68 @@ message ServerSvcStatusRequest {
 }
 
 message ServerSvcStatusResponse {
-  string message = 1;
+  ErrorData errData = 1;
+  string message = 2;
+}
+
+message Session {
+  string sessionID = 1;
+  string sessionTime = 2;
+  string sessionDesc = 3;
+  string instructorID = 4;
+  string sessionType = 5;
+  uint64 sessionUsersEnrolled = 6;
+}
+
+message Person {
+   string name = 1;
+   string age = 2;
+   string sex = 3;
+   string location = 4;
+}
+
+message Instructor {
+   Person person = 1;
+   string instructorID = 2;
+   float rating = 3;
+}
+
+message User {
+   Person person = 1;
+   string userID = 2;
+   repeated string friendsIDs = 3;
+}
+
+message GetSessionsRequest {
+  // If specified, only show sessions of this type.
+  string sessionType = 1;
+}
+
+message GetSessionsReply {
+  ErrorData errData = 1;
+  repeated Session session = 2;
+}
+
+message PostSessionRequest {
+  string name = 1;
+}
+
+message PostSessionReply {
+  ErrorData errData = 1;
+}
+
+message EnrollInstructorRequest {
+  Person instructor = 1;
+}
+
+message EnrollInstructorResponse {
+   ErrorData errData = 1;
+}
+
+message EnrollUserRequest {
+  Person user = 1;
+}
+
+message EnrollUserResponse {
+   ErrorData errData = 1;
 }
