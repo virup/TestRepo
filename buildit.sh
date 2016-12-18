@@ -6,7 +6,7 @@ build_protoc() {
  echo "Building proto files..."
  export PATH=$PATH:$SCRIPTDIR/bin
  cd $SCRIPTDIR/bin
- protoc -I../src/server/rpcdef/ --go_out=plugins=grpc:../src/server/rpcdef/ ../src/server/rpcdef/serverrpc.proto
+ protoc -I$SCRIPTDIR/src/server/rpcdef/ --go_out=plugins=grpc:$SCRIPTDIR/src/server/rpcdef/ $SCRIPTDIR/src/server/rpcdef/serverrpc.proto
  go_back
 }
 
@@ -23,6 +23,7 @@ build_server() {
 # Build everything. At a later date we could give command line options to
 # build only specific things
 main() {
+ build_protoc
  build_server
 }
 

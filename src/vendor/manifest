@@ -20,6 +20,100 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/Sereal/Sereal/Go/sereal",
+			"repository": "https://github.com/Sereal/Sereal",
+			"vcs": "git",
+			"revision": "36f2c9f6f40926fbc799c190676695b929d828e9",
+			"branch": "master",
+			"path": "/Go/sereal",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/asdine/storm",
+			"repository": "https://github.com/asdine/storm",
+			"vcs": "git",
+			"revision": "328c29d527ef50fe6a6b1bd1cc90a0c3ccfec683",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/boltdb/bolt",
+			"repository": "https://github.com/boltdb/bolt",
+			"vcs": "git",
+			"revision": "0d9f544bb94aac29c185968483459ef74d6deb5d",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/davecgh/go-spew",
+			"vcs": "git",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"branch": "master",
+			"path": "/spew",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/dchest/siphash",
+			"repository": "https://github.com/dchest/siphash",
+			"vcs": "git",
+			"revision": "4ebf1de738443ea7f45f02dc394c4df1942a126d",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/dgryski/go-csnappy",
+			"repository": "https://github.com/dgryski/go-csnappy",
+			"vcs": "git",
+			"revision": "9d18391da19717aa4fdf14cb7ba6a55e51bff131",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/dgryski/go-ddmin",
+			"repository": "https://github.com/dgryski/go-ddmin",
+			"vcs": "git",
+			"revision": "f7df7ebd4081e6d5d5efc4c70e9c871c9af4ccc0",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/emirpasic/gods/containers",
+			"repository": "https://github.com/emirpasic/gods",
+			"vcs": "git",
+			"revision": "ec46b0116df083cba218abbf72522c6d0c065e4e",
+			"branch": "master",
+			"path": "containers",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/emirpasic/gods/lists",
+			"repository": "https://github.com/emirpasic/gods",
+			"vcs": "git",
+			"revision": "ec46b0116df083cba218abbf72522c6d0c065e4e",
+			"branch": "master",
+			"path": "lists",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/emirpasic/gods/trees",
+			"repository": "https://github.com/emirpasic/gods",
+			"vcs": "git",
+			"revision": "ec46b0116df083cba218abbf72522c6d0c065e4e",
+			"branch": "master",
+			"path": "trees",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/emirpasic/gods/utils",
+			"repository": "https://github.com/emirpasic/gods",
+			"vcs": "git",
+			"revision": "ec46b0116df083cba218abbf72522c6d0c065e4e",
+			"branch": "master",
+			"path": "utils",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/golang/glog",
 			"repository": "https://github.com/golang/glog",
 			"vcs": "git",
@@ -52,6 +146,14 @@
 			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
 			"branch": "master",
 			"path": "ptypes/any",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/golang/snappy",
+			"repository": "https://github.com/golang/snappy",
+			"vcs": "git",
+			"revision": "d9eb7a3d35ec988b8585d4a0068e462c27d28380",
+			"branch": "master",
 			"notests": true
 		},
 		{
