@@ -2,10 +2,17 @@ syntax = "proto3";
 
 package serversvc;
 
+//import "google/api/annotations.proto";
+
 // The greeting service definition.
 service ServerSvc {
   // Sends a greeting
-  rpc GetStatus (ServerSvcStatusRequest) returns (ServerSvcStatusResponse) {}
+  rpc GetStatus (ServerSvcStatusRequest) returns (ServerSvcStatusResponse) {
+    //option (google.api.http) = {
+    //  post: "/v1/getstatus"
+    //  body: "*"
+    //};
+  }
 
   // Session handling
   rpc GetSessions (GetSessionsRequest) returns (GetSessionsReply) {}

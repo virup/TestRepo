@@ -165,30 +165,12 @@
 			"notests": true
 		},
 		{
-			"importpath": "github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"importpath": "github.com/golang/protobuf/protoc-gen-go",
 			"repository": "https://github.com/golang/protobuf",
 			"vcs": "git",
 			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
 			"branch": "master",
-			"path": "protoc-gen-go/descriptor",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/golang/protobuf/protoc-gen-go/generator",
-			"repository": "https://github.com/golang/protobuf",
-			"vcs": "git",
-			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
-			"branch": "master",
-			"path": "protoc-gen-go/generator",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/golang/protobuf/protoc-gen-go/plugin",
-			"repository": "https://github.com/golang/protobuf",
-			"vcs": "git",
-			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
-			"branch": "master",
-			"path": "protoc-gen-go/plugin",
+			"path": "/protoc-gen-go",
 			"notests": true
 		},
 		{
@@ -271,6 +253,30 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/googleapis/googleapis",
+			"repository": "https://github.com/googleapis/googleapis",
+			"vcs": "git",
+			"revision": "d3e2ebbb857e061e4c0bb632fe8da2a888cf91cf",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gorilla/context",
+			"repository": "https://github.com/gorilla/context",
+			"vcs": "git",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gorilla/mux",
+			"repository": "https://github.com/gorilla/mux",
+			"vcs": "git",
+			"revision": "757bef944d0f21880861c2dd9c871ca543023cba",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/grpc-ecosystem/grpc-gateway",
 			"repository": "https://github.com/grpc-ecosystem/grpc-gateway",
 			"vcs": "git",
@@ -291,6 +297,14 @@
 			"repository": "https://github.com/rogpeppe/fastuuid",
 			"vcs": "git",
 			"revision": "6724a57986aff9bff1a1770e9347036def7c89f6",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/stripe/stripe-go",
+			"repository": "https://github.com/stripe/stripe-go",
+			"vcs": "git",
+			"revision": "c49cef41dc0a5232570890d139748140a76d1f6e",
 			"branch": "master",
 			"notests": true
 		},
