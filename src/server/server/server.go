@@ -73,7 +73,7 @@ func (s *server) GetSessions(ctx context.Context,
 	return &resp, nil
 }
 
-func postSessionDB(in *pb.SessionInfo) error {
+func postSessionDB(in *pb.SessionInfo) (error, string) {
 
 	log.Debug("Post Session DB request")
 	var s pb.Session
@@ -83,10 +83,10 @@ func postSessionDB(in *pb.SessionInfo) error {
 	if err != nil {
 		log.WithFields(log.Fields{"session": s, "error": err}).Error("Failed" +
 			" to write to DB")
-		return err
+		return err, ""
 	}
 	log.WithFields(log.Fields{"session": s}).Debug("Added to DB")
-	return nil
+	return nil, s.ID
 }
 
 func (ser *server) PostSession(ctx context.Context,
@@ -162,15 +162,24 @@ func (s *server) EnrollUser(ctx context.Context,
 
 func initRestServer() {
 	router := mux.NewRouter()
+	router.HandleFunc("/getstatus", getStatus).Methods("GET")
 	router.HandleFunc("/getsessions", getSessions).Methods("GET")
 	router.HandleFunc("/session/{sessionKey}", handleSession).Methods("GET",
 		"DELETE", "POST")
+	router.HandleFunc("/postsession", postSession).Methods("POST")
 	http.ListenAndServe(":8080", router)
+}
+
+func getStatus(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+
+	fmt.Fprint(res, "running from server!")
 }
 
 func getSessions(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 
+	log.Debug("getSessions req")
 	err, sessionList := getAllSessionFromDB()
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -179,6 +188,9 @@ func getSessions(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	outgoingJSON, error := json.Marshal(sessionList)
+
+	log.WithFields(log.Fields{"json": outgoingJSON}).Debug("Sending" +
+		" sessions from DB")
 	if error != nil {
 		log.Println(error.Error())
 		http.Error(res, error.Error(), http.StatusInternalServerError)
@@ -188,11 +200,36 @@ func getSessions(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(res, string(outgoingJSON))
 }
 
+func postSession(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	var err error
+
+	log.Debugf("postSession req %s", req.Body)
+	info := new(pb.SessionInfo)
+	decoder := json.NewDecoder(req.Body)
+	error := decoder.Decode(&info)
+	if error != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to decode json")
+		http.Error(res, error.Error(), http.StatusInternalServerError)
+		return
+	}
+	err, sessionID := postSessionDB(info)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to post session to DB")
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	res.WriteHeader(http.StatusCreated)
+	result := sessionID + " created"
+	fmt.Fprint(res, result)
+}
+
 func handleSession(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(req)
 	sessionKey := vars["sessionKey"]
-	var err error
 
 	switch req.Method {
 	case "GET":
@@ -212,30 +249,6 @@ func handleSession(res http.ResponseWriter, req *http.Request) {
 	case "DELETE":
 		//delete(movies, sessionKey)
 		res.WriteHeader(http.StatusNoContent)
-	case "POST":
-		info := new(pb.SessionInfo)
-		decoder := json.NewDecoder(req.Body)
-		error := decoder.Decode(&info)
-		if error != nil {
-			log.Println(error.Error())
-			http.Error(res, error.Error(), http.StatusInternalServerError)
-			return
-		}
-		err = postSessionDB(info)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to post session to DB")
-			http.Error(res, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		outgoingJSON, err := json.Marshal(info)
-		if err != nil {
-			log.Println(error.Error())
-			http.Error(res, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		res.WriteHeader(http.StatusCreated)
-		fmt.Fprint(res, string(outgoingJSON))
 	}
 }
 
