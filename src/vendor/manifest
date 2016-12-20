@@ -139,6 +139,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/go-swagger/go-swagger",
+			"repository": "https://github.com/go-swagger/go-swagger",
+			"vcs": "git",
+			"revision": "fe9494fff4da1adac1e86ed679702d39ea4be458",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/golang/glog",
 			"repository": "https://github.com/golang/glog",
 			"vcs": "git",
@@ -309,6 +317,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/urfave/negroni",
+			"repository": "https://github.com/urfave/negroni",
+			"vcs": "git",
+			"revision": "cd9734011043904139c24dbad9a71b21f1586f36",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "go4.org/syncutil/singleflight",
 			"repository": "https://github.com/camlistore/go4",
 			"vcs": "git",
@@ -462,6 +478,14 @@
 			"repository": "https://gopkg.in/gemnasium/logrus-airbrake-hook.v2",
 			"vcs": "git",
 			"revision": "bfee1239d796830ca346767650cce5ba90d58c57",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/tylerb/graceful.v1",
+			"repository": "https://gopkg.in/tylerb/graceful.v1",
+			"vcs": "git",
+			"revision": "50a48b6e73fcc75b45e22c05b79629a67c79e938",
 			"branch": "master",
 			"notests": true
 		}
