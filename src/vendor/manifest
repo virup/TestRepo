@@ -45,6 +45,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/ajain1990/gorocksdb",
+			"repository": "https://github.com/ajain1990/gorocksdb",
+			"vcs": "git",
+			"revision": "f31ce053e8b2c7b42a3a4ebf39b2599ea04b86d3",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/asdine/storm",
 			"repository": "https://github.com/asdine/storm",
 			"vcs": "git",
@@ -393,14 +401,6 @@
 			"repository": "https://github.com/stripe/stripe-go",
 			"vcs": "git",
 			"revision": "c49cef41dc0a5232570890d139748140a76d1f6e",
-			"branch": "master",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/tecbot/gorocksdb",
-			"repository": "https://github.com/tecbot/gorocksdb",
-			"vcs": "git",
-			"revision": "17991d3138a879b166adebf86f7c84da3c1517a7",
 			"branch": "master",
 			"notests": true
 		},

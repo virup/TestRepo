@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/ajain1990/gorocksdb"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )
@@ -36,6 +37,7 @@ func (s *server) GetStatus(ctx context.Context,
 
 func getAllSessionFromDB() (error, []pb.Session) {
 	var sList []pb.Session
+	var err error
 	//err := db.All(&sList)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -47,6 +49,7 @@ func getAllSessionFromDB() (error, []pb.Session) {
 
 func getSessionFromDB(sKey string) (error, pb.Session) {
 	var s pb.Session
+	var err error
 	//err := db.One("ID", sKey, &s)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -60,6 +63,7 @@ func (s *server) GetSessions(ctx context.Context,
 	in *pb.GetSessionsRequest) (*pb.GetSessionsReply, error) {
 
 	var resp pb.GetSessionsReply
+	var err error
 	//err := db.All(&resp.Session)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -73,6 +77,7 @@ func (s *server) GetSessions(ctx context.Context,
 
 func postSessionDB(in *pb.SessionInfo) (error, string) {
 
+	var err error
 	log.WithFields(log.Fields{"sessionInfo": in}).Debug("Adding to DB")
 	s := new(pb.Session)
 	s.Info = in
@@ -92,12 +97,13 @@ func postSessionDB(in *pb.SessionInfo) (error, string) {
 func (ser *server) PostSession(ctx context.Context,
 	in *pb.PostSessionRequest) (*pb.PostSessionReply, error) {
 
+	var err error
 	var resp pb.PostSessionReply
 	log.Debug("Post Session grpc request")
 	var s pb.Session
 	s.Info = in.Info
 	s.ID = getRandomID()
-	err := db.Save(&s)
+	//err := db.Save(&s)
 	if err != nil {
 		log.WithFields(log.Fields{"session": s, "error": err}).Error("Failed" +
 			" to write to DB")
@@ -112,12 +118,13 @@ func (ser *server) PostSession(ctx context.Context,
 func (s *server) EnrollInstructor(ctx context.Context,
 	in *pb.EnrollInstructorRequest) (*pb.EnrollInstructorResponse, error) {
 
+	var err error
 	var resp pb.EnrollInstructorResponse
 	log.Debug("Enroll Instructor request")
 	var i pb.Instructor
 	i.Person = in.Instructor
 	i.ID = getRandomID()
-	err := db.Save(&i)
+	//err := db.Save(&i)
 	if err != nil {
 		log.WithFields(log.Fields{"instructor": i, "error": err}).Error("Failed" +
 			" to write to DB")
@@ -142,12 +149,13 @@ func getRandomID() string {
 func (s *server) EnrollUser(ctx context.Context,
 	in *pb.EnrollUserRequest) (*pb.EnrollUserResponse, error) {
 
+	var err error
 	var resp pb.EnrollUserResponse
 	log.Debug("Enroll User request")
 	var u pb.User
 	u.Person = in.User
 	u.ID = getRandomID()
-	err := db.Save(&u)
+	//err := db.Save(&u)
 	if err != nil {
 		log.WithFields(log.Fields{"user": u, "error": err}).Error("Failed" +
 			" to write to DB for user")
@@ -261,12 +269,6 @@ func initGprcServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//db, err := bolt.Open("my.db", 0600, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	s := grpc.NewServer()
 	log.Debug("registering server...")
 	pb.RegisterServerSvcServer(s, &server{})
@@ -275,6 +277,35 @@ func initGprcServer() {
 	}
 	log.Debug("registered server...")
 
+}
+
+var RocksDBPath = "/libera/bin/rocksdb/"
+var dbname = "mydb"
+var rdb *gorocksdb.DB
+
+func initRocksDB() error {
+	err := os.MkdirAll(RocksDBPath, 0750)
+	if err != nil {
+		log.Errorf("Can not create DB directory for '%s'; Error '%v'",
+			dbname, err)
+		return err
+	}
+
+	opts := gorocksdb.NewDefaultOptions()
+	opts.SetCreateIfMissing(true)
+
+	/* Read and write options are required for reading and writing the keys */
+	rdb, err := gorocksdb.OpenDb(opts, RocksDBPath+dbname)
+
+	if err != nil {
+		log.Errorf("Opening of rocks DB '%s' failed with error '%v'",
+			dbname, err)
+		return err
+	} else {
+		log.Debug("Successfully opened RocksDB's database", dbname)
+		log.Debug("Successfully opened RocksDB's database %v", rdb)
+		return nil
+	}
 }
 
 func main() {
@@ -297,5 +328,10 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	//initGprcServer()
 	fmt.Printf("init rest")
+	err = initRocksDB()
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to init rocks DB")
+	}
 	initRestServer()
 }

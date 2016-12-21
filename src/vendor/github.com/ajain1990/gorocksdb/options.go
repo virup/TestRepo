@@ -327,7 +327,7 @@ func (opts *Options) SetMinLevelToCompress(value int) {
 // SetCompressionOptions sets different options for compression algorithms.
 // Default: nil
 func (opts *Options) SetCompressionOptions(value *CompressionOptions) {
-	C.rocksdb_options_set_compression_options(opts.c, C.int(value.WindowBits), C.int(value.Level), C.int(value.Strategy), C.int(value.MaxDictBytes))
+	//C.rocksdb_options_set_compression_options(opts.c, C.int(value.WindowBits), C.int(value.Level), C.int(value.Strategy), C.int(value.MaxDictBytes))
 }
 
 // SetPrefixExtractor sets the prefic extractor.
@@ -433,7 +433,7 @@ func (opts *Options) SetMaxBytesForLevelBase(value uint64) {
 // SetMaxBytesForLevelMultiplier sets the max Bytes for level multiplier.
 // Default: 10
 func (opts *Options) SetMaxBytesForLevelMultiplier(value float64) {
-	C.rocksdb_options_set_max_bytes_for_level_multiplier(opts.c, C.double(value))
+	C.rocksdb_options_set_max_bytes_for_level_multiplier(opts.c, C.int(value))
 }
 
 // SetMaxBytesForLevelMultiplierAdditional sets different max-size multipliers
