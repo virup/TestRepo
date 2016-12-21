@@ -61,6 +61,38 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/cockroachdb/c-jemalloc",
+			"repository": "https://github.com/cockroachdb/c-jemalloc",
+			"vcs": "git",
+			"revision": "d32877eaa9cd9a795073a36e30da919ed52c73f9",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-lz4",
+			"repository": "https://github.com/cockroachdb/c-lz4",
+			"vcs": "git",
+			"revision": "834d3303c9e84b1045bc57c3eb3723ee8cb4d33b",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-rocksdb",
+			"repository": "https://github.com/cockroachdb/c-rocksdb",
+			"vcs": "git",
+			"revision": "894d369c4ea259b65f75563feeb06bea322a8450",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-snappy",
+			"repository": "https://github.com/cockroachdb/c-snappy",
+			"vcs": "git",
+			"revision": "c0cd3c9ce92f195001595e1fbbe66f045daad34f",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/coreos/pkg/flagutil",
 			"repository": "https://github.com/coreos/pkg",
 			"vcs": "git",
@@ -361,6 +393,14 @@
 			"repository": "https://github.com/stripe/stripe-go",
 			"vcs": "git",
 			"revision": "c49cef41dc0a5232570890d139748140a76d1f6e",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/tecbot/gorocksdb",
+			"repository": "https://github.com/tecbot/gorocksdb",
+			"vcs": "git",
+			"revision": "17991d3138a879b166adebf86f7c84da3c1517a7",
 			"branch": "master",
 			"notests": true
 		},
