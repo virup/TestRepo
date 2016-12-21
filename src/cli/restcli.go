@@ -77,8 +77,18 @@ func getNewSession() pb.SessionInfo {
 	si.SessionDesc = "my session"
 	return si
 }
+
+func getUrl() string {
+	serv := os.Getenv("SERVERIP")
+	if serv == "" {
+		fmt.Printf("IP not set")
+		os.Exit(-1)
+	}
+	return "http://" + serv + ":8080"
+}
 func postSession(c *cli.Context) {
 
+	serverurl := getUrl()
 	s := getNewSession()
 	sJson, err := json.Marshal(s)
 	if err != nil {
@@ -94,7 +104,8 @@ func postSession(c *cli.Context) {
 			End()
 	*/
 	contentReader := bytes.NewReader(sJson)
-	req, err := http.NewRequest("POST", "http://example.com", contentReader)
+	req, err := http.NewRequest("POST", serverurl+"/postsession",
+		contentReader)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Notes", "GoRequest is coming!")
 	client := &http.Client{}
@@ -102,7 +113,7 @@ func postSession(c *cli.Context) {
 	if err != nil {
 		log.Fatal("postsession REST call error:%s ", err)
 	}
-	fmt.Printf(" postsession response: %s\n", resp.Status)
+	fmt.Printf(" postsession response: %v\n", resp)
 }
 
 // Rest call to get list of vCenter s.

@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/asdine/storm"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )
@@ -25,7 +24,6 @@ const (
 )
 
 var lastUserUserID uint64
-var db *storm.DB
 
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
@@ -38,7 +36,7 @@ func (s *server) GetStatus(ctx context.Context,
 
 func getAllSessionFromDB() (error, []pb.Session) {
 	var sList []pb.Session
-	err := db.All(&sList)
+	//err := db.All(&sList)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -49,7 +47,7 @@ func getAllSessionFromDB() (error, []pb.Session) {
 
 func getSessionFromDB(sKey string) (error, pb.Session) {
 	var s pb.Session
-	err := db.One("ID", sKey, &s)
+	//err := db.One("ID", sKey, &s)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -62,7 +60,7 @@ func (s *server) GetSessions(ctx context.Context,
 	in *pb.GetSessionsRequest) (*pb.GetSessionsReply, error) {
 
 	var resp pb.GetSessionsReply
-	err := db.All(&resp.Session)
+	//err := db.All(&resp.Session)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -75,11 +73,13 @@ func (s *server) GetSessions(ctx context.Context,
 
 func postSessionDB(in *pb.SessionInfo) (error, string) {
 
-	log.Debug("Post Session DB request")
-	var s pb.Session
+	log.WithFields(log.Fields{"sessionInfo": in}).Debug("Adding to DB")
+	s := new(pb.Session)
 	s.Info = in
 	s.ID = getRandomID()
-	err := db.Save(&s)
+
+	log.WithFields(log.Fields{"session": s}).Debug("Before Adding to DB")
+	//err := db.Save(*s)
 	if err != nil {
 		log.WithFields(log.Fields{"session": s, "error": err}).Error("Failed" +
 			" to write to DB")
@@ -168,6 +168,8 @@ func initRestServer() {
 		"DELETE", "POST")
 	router.HandleFunc("/postsession", postSession).Methods("POST")
 	http.ListenAndServe(":8080", router)
+
+	log.Debug("rest server running...")
 }
 
 func getStatus(res http.ResponseWriter, req *http.Request) {
@@ -259,7 +261,11 @@ func initGprcServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	db, err = storm.Open(soulFitDB)
+	//db, err := bolt.Open("my.db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	s := grpc.NewServer()
 	log.Debug("registering server...")
@@ -267,13 +273,13 @@ func initGprcServer() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+	log.Debug("registered server...")
 
 }
 
 func main() {
 	// open a file
-	f, err := os.OpenFile("server.log",
-		os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	f, err := os.OpenFile("testlogrus.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("error opening file: %v", err)
 	}
@@ -285,11 +291,11 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 
 	// Output to stderr instead of stdout, could also be a file.
-	log.SetOutput(f)
+	log.SetOutput(os.Stdout)
 
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
-
 	//initGprcServer()
+	fmt.Printf("init rest")
 	initRestServer()
 }

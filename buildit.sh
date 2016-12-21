@@ -25,6 +25,8 @@ build_server() {
  echo "Cleaning up old server..."
  rm -f $OUTDIR/server
  cd src/server/server
+
+ echo "Building server..."
  go build -gcflags "-N -l" -o $OUTDIR/server
  go_back
 }
