@@ -13,6 +13,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/ajain1990/gorocksdb"
+	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )
@@ -47,14 +48,34 @@ func getAllSessionFromDB() (error, []pb.Session) {
 	return err, sList
 }
 
-func getSessionFromDB(sKey string) (error, pb.Session) {
-	var s pb.Session
+func getSessionFromDB(sKey string) (error, pb.SessionInfo) {
 	var err error
-	//err := db.One("ID", sKey, &s)
+	var buf []byte
+
+	s := pb.SessionInfo{}
+
+	v, err := rdb.GetCF(ro, sessionsCF, []byte(sKey))
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
 		return err, s
+	} else {
+
+		if v.Size() > 0 {
+			buf = make([]byte, v.Size())
+			copy(buf, v.Data())
+			v.Free()
+		} else {
+			log.WithFields(log.Fields{"error": err}).Error("corrupted" +
+				" session from DB")
+		}
+		err = proto.Unmarshal(buf, &s)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to unmarshal proto from DB")
+		}
+		log.WithFields(log.Fields{"sessionInfo": s, "key": sKey}).
+			Debug("Read from DB")
 	}
 	return err, s
 }
@@ -64,7 +85,7 @@ func (s *server) GetSessions(ctx context.Context,
 
 	var resp pb.GetSessionsReply
 	var err error
-	//err := db.All(&resp.Session)
+	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -75,23 +96,28 @@ func (s *server) GetSessions(ctx context.Context,
 	return &resp, nil
 }
 
-func postSessionDB(in *pb.SessionInfo) (error, string) {
+func postSessionDB(in pb.SessionInfo) (err error, sessionKey string) {
 
-	var err error
 	log.WithFields(log.Fields{"sessionInfo": in}).Debug("Adding to DB")
-	s := new(pb.Session)
-	s.Info = in
-	s.ID = getRandomID()
+	sessionKey = getRandomID()
 
-	log.WithFields(log.Fields{"session": s}).Debug("Before Adding to DB")
-	//err := db.Save(*s)
+	byteBuf, err := proto.Marshal(&in)
 	if err != nil {
-		log.WithFields(log.Fields{"session": s, "error": err}).Error("Failed" +
-			" to write to DB")
+		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
+			Error("Failed to convert to binary")
 		return err, ""
 	}
-	log.WithFields(log.Fields{"session": s}).Debug("Added to DB")
-	return nil, s.ID
+
+	log.Debugf("wo %#v sessionsCF %#v, sessionKey %#v byteBuf %#v",
+		wo, sessionsCF, sessionKey, byteBuf)
+	err = rdb.PutCF(wo, sessionsCF, []byte(sessionKey), byteBuf)
+	if err != nil {
+		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
+			Error("Failed to write to DB")
+		return err, ""
+	}
+	log.WithFields(log.Fields{"sessionInfo": in, "key": sessionKey}).Debug("Added to DB")
+	return nil, sessionKey
 }
 
 func (ser *server) PostSession(ctx context.Context,
@@ -172,8 +198,8 @@ func initRestServer() {
 	router := mux.NewRouter()
 	router.HandleFunc("/getstatus", getStatus).Methods("GET")
 	router.HandleFunc("/getsessions", getSessions).Methods("GET")
-	router.HandleFunc("/session/{sessionKey}", handleSession).Methods("GET",
-		"DELETE", "POST")
+	router.HandleFunc("/getsession/{sessionKey}", getSession).Methods("GET")
+	router.HandleFunc("/deletesession/{sessionKey}", deleteSession).Methods("DELETE")
 	router.HandleFunc("/postsession", postSession).Methods("POST")
 	http.ListenAndServe(":8080", router)
 
@@ -210,12 +236,15 @@ func getSessions(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(res, string(outgoingJSON))
 }
 
+type PostSessionResponse struct {
+	sessionID string `json:"sessionID,omitempty"`
+}
+
 func postSession(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "application/json")
 	var err error
 
 	log.Debugf("postSession req %s", req.Body)
-	info := new(pb.SessionInfo)
+	var info pb.SessionInfo
 	decoder := json.NewDecoder(req.Body)
 	error := decoder.Decode(&info)
 	if error != nil {
@@ -231,35 +260,41 @@ func postSession(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	res.WriteHeader(http.StatusCreated)
-	result := sessionID + " created"
-	fmt.Fprint(res, result)
+	log.WithFields(log.Fields{"sessionID": sessionID}).Debug("Post response")
+
+	var sid PostSessionResponse
+	sid.sessionID = sessionID
+	json.NewEncoder(res).Encode(sid)
 }
 
-func handleSession(res http.ResponseWriter, req *http.Request) {
+func getSession(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(req)
 	sessionKey := vars["sessionKey"]
 
-	switch req.Method {
-	case "GET":
-		//movie, ok := movies[sessionKey]
-		err, session := getSessionFromDB(sessionKey)
-		if err != nil {
-			res.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(res, string("Session not found"))
-		}
-		outgoingJSON, error := json.Marshal(session)
-		if error != nil {
-			log.Println(error.Error())
-			http.Error(res, error.Error(), http.StatusInternalServerError)
-			return
-		}
-		fmt.Fprint(res, string(outgoingJSON))
-	case "DELETE":
-		//delete(movies, sessionKey)
-		res.WriteHeader(http.StatusNoContent)
+	log.WithFields(log.Fields{"sessionKey": sessionKey}).Debug("getsession request")
+	err, session := getSessionFromDB(sessionKey)
+	if err != nil {
+		res.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(res, string("Session not found"))
 	}
+	outgoingJSON, error := json.Marshal(session)
+	if error != nil {
+		log.Println(error.Error())
+		http.Error(res, error.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprint(res, string(outgoingJSON))
+}
+
+func deleteSession(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(req)
+	sessionKey := vars["sessionKey"]
+
+	log.WithFields(log.Fields{"sessionKey": sessionKey}).Debug("deletesession request")
+	//delete(movies, sessionKey)
+	res.WriteHeader(http.StatusNoContent)
 }
 
 func initGprcServer() {
@@ -282,7 +317,13 @@ func initGprcServer() {
 var RocksDBPath = "/libera/bin/rocksdb/"
 var dbname = "mydb"
 var rdb *gorocksdb.DB
+var sessionsCF *gorocksdb.ColumnFamilyHandle
+var usersCF *gorocksdb.ColumnFamilyHandle
+var instructorsCF *gorocksdb.ColumnFamilyHandle
+var wo *gorocksdb.WriteOptions
+var ro *gorocksdb.ReadOptions
 
+// XXX Cleanup pending
 func initRocksDB() error {
 	err := os.MkdirAll(RocksDBPath, 0750)
 	if err != nil {
@@ -293,19 +334,38 @@ func initRocksDB() error {
 
 	opts := gorocksdb.NewDefaultOptions()
 	opts.SetCreateIfMissing(true)
+	opts.SetCreateIfMissingColumnFamilies(true)
+	wo = gorocksdb.NewDefaultWriteOptions()
+	ro = gorocksdb.NewDefaultReadOptions()
 
 	/* Read and write options are required for reading and writing the keys */
-	rdb, err := gorocksdb.OpenDb(opts, RocksDBPath+dbname)
-
+	rdb, err = gorocksdb.OpenDb(opts, RocksDBPath+dbname)
 	if err != nil {
 		log.Errorf("Opening of rocks DB '%s' failed with error '%v'",
 			dbname, err)
 		return err
-	} else {
-		log.Debug("Successfully opened RocksDB's database", dbname)
-		log.Debug("Successfully opened RocksDB's database %v", rdb)
-		return nil
 	}
+	log.Debug("Successfully opened RocksDB's database", dbname)
+	log.Debug("Successfully opened RocksDB's database %v", rdb)
+	sessionsCF, err = rdb.CreateColumnFamily(opts, "sessions")
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to create session CF")
+		return err
+	}
+	usersCF, err = rdb.CreateColumnFamily(opts, "users")
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to create users CF")
+		return err
+	}
+	instructorsCF, err = rdb.CreateColumnFamily(opts, "instructors")
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to create instructors CF")
+		return err
+	}
+	return nil
 }
 
 func main() {
@@ -332,6 +392,7 @@ func main() {
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to init rocks DB")
+		return
 	}
 	initRestServer()
 }

@@ -35,7 +35,7 @@ build_server() {
 # build only specific things
 main() {
  build_cli
- build_protoc
+ #build_protoc
  build_server
 }
 

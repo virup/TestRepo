@@ -113,7 +113,11 @@ func postSession(c *cli.Context) {
 	if err != nil {
 		log.Fatal("postsession REST call error:%s ", err)
 	}
-	fmt.Printf(" postsession response: %v\n", resp)
+	var mybody struct {
+		SessionID string `json:"sessionid"`
+	}
+	json.NewDecoder(resp.Body).Decode(&mybody)
+	fmt.Println(mybody)
 }
 
 // Rest call to get list of vCenter s.
