@@ -20,6 +20,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/BurntSushi/toml",
+			"repository": "https://github.com/BurntSushi/toml",
+			"vcs": "git",
+			"revision": "99064174e013895bbd9b025c31100bd1d9b590ca",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/Sereal/Sereal/Go/sereal",
 			"repository": "https://github.com/Sereal/Sereal",
 			"vcs": "git",
@@ -37,6 +45,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/ajain1990/gorocksdb",
+			"repository": "https://github.com/ajain1990/gorocksdb",
+			"vcs": "git",
+			"revision": "f31ce053e8b2c7b42a3a4ebf39b2599ea04b86d3",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/asdine/storm",
 			"repository": "https://github.com/asdine/storm",
 			"vcs": "git",
@@ -49,6 +65,38 @@
 			"repository": "https://github.com/boltdb/bolt",
 			"vcs": "git",
 			"revision": "0d9f544bb94aac29c185968483459ef74d6deb5d",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-jemalloc",
+			"repository": "https://github.com/cockroachdb/c-jemalloc",
+			"vcs": "git",
+			"revision": "d32877eaa9cd9a795073a36e30da919ed52c73f9",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-lz4",
+			"repository": "https://github.com/cockroachdb/c-lz4",
+			"vcs": "git",
+			"revision": "834d3303c9e84b1045bc57c3eb3723ee8cb4d33b",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-rocksdb",
+			"repository": "https://github.com/cockroachdb/c-rocksdb",
+			"vcs": "git",
+			"revision": "894d369c4ea259b65f75563feeb06bea322a8450",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/cockroachdb/c-snappy",
+			"repository": "https://github.com/cockroachdb/c-snappy",
+			"vcs": "git",
+			"revision": "c0cd3c9ce92f195001595e1fbbe66f045daad34f",
 			"branch": "master",
 			"notests": true
 		},
@@ -139,6 +187,22 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/fatih/color",
+			"repository": "https://github.com/fatih/color",
+			"vcs": "git",
+			"revision": "bf82308e8c8546dc2b945157173eb8a959ae9505",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/go-swagger/go-swagger",
+			"repository": "https://github.com/go-swagger/go-swagger",
+			"vcs": "git",
+			"revision": "fe9494fff4da1adac1e86ed679702d39ea4be458",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/golang/glog",
 			"repository": "https://github.com/golang/glog",
 			"vcs": "git",
@@ -165,30 +229,12 @@
 			"notests": true
 		},
 		{
-			"importpath": "github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"importpath": "github.com/golang/protobuf/protoc-gen-go",
 			"repository": "https://github.com/golang/protobuf",
 			"vcs": "git",
 			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
 			"branch": "master",
-			"path": "protoc-gen-go/descriptor",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/golang/protobuf/protoc-gen-go/generator",
-			"repository": "https://github.com/golang/protobuf",
-			"vcs": "git",
-			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
-			"branch": "master",
-			"path": "protoc-gen-go/generator",
-			"notests": true
-		},
-		{
-			"importpath": "github.com/golang/protobuf/protoc-gen-go/plugin",
-			"repository": "https://github.com/golang/protobuf",
-			"vcs": "git",
-			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
-			"branch": "master",
-			"path": "protoc-gen-go/plugin",
+			"path": "/protoc-gen-go",
 			"notests": true
 		},
 		{
@@ -271,6 +317,30 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/googleapis/googleapis",
+			"repository": "https://github.com/googleapis/googleapis",
+			"vcs": "git",
+			"revision": "d3e2ebbb857e061e4c0bb632fe8da2a888cf91cf",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gorilla/context",
+			"repository": "https://github.com/gorilla/context",
+			"vcs": "git",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gorilla/mux",
+			"repository": "https://github.com/gorilla/mux",
+			"vcs": "git",
+			"revision": "757bef944d0f21880861c2dd9c871ca543023cba",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/grpc-ecosystem/grpc-gateway",
 			"repository": "https://github.com/grpc-ecosystem/grpc-gateway",
 			"vcs": "git",
@@ -287,10 +357,66 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/mattn/go-colorable",
+			"repository": "https://github.com/mattn/go-colorable",
+			"vcs": "git",
+			"revision": "d228849504861217f796da67fae4f6e347643f15",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/mattn/go-isatty",
+			"repository": "https://github.com/mattn/go-isatty",
+			"vcs": "git",
+			"revision": "30a891c33c7cde7b02a981314b4228ec99380cca",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/moul/http2curl",
+			"repository": "https://github.com/moul/http2curl",
+			"vcs": "git",
+			"revision": "4e24498b31dba4683efb9d35c1c8a91e2eda28c8",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/parnurzeal/gorequest",
+			"repository": "https://github.com/parnurzeal/gorequest",
+			"vcs": "git",
+			"revision": "bdd24ac7ec2b0b2126f4782dd031644cbea1d223",
+			"branch": "develop",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/rogpeppe/fastuuid",
 			"repository": "https://github.com/rogpeppe/fastuuid",
 			"vcs": "git",
 			"revision": "6724a57986aff9bff1a1770e9347036def7c89f6",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/stripe/stripe-go",
+			"repository": "https://github.com/stripe/stripe-go",
+			"vcs": "git",
+			"revision": "c49cef41dc0a5232570890d139748140a76d1f6e",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/urfave/cli",
+			"repository": "https://github.com/urfave/cli",
+			"vcs": "git",
+			"revision": "0bdeddeeb0f650497d603c4ad7b20cfe685682f6",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/urfave/negroni",
+			"repository": "https://github.com/urfave/negroni",
+			"vcs": "git",
+			"revision": "cd9734011043904139c24dbad9a71b21f1586f36",
 			"branch": "master",
 			"notests": true
 		},
@@ -364,6 +490,15 @@
 			"revision": "4971afdc2f162e82d185353533d3cf16188a9f4e",
 			"branch": "master",
 			"path": "lex/httplex",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/publicsuffix",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "45e771701b814666a7eb299e6c7a57d0b1799e91",
+			"branch": "master",
+			"path": "/publicsuffix",
 			"notests": true
 		},
 		{
@@ -448,6 +583,30 @@
 			"repository": "https://gopkg.in/gemnasium/logrus-airbrake-hook.v2",
 			"vcs": "git",
 			"revision": "bfee1239d796830ca346767650cce5ba90d58c57",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/tylerb/graceful.v1",
+			"repository": "https://gopkg.in/tylerb/graceful.v1",
+			"vcs": "git",
+			"revision": "50a48b6e73fcc75b45e22c05b79629a67c79e938",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/urfave/cli.v1",
+			"repository": "https://gopkg.in/urfave/cli.v1",
+			"vcs": "git",
+			"revision": "0bdeddeeb0f650497d603c4ad7b20cfe685682f6",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"vcs": "git",
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
 			"branch": "master",
 			"notests": true
 		}
