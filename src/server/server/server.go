@@ -399,7 +399,6 @@ func main() {
 
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
-	//initGprcServer()
 	fmt.Printf("init rest")
 	err = initRocksDB()
 	if err != nil {
@@ -407,5 +406,6 @@ func main() {
 			" to init rocks DB")
 		return
 	}
-	initRestServer()
+	//initRestServer()
+	initGprcServer()
 }
