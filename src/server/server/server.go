@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	port          = ":50051"
+	port          = ":8080"
 	soulFitDB     = "SoulFitDB"
 	internalError = "internalError"
 	successError  = "success"
