@@ -10,9 +10,10 @@ build_protoc() {
 }
 
 build_cli() {
- echo "Building cli..."
  echo "Cleaning up old cli..."
  rm -f $OUTDIR/cli
+
+ echo "Building cli..."
  cd src/test/cli
  go build -gcflags "-N -l" -o $OUTDIR/cli
  go_back
@@ -20,9 +21,9 @@ build_cli() {
 
 
 build_grpctest() {
- echo "Building grpctest..."
  echo "Cleaning up old grpctest..."
  rm -f $OUTDIR/grpctest
+ echo "Building grpctest..."
  cd src/test/grpctest
  go build -gcflags "-N -l" -o $OUTDIR/grpctest
  go_back
@@ -30,7 +31,6 @@ build_grpctest() {
 
 
 build_server() {
- echo "Building server..."
  echo "Cleaning up old server..."
  rm -f $OUTDIR/server
  cd src/server/server

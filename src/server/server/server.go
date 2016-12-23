@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"pay"
 	pb "server/rpcdef"
 
 	"google.golang.org/grpc"
@@ -204,6 +205,27 @@ func (s *server) EnrollUser(ctx context.Context,
 		return &resp, err
 	}
 	log.WithFields(log.Fields{"user": u}).Debug("Added to DB")
+
+	err, customerPayID := pay.CreatePayingCustomer(
+		"mycustomer@gmail.com", "1234-xxxx-xxxx", "06", "19")
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to set up customer payment")
+
+		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
+		return &resp, err
+	}
+	log.WithFields(log.Fields{"customerPayID": customerPayID}).
+		Debug("Got new customer payment ID")
+
+	err = pay.StartSubscription(customerPayID)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to start subscription")
+		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
+		return &resp, err
+	}
+
 	resp.ErrData = &pb.ErrorData{successError, successError}
 	return &resp, nil
 }
@@ -407,5 +429,6 @@ func main() {
 		return
 	}
 	//initRestServer()
+	err = pay.InitPayPlan()
 	initGprcServer()
 }
