@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -86,6 +87,10 @@ func getUrl() string {
 	}
 	return "http://" + serv + ":8080"
 }
+
+/*
+curl -X POST -d '{"sessionTime":"2016-12-23 01:50:18.315421713 +0000 UTC","sessionDesc":"my session","instructorID":"XVlBzgbaiC","sessionType":"stype"}' -H  "Content-Type:application/json" http://192.168.0.103:8080/postsession
+*/
 func postSession(c *cli.Context) {
 
 	serverurl := getUrl()
@@ -112,12 +117,21 @@ func postSession(c *cli.Context) {
 	resp, _ := client.Do(req)
 	if err != nil {
 		log.Fatal("postsession REST call error:%s ", err)
+		return
 	}
+
+	defer resp.Body.Close()
 	var mybody struct {
 		SessionID string `json:"sessionid"`
 	}
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
 	json.NewDecoder(resp.Body).Decode(&mybody)
-	fmt.Println(mybody)
+	fmt.Println("resp body", mybody)
+	body, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("post:\n", (string(body)))
+
 }
 
 // Rest call to get list of vCenter s.

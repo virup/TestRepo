@@ -39,7 +39,21 @@ func (s *server) GetStatus(ctx context.Context,
 func getAllSessionFromDB() (error, []pb.Session) {
 	var sList []pb.Session
 	var err error
-	//err := db.All(&sList)
+
+	log.Debug("Reading sessions from DB")
+	it := rdb.NewIteratorCF(ro, sessionsCF)
+	defer it.Close()
+
+	//it.Seek([]byte("foo"))
+	for ; it.Valid(); it.Next() {
+		log.WithFields(log.Fields{"key": it.Key().Data(),
+			"value": it.Value().Data()}).
+			Debug("Reading key from DB")
+	}
+
+	if err := it.Err(); err != nil {
+		return err, sList
+	}
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -233,15 +247,16 @@ func getSessions(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	fmt.Fprint(res, "hello")
+	return
 	fmt.Fprint(res, string(outgoingJSON))
 }
 
-type PostSessionResponse struct {
-	sessionID string `json:"sessionID,omitempty"`
-}
-
+// Returns the session ID that just created. sessionID can be used
+// to query the session
 func postSession(res http.ResponseWriter, req *http.Request) {
 	var err error
+	res.Header().Set("Content-Type", "application/json")
 
 	log.Debugf("postSession req %s", req.Body)
 	var info pb.SessionInfo
@@ -253,18 +268,16 @@ func postSession(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, error.Error(), http.StatusInternalServerError)
 		return
 	}
-	err, sessionID := postSessionDB(info)
+	err, sID := postSessionDB(info)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to post session to DB")
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.WithFields(log.Fields{"sessionID": sessionID}).Debug("Post response")
 
-	var sid PostSessionResponse
-	sid.sessionID = sessionID
-	json.NewEncoder(res).Encode(sid)
+	log.WithFields(log.Fields{"response": sID}).Debug("Post response")
+	fmt.Fprint(res, sID)
 }
 
 func getSession(res http.ResponseWriter, req *http.Request) {
