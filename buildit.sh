@@ -13,11 +13,20 @@ build_cli() {
  echo "Building cli..."
  echo "Cleaning up old cli..."
  rm -f $OUTDIR/cli
- cd src/cli
+ cd src/test/cli
  go build -gcflags "-N -l" -o $OUTDIR/cli
  go_back
 }
 
+
+build_grpctest() {
+ echo "Building grpctest..."
+ echo "Cleaning up old grpctest..."
+ rm -f $OUTDIR/grpctest
+ cd src/test/grpctest
+ go build -gcflags "-N -l" -o $OUTDIR/grpctest
+ go_back
+}
 
 
 build_server() {
@@ -37,6 +46,7 @@ main() {
  build_cli
  build_protoc
  build_server
+ build_grpctest
 }
 
 # Get the parent directory of this script and store all the binaries in the

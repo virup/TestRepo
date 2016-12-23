@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
-	"time"
-
 	pb "server/rpcdef"
+	"test/util"
 
 	"github.com/fatih/color"
 	"github.com/parnurzeal/gorequest"
@@ -59,42 +57,13 @@ func getGetSessionInfo(c *cli.Context) {
 	fmt.Printf(" session response: %s\n", body)
 }
 
-func randSeq(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
-}
-
-func getNewSession() pb.SessionInfo {
-
-	var si pb.SessionInfo
-	t := time.Now()
-	si.SessionTime = t.String()
-	si.SessionType = "stype"
-	si.InstructorID = randSeq(10)
-	si.SessionDesc = "my session"
-	return si
-}
-
-func getUrl() string {
-	serv := os.Getenv("SERVERIP")
-	if serv == "" {
-		fmt.Printf("IP not set")
-		os.Exit(-1)
-	}
-	return "http://" + serv + ":8080"
-}
-
 /*
 curl -X POST -d '{"sessionTime":"2016-12-23 01:50:18.315421713 +0000 UTC","sessionDesc":"my session","instructorID":"XVlBzgbaiC","sessionType":"stype"}' -H  "Content-Type:application/json" http://192.168.0.103:8080/postsession
 */
 func postSession(c *cli.Context) {
 
-	serverurl := getUrl()
-	s := getNewSession()
+	serverurl := util.GetHttpUrl()
+	s := util.GetNewSession()
 	sJson, err := json.Marshal(s)
 	if err != nil {
 		fmt.Printf("Failed to marshal json %s", err)
