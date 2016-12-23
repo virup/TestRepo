@@ -6,10 +6,16 @@ mkdir src
 cd src
 git clone github.com/LiberaLabs/libera
 
-- Server runs in a rocksdb container
-docker pull az3r/golang-rocksdb
+-- Server runs in a rocksdb container, so lets build the container
+cd ~/src/libera/libera/pkg
+
+# Build the image using rocksdb Dockerfile
+docker build . 
+
+# Run the container with an open port for the server and mounted repo
 docker run -p 8080:8080 --privileged -it -v /Users/YOURUSERNAME/src/libera/libera:/libera c036c6e84f35  /bin/bash
-- Inside the container
+
+# Inside the container, run the server
 cd /libera/bin 
 ../buildit.sh
 ./server
