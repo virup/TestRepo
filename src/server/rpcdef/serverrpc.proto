@@ -2,107 +2,213 @@ syntax = "proto3";
 
 package serversvc;
 
-//import "google/api/annotations.proto";
+// XXX Couldn't compile for now.
+//import "google/protobuf/any.proto";
+//import "google/protobuf/timestamp.proto";
 
-// The greeting service definition.
 service ServerSvc {
-  // Sends a greeting
-  rpc GetStatus (ServerSvcStatusRequest) returns (ServerSvcStatusResponse) {
-    //option (google.api.http) = {
-    //  post: "/v1/getstatus"
-    //  body: "*"
-    //};
+  // Is it running?
+  rpc GetStatus (ServerSvcStatusReq) returns (ServerSvcStatusReply) {
   }
 
   // Session handling
-  rpc GetSessions (GetSessionsRequest) returns (GetSessionsReply) {}
-  rpc PostSession(PostSessionRequest) returns (PostSessionReply) {}
+  rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
+  rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
   
   // Instructor handling
-  rpc EnrollInstructor(EnrollInstructorRequest) returns (EnrollInstructorResponse) {}
+  rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
+  rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
 
   // User handling
-  rpc EnrollUser(EnrollUserRequest) returns (EnrollUserResponse) {}
+  rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
+  rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
+
+  rpc Login(LoginReq) returns (LoginReply) {}
+
+  // Used for analytics
+  // Client will record much of the user interaction with the app
+  rpc RecordEvent(RecordEventReq) returns (RecordEventReply) {}
 }
 
-message ErrorData {
-  string errorCode = 1;
-  string errorStr = 2;
-}
-
-message ServerSvcStatusRequest {
+message ServerSvcStatusReq {
   string name = 1;
 }
 
-message ServerSvcStatusResponse {
-  ErrorData errData = 1;
-  string message = 2;
+message ServerSvcStatusReply {
+  //ErrorData errData = 1;
+  string message = 1;
 }
 
 message SessionInfo {
+  //Timestamp sessionTime = 1;
   string sessionTime = 1;
   string sessionDesc = 2;
   string instructorID = 3;
-  string sessionType = 4;
+  repeated FitnessCategory sessionType = 4;
+
+  // Maintained by server
+  uint64 sessionUsersEnrolled = 5;
 }
 
-message Session {
-  SessionInfo info = 1;
-  uint64 sessionUsersEnrolled = 2;
-  // ID isn't during request
-  // XXX This has to be modeled properly
-  string ID = 3;
+enum FitnessCategory {
+    YOGA = 0;
+    HATHA_YOGA = 1;
+    KUNDALINI_YOGA = 2;
+    FAST_YOGA = 3;
+
+    MEDITATION = 101;
+    TM_MEDITATION = 102;
+
+    DANCE = 201;
+    HIP_HOP = 202;
+    ZUMBA = 203;
 }
 
-message Person {
+message ReviewInfo {
+   message Review {
+      float rating = 1;
+      string review = 2;
+   } 
+   repeated Review reviewList = 1;
+}
+
+message CCInfo {
+   message CreditCard {
+     string Name = 1;
+     string Number = 2;
+     string ExpiryMonth = 3;
+     string ExpiryYear = 4;
+     string CCV = 5;
+     bool isDefault = 6;
+   }
+   repeated CreditCard ccList = 1; 
+}
+
+message BankInfo {
+     string RoutingNum = 1;
+     string AcctNum = 2;
+     string BankName = 3;
+}
+
+message InstructorInfo {
    string name = 1;
    string age = 2;
    string sex = 3;
    string location = 4;
+   string email = 5;
+   
+   string desc = 6;
+   string certification = 7;
+   repeated FitnessCategory fitnessSpecialties = 8;
+
+   // Internal to server
+   string ReviewInfoID = 9;
+   string BankInfoID = 10;
 }
 
-message Instructor {
-   Person person = 1;
-   string ID = 2;
-   float rating = 3;
+message Device {
+   string DeviceID = 1;
+   string DeviceDesc = 2;
 }
 
-message User {
-   Person person = 1;
-   string ID = 2;
-   repeated string friendsIDs = 3;
+message UserInfo {
+   string name = 1;
+   string age = 2;
+   string sex = 3;
+   string city = 4;
+   string country = 5;
+   string email = 6;
+
+   string CCInfoID = 7;
+
+   // Internal to server
+   repeated string friendsIDs = 8;
+   repeated string followIDs = 9;
+   // Pointer to event activity in DB
+   string RecordActivityID = 10;
 }
 
-message GetSessionsRequest {
+message GetSessionsReq {
   // If specified, only show sessions of this type.
   string sessionType = 1;
+  // XXX Search by other attributes later
 }
 
 message GetSessionsReply {
-  ErrorData errData = 1;
-  repeated Session session = 2;
+  repeated SessionInfo sessionList = 2;
 }
 
-message PostSessionRequest {
+message PostSessionReq {
   SessionInfo info = 1;
 }
 
 message PostSessionReply {
-  ErrorData errData = 1;
 }
 
-message EnrollInstructorRequest {
-  Person instructor = 1;
+message EnrollInstructorReq {
+  InstructorInfo instructor = 1;
 }
 
-message EnrollInstructorResponse {
-   ErrorData errData = 1;
+message EnrollInstructorReply {
 }
 
-message EnrollUserRequest {
-  Person user = 1;
+message GetInstructorsReq {
+  // If specified, only show sessions of this type.
+  string sessionType = 1;
+  // XXX Search by other attributes later
 }
 
-message EnrollUserResponse {
-   ErrorData errData = 1;
+message GetInstructorsReply {
+}
+
+message EnrollUserReq {
+  UserInfo user = 1;
+}
+
+message EnrollUserReply {
+}
+
+message GetUsersReq {
+
+}
+
+message GetUsersReply {
+   repeated UserInfo userList = 1;
+}
+
+enum EventType {
+    LOGIN_EVENT = 0;
+    LOGOUT_EVENT = 1;
+    DEVICE_USED = 2;
+
+    JOIN_SESSION = 101;
+    FOLLOW_INSTRUCTOR = 102;
+
+    LIKE_PRESS_WATCH = 201;
+}
+
+message Event {
+   EventType eventType = 1;
+   //Duration eventDuration = 2;
+   //google.protobuf.Timestamp eventTS = 3;
+   string eventDesc = 4;
+}
+ 
+message RecordActivity {
+  repeated Event eventList = 1;
+}
+
+message RecordEventReq {
+   Event event = 1;
+}
+
+message RecordEventReply {
+}
+
+message LoginReq {
+   string email = 1;
+   string userOrInstructorID = 2;
+}
+
+message LoginReply {
 }

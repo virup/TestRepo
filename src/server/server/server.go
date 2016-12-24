@@ -1,29 +1,24 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net"
-	"net/http"
 	"os"
 	"pay"
 	pb "server/rpcdef"
 
-	"google.golang.org/grpc"
-
 	log "github.com/Sirupsen/logrus"
+
 	"github.com/ajain1990/gorocksdb"
 	"github.com/golang/protobuf/proto"
-	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 const (
-	port          = ":8080"
-	soulFitDB     = "SoulFitDB"
-	internalError = "internalError"
-	successError  = "success"
+	port      = ":8080"
+	soulFitDB = "SoulFitDB"
 )
 
 var lastUserUserID uint64
@@ -33,12 +28,12 @@ type server struct{}
 
 //  Send hello
 func (s *server) GetStatus(ctx context.Context,
-	in *pb.ServerSvcStatusRequest) (*pb.ServerSvcStatusResponse, error) {
-	return &pb.ServerSvcStatusResponse{Message: "Hello " + in.Name}, nil
+	in *pb.ServerSvcStatusReq) (*pb.ServerSvcStatusReply, error) {
+	return &pb.ServerSvcStatusReply{Message: "Hello " + in.Name}, nil
 }
 
-func getAllSessionFromDB() (error, []pb.Session) {
-	var sList []pb.Session
+func getAllSessionFromDB() (error, []pb.SessionInfo) {
+	var sList []pb.SessionInfo
 	var err error
 
 	log.Debug("Reading sessions from DB")
@@ -96,18 +91,15 @@ func getSessionFromDB(sKey string) (error, pb.SessionInfo) {
 }
 
 func (s *server) GetSessions(ctx context.Context,
-	in *pb.GetSessionsRequest) (*pb.GetSessionsReply, error) {
+	in *pb.GetSessionsReq) (*pb.GetSessionsReply, error) {
 
 	var resp pb.GetSessionsReply
-	var err error
-	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+	err := GetSessions()
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
-		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
-		return &resp, nil
+		return &resp, err
 	}
-	resp.ErrData = &pb.ErrorData{successError, successError}
 	return &resp, nil
 }
 
@@ -136,83 +128,127 @@ func postSessionDB(in pb.SessionInfo) (err error, sessionKey string) {
 }
 
 func (ser *server) PostSession(ctx context.Context,
-	in *pb.PostSessionRequest) (*pb.PostSessionReply, error) {
+	in *pb.PostSessionReq) (*pb.PostSessionReply, error) {
 
 	var err error
 	var resp pb.PostSessionReply
-	log.Debug("Post Session grpc request")
-	var s pb.Session
-	s.Info = in.Info
-	s.ID = getRandomID()
-	//err := db.Save(&s)
+	log.WithFields(log.Fields{"sessionInfo": in.Info}).
+		Debug("Received post session request")
+
+	err, _ = postSessionDB(*in.Info)
 	if err != nil {
-		log.WithFields(log.Fields{"session": s, "error": err}).Error("Failed" +
-			" to write to DB")
-		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
+		log.WithFields(log.Fields{"session": in.Info, "error": err}).
+			Error("Failed to write to DB")
 		return &resp, err
 	}
-	log.WithFields(log.Fields{"session": s}).Debug("Added to DB")
-	resp.ErrData = &pb.ErrorData{successError, successError}
+	log.WithFields(log.Fields{"session": in.Info}).
+		Debug("Post session succeeded")
+	return &resp, nil
+}
+
+func (s *server) GetInstructors(ctx context.Context,
+	in *pb.GetInstructorsReq) (*pb.GetInstructorsReply, error) {
+
+	var resp pb.GetInstructorsReply
+	var err error
+	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get instructors from DB")
+		return &resp, err
+	}
+	return &resp, nil
+}
+
+func (s *server) RecordEvent(ctx context.Context,
+	in *pb.RecordEventReq) (*pb.RecordEventReply, error) {
+
+	var resp pb.RecordEventReply
+	var err error
+	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to login")
+		return &resp, err
+	}
+	return &resp, nil
+}
+
+func (s *server) Login(ctx context.Context,
+	in *pb.LoginReq) (*pb.LoginReply, error) {
+
+	var resp pb.LoginReply
+	var err error
+	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to login")
+		return &resp, err
+	}
 	return &resp, nil
 }
 
 func (s *server) EnrollInstructor(ctx context.Context,
-	in *pb.EnrollInstructorRequest) (*pb.EnrollInstructorResponse, error) {
+	in *pb.EnrollInstructorReq) (*pb.EnrollInstructorReply, error) {
 
 	var err error
-	var resp pb.EnrollInstructorResponse
+	var resp pb.EnrollInstructorReply
 	log.Debug("Enroll Instructor request")
-	var i pb.Instructor
-	i.Person = in.Instructor
-	i.ID = getRandomID()
+	//i.ID = getRandomID()
 	//err := db.Save(&i)
 	if err != nil {
-		log.WithFields(log.Fields{"instructor": i, "error": err}).Error("Failed" +
-			" to write to DB")
-		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
+		log.WithFields(log.Fields{"instructor": in.Instructor,
+			"error": err}).Error("Failed to write to DB")
 		return &resp, err
 	}
-	log.WithFields(log.Fields{"instructor": i}).Debug("Added to DB")
-	resp.ErrData = &pb.ErrorData{successError, successError}
+	log.WithFields(log.Fields{"instructor": in.Instructor}).
+		Debug("Added to DB")
 	return &resp, nil
 }
 
 func getRandomID() string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	var letters = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
 
-	b := make([]rune, 10)
+	b := make([]rune, 8)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
 }
 
-func (s *server) EnrollUser(ctx context.Context,
-	in *pb.EnrollUserRequest) (*pb.EnrollUserResponse, error) {
+func (s *server) GetUsers(ctx context.Context,
+	in *pb.GetUsersReq) (*pb.GetUsersReply, error) {
 
+	var resp pb.GetUsersReply
 	var err error
-	var resp pb.EnrollUserResponse
-	log.Debug("Enroll User request")
-	var u pb.User
-	u.Person = in.User
-	u.ID = getRandomID()
-	//err := db.Save(&u)
+	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
 	if err != nil {
-		log.WithFields(log.Fields{"user": u, "error": err}).Error("Failed" +
-			" to write to DB for user")
-
-		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get users from DB")
 		return &resp, err
 	}
-	log.WithFields(log.Fields{"user": u}).Debug("Added to DB")
+	return &resp, nil
+}
+
+func (s *server) EnrollUser(ctx context.Context,
+	in *pb.EnrollUserReq) (*pb.EnrollUserReply, error) {
+
+	var err error
+	var resp pb.EnrollUserReply
+	log.Debug("Enroll User request")
+	//err := db.Save(&u)
+	if err != nil {
+		log.WithFields(log.Fields{"user": in.User, "error": err}).
+			Error("Failed to write to DB for user")
+		return &resp, err
+	}
+	log.WithFields(log.Fields{"user": in.User}).Debug("Added to DB")
 
 	err, customerPayID := pay.CreatePayingCustomer(
 		"mycustomer@gmail.com", "1234-xxxx-xxxx", "06", "19")
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to set up customer payment")
-
-		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
 		return &resp, err
 	}
 	log.WithFields(log.Fields{"customerPayID": customerPayID}).
@@ -222,114 +258,9 @@ func (s *server) EnrollUser(ctx context.Context,
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to start subscription")
-		resp.ErrData = &pb.ErrorData{internalError, err.Error()}
 		return &resp, err
 	}
-
-	resp.ErrData = &pb.ErrorData{successError, successError}
 	return &resp, nil
-}
-
-func initRestServer() {
-	router := mux.NewRouter()
-	router.HandleFunc("/getstatus", getStatus).Methods("GET")
-	router.HandleFunc("/getsessions", getSessions).Methods("GET")
-	router.HandleFunc("/getsession/{sessionKey}", getSession).Methods("GET")
-	router.HandleFunc("/deletesession/{sessionKey}", deleteSession).Methods("DELETE")
-	router.HandleFunc("/postsession", postSession).Methods("POST")
-	http.ListenAndServe(":8080", router)
-
-	log.Debug("rest server running...")
-}
-
-func getStatus(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "application/json")
-
-	fmt.Fprint(res, "running from server!")
-}
-
-func getSessions(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "application/json")
-
-	log.Debug("getSessions req")
-	err, sessionList := getAllSessionFromDB()
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to get sessions from DB")
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	outgoingJSON, error := json.Marshal(sessionList)
-
-	log.WithFields(log.Fields{"json": outgoingJSON}).Debug("Sending" +
-		" sessions from DB")
-	if error != nil {
-		log.Println(error.Error())
-		http.Error(res, error.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprint(res, "hello")
-	return
-	fmt.Fprint(res, string(outgoingJSON))
-}
-
-// Returns the session ID that just created. sessionID can be used
-// to query the session
-func postSession(res http.ResponseWriter, req *http.Request) {
-	var err error
-	res.Header().Set("Content-Type", "application/json")
-
-	log.Debugf("postSession req %s", req.Body)
-	var info pb.SessionInfo
-	decoder := json.NewDecoder(req.Body)
-	error := decoder.Decode(&info)
-	if error != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to decode json")
-		http.Error(res, error.Error(), http.StatusInternalServerError)
-		return
-	}
-	err, sID := postSessionDB(info)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to post session to DB")
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	log.WithFields(log.Fields{"response": sID}).Debug("Post response")
-	fmt.Fprint(res, sID)
-}
-
-func getSession(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(req)
-	sessionKey := vars["sessionKey"]
-
-	log.WithFields(log.Fields{"sessionKey": sessionKey}).Debug("getsession request")
-	err, session := getSessionFromDB(sessionKey)
-	if err != nil {
-		res.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(res, string("Session not found"))
-	}
-	outgoingJSON, error := json.Marshal(session)
-	if error != nil {
-		log.Println(error.Error())
-		http.Error(res, error.Error(), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprint(res, string(outgoingJSON))
-}
-
-func deleteSession(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(req)
-	sessionKey := vars["sessionKey"]
-
-	log.WithFields(log.Fields{"sessionKey": sessionKey}).Debug("deletesession request")
-	//delete(movies, sessionKey)
-	res.WriteHeader(http.StatusNoContent)
 }
 
 func initGprcServer() {
@@ -359,6 +290,7 @@ var wo *gorocksdb.WriteOptions
 var ro *gorocksdb.ReadOptions
 
 // XXX Cleanup pending
+// XXX Reopening an existing DB doesn't work for now.
 func initRocksDB() error {
 	err := os.MkdirAll(RocksDBPath, 0750)
 	if err != nil {
@@ -428,7 +360,6 @@ func main() {
 			" to init rocks DB")
 		return
 	}
-	//initRestServer()
 	err = pay.InitPayPlan()
 	initGprcServer()
 }
