@@ -14,7 +14,7 @@ func GetNewSession() pb.SessionInfo {
 	var si pb.SessionInfo
 	t := time.Now()
 	si.SessionTime = t.String()
-	si.SessionType = "stype"
+	si.SessionType = []pb.FitnessCategory{pb.FitnessCategory_YOGA, pb.FitnessCategory_FAST_YOGA}
 	si.InstructorID = randSeq(10)
 	si.SessionDesc = "my session"
 	return si

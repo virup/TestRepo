@@ -9,22 +9,33 @@ It is generated from these files:
 	serverrpc.proto
 
 It has these top-level messages:
-	ErrorData
-	ServerSvcStatusRequest
-	ServerSvcStatusResponse
+	ServerSvcStatusReq
+	ServerSvcStatusReply
 	SessionInfo
-	Session
-	Person
-	Instructor
-	User
-	GetSessionsRequest
+	ReviewInfo
+	CCInfo
+	BankInfo
+	InstructorInfo
+	Device
+	UserInfo
+	GetSessionsReq
 	GetSessionsReply
-	PostSessionRequest
+	PostSessionReq
 	PostSessionReply
-	EnrollInstructorRequest
-	EnrollInstructorResponse
-	EnrollUserRequest
-	EnrollUserResponse
+	EnrollInstructorReq
+	EnrollInstructorReply
+	GetInstructorsReq
+	GetInstructorsReply
+	EnrollUserReq
+	EnrollUserReply
+	GetUsersReq
+	GetUsersReply
+	Event
+	RecordActivity
+	RecordEventReq
+	RecordEventReply
+	LoginReq
+	LoginReply
 */
 package serversvc
 
@@ -48,64 +59,108 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type ErrorData struct {
-	ErrorCode string `protobuf:"bytes,1,opt,name=errorCode" json:"errorCode,omitempty"`
-	ErrorStr  string `protobuf:"bytes,2,opt,name=errorStr" json:"errorStr,omitempty"`
+type FitnessCategory int32
+
+const (
+	FitnessCategory_YOGA           FitnessCategory = 0
+	FitnessCategory_HATHA_YOGA     FitnessCategory = 1
+	FitnessCategory_KUNDALINI_YOGA FitnessCategory = 2
+	FitnessCategory_FAST_YOGA      FitnessCategory = 3
+	FitnessCategory_MEDITATION     FitnessCategory = 101
+	FitnessCategory_TM_MEDITATION  FitnessCategory = 102
+	FitnessCategory_DANCE          FitnessCategory = 201
+	FitnessCategory_HIP_HOP        FitnessCategory = 202
+	FitnessCategory_ZUMBA          FitnessCategory = 203
+)
+
+var FitnessCategory_name = map[int32]string{
+	0:   "YOGA",
+	1:   "HATHA_YOGA",
+	2:   "KUNDALINI_YOGA",
+	3:   "FAST_YOGA",
+	101: "MEDITATION",
+	102: "TM_MEDITATION",
+	201: "DANCE",
+	202: "HIP_HOP",
+	203: "ZUMBA",
+}
+var FitnessCategory_value = map[string]int32{
+	"YOGA":           0,
+	"HATHA_YOGA":     1,
+	"KUNDALINI_YOGA": 2,
+	"FAST_YOGA":      3,
+	"MEDITATION":     101,
+	"TM_MEDITATION":  102,
+	"DANCE":          201,
+	"HIP_HOP":        202,
+	"ZUMBA":          203,
 }
 
-func (m *ErrorData) Reset()                    { *m = ErrorData{} }
-func (m *ErrorData) String() string            { return proto.CompactTextString(m) }
-func (*ErrorData) ProtoMessage()               {}
-func (*ErrorData) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (x FitnessCategory) String() string {
+	return proto.EnumName(FitnessCategory_name, int32(x))
+}
+func (FitnessCategory) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *ErrorData) GetErrorCode() string {
-	if m != nil {
-		return m.ErrorCode
-	}
-	return ""
+type EventType int32
+
+const (
+	EventType_LOGIN_EVENT       EventType = 0
+	EventType_LOGOUT_EVENT      EventType = 1
+	EventType_DEVICE_USED       EventType = 2
+	EventType_JOIN_SESSION      EventType = 101
+	EventType_FOLLOW_INSTRUCTOR EventType = 102
+	EventType_LIKE_PRESS_WATCH  EventType = 201
+)
+
+var EventType_name = map[int32]string{
+	0:   "LOGIN_EVENT",
+	1:   "LOGOUT_EVENT",
+	2:   "DEVICE_USED",
+	101: "JOIN_SESSION",
+	102: "FOLLOW_INSTRUCTOR",
+	201: "LIKE_PRESS_WATCH",
+}
+var EventType_value = map[string]int32{
+	"LOGIN_EVENT":       0,
+	"LOGOUT_EVENT":      1,
+	"DEVICE_USED":       2,
+	"JOIN_SESSION":      101,
+	"FOLLOW_INSTRUCTOR": 102,
+	"LIKE_PRESS_WATCH":  201,
 }
 
-func (m *ErrorData) GetErrorStr() string {
-	if m != nil {
-		return m.ErrorStr
-	}
-	return ""
+func (x EventType) String() string {
+	return proto.EnumName(EventType_name, int32(x))
 }
+func (EventType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-type ServerSvcStatusRequest struct {
+type ServerSvcStatusReq struct {
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 }
 
-func (m *ServerSvcStatusRequest) Reset()                    { *m = ServerSvcStatusRequest{} }
-func (m *ServerSvcStatusRequest) String() string            { return proto.CompactTextString(m) }
-func (*ServerSvcStatusRequest) ProtoMessage()               {}
-func (*ServerSvcStatusRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *ServerSvcStatusReq) Reset()                    { *m = ServerSvcStatusReq{} }
+func (m *ServerSvcStatusReq) String() string            { return proto.CompactTextString(m) }
+func (*ServerSvcStatusReq) ProtoMessage()               {}
+func (*ServerSvcStatusReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *ServerSvcStatusRequest) GetName() string {
+func (m *ServerSvcStatusReq) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-type ServerSvcStatusResponse struct {
-	ErrData *ErrorData `protobuf:"bytes,1,opt,name=errData" json:"errData,omitempty"`
-	Message string     `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
+type ServerSvcStatusReply struct {
+	// ErrorData errData = 1;
+	Message string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
 }
 
-func (m *ServerSvcStatusResponse) Reset()                    { *m = ServerSvcStatusResponse{} }
-func (m *ServerSvcStatusResponse) String() string            { return proto.CompactTextString(m) }
-func (*ServerSvcStatusResponse) ProtoMessage()               {}
-func (*ServerSvcStatusResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (m *ServerSvcStatusReply) Reset()                    { *m = ServerSvcStatusReply{} }
+func (m *ServerSvcStatusReply) String() string            { return proto.CompactTextString(m) }
+func (*ServerSvcStatusReply) ProtoMessage()               {}
+func (*ServerSvcStatusReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-func (m *ServerSvcStatusResponse) GetErrData() *ErrorData {
-	if m != nil {
-		return m.ErrData
-	}
-	return nil
-}
-
-func (m *ServerSvcStatusResponse) GetMessage() string {
+func (m *ServerSvcStatusReply) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
@@ -113,16 +168,19 @@ func (m *ServerSvcStatusResponse) GetMessage() string {
 }
 
 type SessionInfo struct {
-	SessionTime  string `protobuf:"bytes,1,opt,name=sessionTime" json:"sessionTime,omitempty"`
-	SessionDesc  string `protobuf:"bytes,2,opt,name=sessionDesc" json:"sessionDesc,omitempty"`
-	InstructorID string `protobuf:"bytes,3,opt,name=instructorID" json:"instructorID,omitempty"`
-	SessionType  string `protobuf:"bytes,4,opt,name=sessionType" json:"sessionType,omitempty"`
+	// Timestamp sessionTime = 1;
+	SessionTime  string            `protobuf:"bytes,1,opt,name=sessionTime" json:"sessionTime,omitempty"`
+	SessionDesc  string            `protobuf:"bytes,2,opt,name=sessionDesc" json:"sessionDesc,omitempty"`
+	InstructorID string            `protobuf:"bytes,3,opt,name=instructorID" json:"instructorID,omitempty"`
+	SessionType  []FitnessCategory `protobuf:"varint,4,rep,packed,name=sessionType,enum=serversvc.FitnessCategory" json:"sessionType,omitempty"`
+	// Maintained by server
+	SessionUsersEnrolled uint64 `protobuf:"varint,5,opt,name=sessionUsersEnrolled" json:"sessionUsersEnrolled,omitempty"`
 }
 
 func (m *SessionInfo) Reset()                    { *m = SessionInfo{} }
 func (m *SessionInfo) String() string            { return proto.CompactTextString(m) }
 func (*SessionInfo) ProtoMessage()               {}
-func (*SessionInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (*SessionInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 func (m *SessionInfo) GetSessionTime() string {
 	if m != nil {
@@ -145,162 +203,378 @@ func (m *SessionInfo) GetInstructorID() string {
 	return ""
 }
 
-func (m *SessionInfo) GetSessionType() string {
+func (m *SessionInfo) GetSessionType() []FitnessCategory {
 	if m != nil {
 		return m.SessionType
-	}
-	return ""
-}
-
-type Session struct {
-	Info                 *SessionInfo `protobuf:"bytes,1,opt,name=info" json:"info,omitempty"`
-	SessionUsersEnrolled uint64       `protobuf:"varint,2,opt,name=sessionUsersEnrolled" json:"sessionUsersEnrolled,omitempty"`
-	// ID isn't during request
-	// XXX This has to be modeled properly
-	ID string `protobuf:"bytes,3,opt,name=ID,json=iD" json:"ID,omitempty"`
-}
-
-func (m *Session) Reset()                    { *m = Session{} }
-func (m *Session) String() string            { return proto.CompactTextString(m) }
-func (*Session) ProtoMessage()               {}
-func (*Session) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
-
-func (m *Session) GetInfo() *SessionInfo {
-	if m != nil {
-		return m.Info
 	}
 	return nil
 }
 
-func (m *Session) GetSessionUsersEnrolled() uint64 {
+func (m *SessionInfo) GetSessionUsersEnrolled() uint64 {
 	if m != nil {
 		return m.SessionUsersEnrolled
 	}
 	return 0
 }
 
-func (m *Session) GetID() string {
+type ReviewInfo struct {
+	ReviewList []*ReviewInfo_Review `protobuf:"bytes,1,rep,name=reviewList" json:"reviewList,omitempty"`
+}
+
+func (m *ReviewInfo) Reset()                    { *m = ReviewInfo{} }
+func (m *ReviewInfo) String() string            { return proto.CompactTextString(m) }
+func (*ReviewInfo) ProtoMessage()               {}
+func (*ReviewInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *ReviewInfo) GetReviewList() []*ReviewInfo_Review {
 	if m != nil {
-		return m.ID
-	}
-	return ""
-}
-
-type Person struct {
-	Name     string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Age      string `protobuf:"bytes,2,opt,name=age" json:"age,omitempty"`
-	Sex      string `protobuf:"bytes,3,opt,name=sex" json:"sex,omitempty"`
-	Location string `protobuf:"bytes,4,opt,name=location" json:"location,omitempty"`
-}
-
-func (m *Person) Reset()                    { *m = Person{} }
-func (m *Person) String() string            { return proto.CompactTextString(m) }
-func (*Person) ProtoMessage()               {}
-func (*Person) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
-
-func (m *Person) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *Person) GetAge() string {
-	if m != nil {
-		return m.Age
-	}
-	return ""
-}
-
-func (m *Person) GetSex() string {
-	if m != nil {
-		return m.Sex
-	}
-	return ""
-}
-
-func (m *Person) GetLocation() string {
-	if m != nil {
-		return m.Location
-	}
-	return ""
-}
-
-type Instructor struct {
-	Person *Person `protobuf:"bytes,1,opt,name=person" json:"person,omitempty"`
-	ID     string  `protobuf:"bytes,2,opt,name=ID,json=iD" json:"ID,omitempty"`
-	Rating float32 `protobuf:"fixed32,3,opt,name=rating" json:"rating,omitempty"`
-}
-
-func (m *Instructor) Reset()                    { *m = Instructor{} }
-func (m *Instructor) String() string            { return proto.CompactTextString(m) }
-func (*Instructor) ProtoMessage()               {}
-func (*Instructor) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
-
-func (m *Instructor) GetPerson() *Person {
-	if m != nil {
-		return m.Person
+		return m.ReviewList
 	}
 	return nil
 }
 
-func (m *Instructor) GetID() string {
-	if m != nil {
-		return m.ID
-	}
-	return ""
+type ReviewInfo_Review struct {
+	Rating float32 `protobuf:"fixed32,1,opt,name=rating" json:"rating,omitempty"`
+	Review string  `protobuf:"bytes,2,opt,name=review" json:"review,omitempty"`
 }
 
-func (m *Instructor) GetRating() float32 {
+func (m *ReviewInfo_Review) Reset()                    { *m = ReviewInfo_Review{} }
+func (m *ReviewInfo_Review) String() string            { return proto.CompactTextString(m) }
+func (*ReviewInfo_Review) ProtoMessage()               {}
+func (*ReviewInfo_Review) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3, 0} }
+
+func (m *ReviewInfo_Review) GetRating() float32 {
 	if m != nil {
 		return m.Rating
 	}
 	return 0
 }
 
-type User struct {
-	Person     *Person  `protobuf:"bytes,1,opt,name=person" json:"person,omitempty"`
-	ID         string   `protobuf:"bytes,2,opt,name=ID,json=iD" json:"ID,omitempty"`
-	FriendsIDs []string `protobuf:"bytes,3,rep,name=friendsIDs" json:"friendsIDs,omitempty"`
-}
-
-func (m *User) Reset()                    { *m = User{} }
-func (m *User) String() string            { return proto.CompactTextString(m) }
-func (*User) ProtoMessage()               {}
-func (*User) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
-
-func (m *User) GetPerson() *Person {
+func (m *ReviewInfo_Review) GetReview() string {
 	if m != nil {
-		return m.Person
-	}
-	return nil
-}
-
-func (m *User) GetID() string {
-	if m != nil {
-		return m.ID
+		return m.Review
 	}
 	return ""
 }
 
-func (m *User) GetFriendsIDs() []string {
+type CCInfo struct {
+	CcList []*CCInfo_CreditCard `protobuf:"bytes,1,rep,name=ccList" json:"ccList,omitempty"`
+}
+
+func (m *CCInfo) Reset()                    { *m = CCInfo{} }
+func (m *CCInfo) String() string            { return proto.CompactTextString(m) }
+func (*CCInfo) ProtoMessage()               {}
+func (*CCInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *CCInfo) GetCcList() []*CCInfo_CreditCard {
+	if m != nil {
+		return m.CcList
+	}
+	return nil
+}
+
+type CCInfo_CreditCard struct {
+	Name        string `protobuf:"bytes,1,opt,name=Name,json=name" json:"Name,omitempty"`
+	Number      string `protobuf:"bytes,2,opt,name=Number,json=number" json:"Number,omitempty"`
+	ExpiryMonth string `protobuf:"bytes,3,opt,name=ExpiryMonth,json=expiryMonth" json:"ExpiryMonth,omitempty"`
+	ExpiryYear  string `protobuf:"bytes,4,opt,name=ExpiryYear,json=expiryYear" json:"ExpiryYear,omitempty"`
+	CCV         string `protobuf:"bytes,5,opt,name=CCV,json=cCV" json:"CCV,omitempty"`
+	IsDefault   bool   `protobuf:"varint,6,opt,name=isDefault" json:"isDefault,omitempty"`
+}
+
+func (m *CCInfo_CreditCard) Reset()                    { *m = CCInfo_CreditCard{} }
+func (m *CCInfo_CreditCard) String() string            { return proto.CompactTextString(m) }
+func (*CCInfo_CreditCard) ProtoMessage()               {}
+func (*CCInfo_CreditCard) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4, 0} }
+
+func (m *CCInfo_CreditCard) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *CCInfo_CreditCard) GetNumber() string {
+	if m != nil {
+		return m.Number
+	}
+	return ""
+}
+
+func (m *CCInfo_CreditCard) GetExpiryMonth() string {
+	if m != nil {
+		return m.ExpiryMonth
+	}
+	return ""
+}
+
+func (m *CCInfo_CreditCard) GetExpiryYear() string {
+	if m != nil {
+		return m.ExpiryYear
+	}
+	return ""
+}
+
+func (m *CCInfo_CreditCard) GetCCV() string {
+	if m != nil {
+		return m.CCV
+	}
+	return ""
+}
+
+func (m *CCInfo_CreditCard) GetIsDefault() bool {
+	if m != nil {
+		return m.IsDefault
+	}
+	return false
+}
+
+type BankInfo struct {
+	RoutingNum string `protobuf:"bytes,1,opt,name=RoutingNum,json=routingNum" json:"RoutingNum,omitempty"`
+	AcctNum    string `protobuf:"bytes,2,opt,name=AcctNum,json=acctNum" json:"AcctNum,omitempty"`
+	BankName   string `protobuf:"bytes,3,opt,name=BankName,json=bankName" json:"BankName,omitempty"`
+}
+
+func (m *BankInfo) Reset()                    { *m = BankInfo{} }
+func (m *BankInfo) String() string            { return proto.CompactTextString(m) }
+func (*BankInfo) ProtoMessage()               {}
+func (*BankInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *BankInfo) GetRoutingNum() string {
+	if m != nil {
+		return m.RoutingNum
+	}
+	return ""
+}
+
+func (m *BankInfo) GetAcctNum() string {
+	if m != nil {
+		return m.AcctNum
+	}
+	return ""
+}
+
+func (m *BankInfo) GetBankName() string {
+	if m != nil {
+		return m.BankName
+	}
+	return ""
+}
+
+type InstructorInfo struct {
+	Name               string            `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Age                string            `protobuf:"bytes,2,opt,name=age" json:"age,omitempty"`
+	Sex                string            `protobuf:"bytes,3,opt,name=sex" json:"sex,omitempty"`
+	Location           string            `protobuf:"bytes,4,opt,name=location" json:"location,omitempty"`
+	Email              string            `protobuf:"bytes,5,opt,name=email" json:"email,omitempty"`
+	Desc               string            `protobuf:"bytes,6,opt,name=desc" json:"desc,omitempty"`
+	Certification      string            `protobuf:"bytes,7,opt,name=certification" json:"certification,omitempty"`
+	FitnessSpecialties []FitnessCategory `protobuf:"varint,8,rep,packed,name=fitnessSpecialties,enum=serversvc.FitnessCategory" json:"fitnessSpecialties,omitempty"`
+	// Internal to server
+	ReviewInfoID string `protobuf:"bytes,9,opt,name=ReviewInfoID,json=reviewInfoID" json:"ReviewInfoID,omitempty"`
+	BankInfoID   string `protobuf:"bytes,10,opt,name=BankInfoID,json=bankInfoID" json:"BankInfoID,omitempty"`
+}
+
+func (m *InstructorInfo) Reset()                    { *m = InstructorInfo{} }
+func (m *InstructorInfo) String() string            { return proto.CompactTextString(m) }
+func (*InstructorInfo) ProtoMessage()               {}
+func (*InstructorInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+
+func (m *InstructorInfo) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetAge() string {
+	if m != nil {
+		return m.Age
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetSex() string {
+	if m != nil {
+		return m.Sex
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetLocation() string {
+	if m != nil {
+		return m.Location
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetDesc() string {
+	if m != nil {
+		return m.Desc
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetCertification() string {
+	if m != nil {
+		return m.Certification
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetFitnessSpecialties() []FitnessCategory {
+	if m != nil {
+		return m.FitnessSpecialties
+	}
+	return nil
+}
+
+func (m *InstructorInfo) GetReviewInfoID() string {
+	if m != nil {
+		return m.ReviewInfoID
+	}
+	return ""
+}
+
+func (m *InstructorInfo) GetBankInfoID() string {
+	if m != nil {
+		return m.BankInfoID
+	}
+	return ""
+}
+
+type Device struct {
+	DeviceID   string `protobuf:"bytes,1,opt,name=DeviceID,json=deviceID" json:"DeviceID,omitempty"`
+	DeviceDesc string `protobuf:"bytes,2,opt,name=DeviceDesc,json=deviceDesc" json:"DeviceDesc,omitempty"`
+}
+
+func (m *Device) Reset()                    { *m = Device{} }
+func (m *Device) String() string            { return proto.CompactTextString(m) }
+func (*Device) ProtoMessage()               {}
+func (*Device) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+
+func (m *Device) GetDeviceID() string {
+	if m != nil {
+		return m.DeviceID
+	}
+	return ""
+}
+
+func (m *Device) GetDeviceDesc() string {
+	if m != nil {
+		return m.DeviceDesc
+	}
+	return ""
+}
+
+type UserInfo struct {
+	Name     string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Age      string `protobuf:"bytes,2,opt,name=age" json:"age,omitempty"`
+	Sex      string `protobuf:"bytes,3,opt,name=sex" json:"sex,omitempty"`
+	City     string `protobuf:"bytes,4,opt,name=city" json:"city,omitempty"`
+	Country  string `protobuf:"bytes,5,opt,name=country" json:"country,omitempty"`
+	Email    string `protobuf:"bytes,6,opt,name=email" json:"email,omitempty"`
+	CCInfoID string `protobuf:"bytes,7,opt,name=CCInfoID,json=cCInfoID" json:"CCInfoID,omitempty"`
+	// Internal to server
+	FriendsIDs []string `protobuf:"bytes,8,rep,name=friendsIDs" json:"friendsIDs,omitempty"`
+	FollowIDs  []string `protobuf:"bytes,9,rep,name=followIDs" json:"followIDs,omitempty"`
+	// Pointer to event activity in DB
+	RecordActivityID string `protobuf:"bytes,10,opt,name=RecordActivityID,json=recordActivityID" json:"RecordActivityID,omitempty"`
+}
+
+func (m *UserInfo) Reset()                    { *m = UserInfo{} }
+func (m *UserInfo) String() string            { return proto.CompactTextString(m) }
+func (*UserInfo) ProtoMessage()               {}
+func (*UserInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
+func (m *UserInfo) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *UserInfo) GetAge() string {
+	if m != nil {
+		return m.Age
+	}
+	return ""
+}
+
+func (m *UserInfo) GetSex() string {
+	if m != nil {
+		return m.Sex
+	}
+	return ""
+}
+
+func (m *UserInfo) GetCity() string {
+	if m != nil {
+		return m.City
+	}
+	return ""
+}
+
+func (m *UserInfo) GetCountry() string {
+	if m != nil {
+		return m.Country
+	}
+	return ""
+}
+
+func (m *UserInfo) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *UserInfo) GetCCInfoID() string {
+	if m != nil {
+		return m.CCInfoID
+	}
+	return ""
+}
+
+func (m *UserInfo) GetFriendsIDs() []string {
 	if m != nil {
 		return m.FriendsIDs
 	}
 	return nil
 }
 
-type GetSessionsRequest struct {
+func (m *UserInfo) GetFollowIDs() []string {
+	if m != nil {
+		return m.FollowIDs
+	}
+	return nil
+}
+
+func (m *UserInfo) GetRecordActivityID() string {
+	if m != nil {
+		return m.RecordActivityID
+	}
+	return ""
+}
+
+type GetSessionsReq struct {
 	// If specified, only show sessions of this type.
 	SessionType string `protobuf:"bytes,1,opt,name=sessionType" json:"sessionType,omitempty"`
 }
 
-func (m *GetSessionsRequest) Reset()                    { *m = GetSessionsRequest{} }
-func (m *GetSessionsRequest) String() string            { return proto.CompactTextString(m) }
-func (*GetSessionsRequest) ProtoMessage()               {}
-func (*GetSessionsRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+func (m *GetSessionsReq) Reset()                    { *m = GetSessionsReq{} }
+func (m *GetSessionsReq) String() string            { return proto.CompactTextString(m) }
+func (*GetSessionsReq) ProtoMessage()               {}
+func (*GetSessionsReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
 
-func (m *GetSessionsRequest) GetSessionType() string {
+func (m *GetSessionsReq) GetSessionType() string {
 	if m != nil {
 		return m.SessionType
 	}
@@ -308,39 +582,31 @@ func (m *GetSessionsRequest) GetSessionType() string {
 }
 
 type GetSessionsReply struct {
-	ErrData *ErrorData `protobuf:"bytes,1,opt,name=errData" json:"errData,omitempty"`
-	Session []*Session `protobuf:"bytes,2,rep,name=session" json:"session,omitempty"`
+	SessionList []*SessionInfo `protobuf:"bytes,2,rep,name=sessionList" json:"sessionList,omitempty"`
 }
 
 func (m *GetSessionsReply) Reset()                    { *m = GetSessionsReply{} }
 func (m *GetSessionsReply) String() string            { return proto.CompactTextString(m) }
 func (*GetSessionsReply) ProtoMessage()               {}
-func (*GetSessionsReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+func (*GetSessionsReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
 
-func (m *GetSessionsReply) GetErrData() *ErrorData {
+func (m *GetSessionsReply) GetSessionList() []*SessionInfo {
 	if m != nil {
-		return m.ErrData
+		return m.SessionList
 	}
 	return nil
 }
 
-func (m *GetSessionsReply) GetSession() []*Session {
-	if m != nil {
-		return m.Session
-	}
-	return nil
-}
-
-type PostSessionRequest struct {
+type PostSessionReq struct {
 	Info *SessionInfo `protobuf:"bytes,1,opt,name=info" json:"info,omitempty"`
 }
 
-func (m *PostSessionRequest) Reset()                    { *m = PostSessionRequest{} }
-func (m *PostSessionRequest) String() string            { return proto.CompactTextString(m) }
-func (*PostSessionRequest) ProtoMessage()               {}
-func (*PostSessionRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+func (m *PostSessionReq) Reset()                    { *m = PostSessionReq{} }
+func (m *PostSessionReq) String() string            { return proto.CompactTextString(m) }
+func (*PostSessionReq) ProtoMessage()               {}
+func (*PostSessionReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
 
-func (m *PostSessionRequest) GetInfo() *SessionInfo {
+func (m *PostSessionReq) GetInfo() *SessionInfo {
 	if m != nil {
 		return m.Info
 	}
@@ -348,102 +614,240 @@ func (m *PostSessionRequest) GetInfo() *SessionInfo {
 }
 
 type PostSessionReply struct {
-	ErrData *ErrorData `protobuf:"bytes,1,opt,name=errData" json:"errData,omitempty"`
 }
 
 func (m *PostSessionReply) Reset()                    { *m = PostSessionReply{} }
 func (m *PostSessionReply) String() string            { return proto.CompactTextString(m) }
 func (*PostSessionReply) ProtoMessage()               {}
-func (*PostSessionReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+func (*PostSessionReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
 
-func (m *PostSessionReply) GetErrData() *ErrorData {
-	if m != nil {
-		return m.ErrData
-	}
-	return nil
+type EnrollInstructorReq struct {
+	Instructor *InstructorInfo `protobuf:"bytes,1,opt,name=instructor" json:"instructor,omitempty"`
 }
 
-type EnrollInstructorRequest struct {
-	Instructor *Person `protobuf:"bytes,1,opt,name=instructor" json:"instructor,omitempty"`
-}
+func (m *EnrollInstructorReq) Reset()                    { *m = EnrollInstructorReq{} }
+func (m *EnrollInstructorReq) String() string            { return proto.CompactTextString(m) }
+func (*EnrollInstructorReq) ProtoMessage()               {}
+func (*EnrollInstructorReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
 
-func (m *EnrollInstructorRequest) Reset()                    { *m = EnrollInstructorRequest{} }
-func (m *EnrollInstructorRequest) String() string            { return proto.CompactTextString(m) }
-func (*EnrollInstructorRequest) ProtoMessage()               {}
-func (*EnrollInstructorRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
-
-func (m *EnrollInstructorRequest) GetInstructor() *Person {
+func (m *EnrollInstructorReq) GetInstructor() *InstructorInfo {
 	if m != nil {
 		return m.Instructor
 	}
 	return nil
 }
 
-type EnrollInstructorResponse struct {
-	ErrData *ErrorData `protobuf:"bytes,1,opt,name=errData" json:"errData,omitempty"`
+type EnrollInstructorReply struct {
 }
 
-func (m *EnrollInstructorResponse) Reset()                    { *m = EnrollInstructorResponse{} }
-func (m *EnrollInstructorResponse) String() string            { return proto.CompactTextString(m) }
-func (*EnrollInstructorResponse) ProtoMessage()               {}
-func (*EnrollInstructorResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
+func (m *EnrollInstructorReply) Reset()                    { *m = EnrollInstructorReply{} }
+func (m *EnrollInstructorReply) String() string            { return proto.CompactTextString(m) }
+func (*EnrollInstructorReply) ProtoMessage()               {}
+func (*EnrollInstructorReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
 
-func (m *EnrollInstructorResponse) GetErrData() *ErrorData {
+type GetInstructorsReq struct {
+	// If specified, only show sessions of this type.
+	SessionType string `protobuf:"bytes,1,opt,name=sessionType" json:"sessionType,omitempty"`
+}
+
+func (m *GetInstructorsReq) Reset()                    { *m = GetInstructorsReq{} }
+func (m *GetInstructorsReq) String() string            { return proto.CompactTextString(m) }
+func (*GetInstructorsReq) ProtoMessage()               {}
+func (*GetInstructorsReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
+
+func (m *GetInstructorsReq) GetSessionType() string {
 	if m != nil {
-		return m.ErrData
+		return m.SessionType
 	}
-	return nil
+	return ""
 }
 
-type EnrollUserRequest struct {
-	User *Person `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
+type GetInstructorsReply struct {
 }
 
-func (m *EnrollUserRequest) Reset()                    { *m = EnrollUserRequest{} }
-func (m *EnrollUserRequest) String() string            { return proto.CompactTextString(m) }
-func (*EnrollUserRequest) ProtoMessage()               {}
-func (*EnrollUserRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
+func (m *GetInstructorsReply) Reset()                    { *m = GetInstructorsReply{} }
+func (m *GetInstructorsReply) String() string            { return proto.CompactTextString(m) }
+func (*GetInstructorsReply) ProtoMessage()               {}
+func (*GetInstructorsReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{16} }
 
-func (m *EnrollUserRequest) GetUser() *Person {
+type EnrollUserReq struct {
+	User *UserInfo `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
+}
+
+func (m *EnrollUserReq) Reset()                    { *m = EnrollUserReq{} }
+func (m *EnrollUserReq) String() string            { return proto.CompactTextString(m) }
+func (*EnrollUserReq) ProtoMessage()               {}
+func (*EnrollUserReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{17} }
+
+func (m *EnrollUserReq) GetUser() *UserInfo {
 	if m != nil {
 		return m.User
 	}
 	return nil
 }
 
-type EnrollUserResponse struct {
-	ErrData *ErrorData `protobuf:"bytes,1,opt,name=errData" json:"errData,omitempty"`
+type EnrollUserReply struct {
 }
 
-func (m *EnrollUserResponse) Reset()                    { *m = EnrollUserResponse{} }
-func (m *EnrollUserResponse) String() string            { return proto.CompactTextString(m) }
-func (*EnrollUserResponse) ProtoMessage()               {}
-func (*EnrollUserResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
+func (m *EnrollUserReply) Reset()                    { *m = EnrollUserReply{} }
+func (m *EnrollUserReply) String() string            { return proto.CompactTextString(m) }
+func (*EnrollUserReply) ProtoMessage()               {}
+func (*EnrollUserReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{18} }
 
-func (m *EnrollUserResponse) GetErrData() *ErrorData {
+type GetUsersReq struct {
+}
+
+func (m *GetUsersReq) Reset()                    { *m = GetUsersReq{} }
+func (m *GetUsersReq) String() string            { return proto.CompactTextString(m) }
+func (*GetUsersReq) ProtoMessage()               {}
+func (*GetUsersReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{19} }
+
+type GetUsersReply struct {
+	UserList []*UserInfo `protobuf:"bytes,1,rep,name=userList" json:"userList,omitempty"`
+}
+
+func (m *GetUsersReply) Reset()                    { *m = GetUsersReply{} }
+func (m *GetUsersReply) String() string            { return proto.CompactTextString(m) }
+func (*GetUsersReply) ProtoMessage()               {}
+func (*GetUsersReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{20} }
+
+func (m *GetUsersReply) GetUserList() []*UserInfo {
 	if m != nil {
-		return m.ErrData
+		return m.UserList
 	}
 	return nil
 }
 
+type Event struct {
+	EventType EventType `protobuf:"varint,1,opt,name=eventType,enum=serversvc.EventType" json:"eventType,omitempty"`
+	// Duration eventDuration = 2;
+	// google.protobuf.Timestamp eventTS = 3;
+	EventDesc string `protobuf:"bytes,4,opt,name=eventDesc" json:"eventDesc,omitempty"`
+}
+
+func (m *Event) Reset()                    { *m = Event{} }
+func (m *Event) String() string            { return proto.CompactTextString(m) }
+func (*Event) ProtoMessage()               {}
+func (*Event) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{21} }
+
+func (m *Event) GetEventType() EventType {
+	if m != nil {
+		return m.EventType
+	}
+	return EventType_LOGIN_EVENT
+}
+
+func (m *Event) GetEventDesc() string {
+	if m != nil {
+		return m.EventDesc
+	}
+	return ""
+}
+
+type RecordActivity struct {
+	EventList []*Event `protobuf:"bytes,1,rep,name=eventList" json:"eventList,omitempty"`
+}
+
+func (m *RecordActivity) Reset()                    { *m = RecordActivity{} }
+func (m *RecordActivity) String() string            { return proto.CompactTextString(m) }
+func (*RecordActivity) ProtoMessage()               {}
+func (*RecordActivity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{22} }
+
+func (m *RecordActivity) GetEventList() []*Event {
+	if m != nil {
+		return m.EventList
+	}
+	return nil
+}
+
+type RecordEventReq struct {
+	Event *Event `protobuf:"bytes,1,opt,name=event" json:"event,omitempty"`
+}
+
+func (m *RecordEventReq) Reset()                    { *m = RecordEventReq{} }
+func (m *RecordEventReq) String() string            { return proto.CompactTextString(m) }
+func (*RecordEventReq) ProtoMessage()               {}
+func (*RecordEventReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{23} }
+
+func (m *RecordEventReq) GetEvent() *Event {
+	if m != nil {
+		return m.Event
+	}
+	return nil
+}
+
+type RecordEventReply struct {
+}
+
+func (m *RecordEventReply) Reset()                    { *m = RecordEventReply{} }
+func (m *RecordEventReply) String() string            { return proto.CompactTextString(m) }
+func (*RecordEventReply) ProtoMessage()               {}
+func (*RecordEventReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{24} }
+
+type LoginReq struct {
+	Email              string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
+	UserOrInstructorID string `protobuf:"bytes,2,opt,name=userOrInstructorID" json:"userOrInstructorID,omitempty"`
+}
+
+func (m *LoginReq) Reset()                    { *m = LoginReq{} }
+func (m *LoginReq) String() string            { return proto.CompactTextString(m) }
+func (*LoginReq) ProtoMessage()               {}
+func (*LoginReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{25} }
+
+func (m *LoginReq) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *LoginReq) GetUserOrInstructorID() string {
+	if m != nil {
+		return m.UserOrInstructorID
+	}
+	return ""
+}
+
+type LoginReply struct {
+}
+
+func (m *LoginReply) Reset()                    { *m = LoginReply{} }
+func (m *LoginReply) String() string            { return proto.CompactTextString(m) }
+func (*LoginReply) ProtoMessage()               {}
+func (*LoginReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{26} }
+
 func init() {
-	proto.RegisterType((*ErrorData)(nil), "serversvc.ErrorData")
-	proto.RegisterType((*ServerSvcStatusRequest)(nil), "serversvc.ServerSvcStatusRequest")
-	proto.RegisterType((*ServerSvcStatusResponse)(nil), "serversvc.ServerSvcStatusResponse")
+	proto.RegisterType((*ServerSvcStatusReq)(nil), "serversvc.ServerSvcStatusReq")
+	proto.RegisterType((*ServerSvcStatusReply)(nil), "serversvc.ServerSvcStatusReply")
 	proto.RegisterType((*SessionInfo)(nil), "serversvc.SessionInfo")
-	proto.RegisterType((*Session)(nil), "serversvc.Session")
-	proto.RegisterType((*Person)(nil), "serversvc.Person")
-	proto.RegisterType((*Instructor)(nil), "serversvc.Instructor")
-	proto.RegisterType((*User)(nil), "serversvc.User")
-	proto.RegisterType((*GetSessionsRequest)(nil), "serversvc.GetSessionsRequest")
+	proto.RegisterType((*ReviewInfo)(nil), "serversvc.ReviewInfo")
+	proto.RegisterType((*ReviewInfo_Review)(nil), "serversvc.ReviewInfo.Review")
+	proto.RegisterType((*CCInfo)(nil), "serversvc.CCInfo")
+	proto.RegisterType((*CCInfo_CreditCard)(nil), "serversvc.CCInfo.CreditCard")
+	proto.RegisterType((*BankInfo)(nil), "serversvc.BankInfo")
+	proto.RegisterType((*InstructorInfo)(nil), "serversvc.InstructorInfo")
+	proto.RegisterType((*Device)(nil), "serversvc.Device")
+	proto.RegisterType((*UserInfo)(nil), "serversvc.UserInfo")
+	proto.RegisterType((*GetSessionsReq)(nil), "serversvc.GetSessionsReq")
 	proto.RegisterType((*GetSessionsReply)(nil), "serversvc.GetSessionsReply")
-	proto.RegisterType((*PostSessionRequest)(nil), "serversvc.PostSessionRequest")
+	proto.RegisterType((*PostSessionReq)(nil), "serversvc.PostSessionReq")
 	proto.RegisterType((*PostSessionReply)(nil), "serversvc.PostSessionReply")
-	proto.RegisterType((*EnrollInstructorRequest)(nil), "serversvc.EnrollInstructorRequest")
-	proto.RegisterType((*EnrollInstructorResponse)(nil), "serversvc.EnrollInstructorResponse")
-	proto.RegisterType((*EnrollUserRequest)(nil), "serversvc.EnrollUserRequest")
-	proto.RegisterType((*EnrollUserResponse)(nil), "serversvc.EnrollUserResponse")
+	proto.RegisterType((*EnrollInstructorReq)(nil), "serversvc.EnrollInstructorReq")
+	proto.RegisterType((*EnrollInstructorReply)(nil), "serversvc.EnrollInstructorReply")
+	proto.RegisterType((*GetInstructorsReq)(nil), "serversvc.GetInstructorsReq")
+	proto.RegisterType((*GetInstructorsReply)(nil), "serversvc.GetInstructorsReply")
+	proto.RegisterType((*EnrollUserReq)(nil), "serversvc.EnrollUserReq")
+	proto.RegisterType((*EnrollUserReply)(nil), "serversvc.EnrollUserReply")
+	proto.RegisterType((*GetUsersReq)(nil), "serversvc.GetUsersReq")
+	proto.RegisterType((*GetUsersReply)(nil), "serversvc.GetUsersReply")
+	proto.RegisterType((*Event)(nil), "serversvc.Event")
+	proto.RegisterType((*RecordActivity)(nil), "serversvc.RecordActivity")
+	proto.RegisterType((*RecordEventReq)(nil), "serversvc.RecordEventReq")
+	proto.RegisterType((*RecordEventReply)(nil), "serversvc.RecordEventReply")
+	proto.RegisterType((*LoginReq)(nil), "serversvc.LoginReq")
+	proto.RegisterType((*LoginReply)(nil), "serversvc.LoginReply")
+	proto.RegisterEnum("serversvc.FitnessCategory", FitnessCategory_name, FitnessCategory_value)
+	proto.RegisterEnum("serversvc.EventType", EventType_name, EventType_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -457,15 +861,21 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for ServerSvc service
 
 type ServerSvcClient interface {
-	// Sends a greeting
-	GetStatus(ctx context.Context, in *ServerSvcStatusRequest, opts ...grpc.CallOption) (*ServerSvcStatusResponse, error)
+	// Is it running?
+	GetStatus(ctx context.Context, in *ServerSvcStatusReq, opts ...grpc.CallOption) (*ServerSvcStatusReply, error)
 	// Session handling
-	GetSessions(ctx context.Context, in *GetSessionsRequest, opts ...grpc.CallOption) (*GetSessionsReply, error)
-	PostSession(ctx context.Context, in *PostSessionRequest, opts ...grpc.CallOption) (*PostSessionReply, error)
+	GetSessions(ctx context.Context, in *GetSessionsReq, opts ...grpc.CallOption) (*GetSessionsReply, error)
+	PostSession(ctx context.Context, in *PostSessionReq, opts ...grpc.CallOption) (*PostSessionReply, error)
 	// Instructor handling
-	EnrollInstructor(ctx context.Context, in *EnrollInstructorRequest, opts ...grpc.CallOption) (*EnrollInstructorResponse, error)
+	EnrollInstructor(ctx context.Context, in *EnrollInstructorReq, opts ...grpc.CallOption) (*EnrollInstructorReply, error)
+	GetInstructors(ctx context.Context, in *GetInstructorsReq, opts ...grpc.CallOption) (*GetInstructorsReply, error)
 	// User handling
-	EnrollUser(ctx context.Context, in *EnrollUserRequest, opts ...grpc.CallOption) (*EnrollUserResponse, error)
+	EnrollUser(ctx context.Context, in *EnrollUserReq, opts ...grpc.CallOption) (*EnrollUserReply, error)
+	GetUsers(ctx context.Context, in *GetUsersReq, opts ...grpc.CallOption) (*GetUsersReply, error)
+	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginReply, error)
+	// Used for analytics
+	// Client will record much of the user interaction with the app
+	RecordEvent(ctx context.Context, in *RecordEventReq, opts ...grpc.CallOption) (*RecordEventReply, error)
 }
 
 type serverSvcClient struct {
@@ -476,8 +886,8 @@ func NewServerSvcClient(cc *grpc.ClientConn) ServerSvcClient {
 	return &serverSvcClient{cc}
 }
 
-func (c *serverSvcClient) GetStatus(ctx context.Context, in *ServerSvcStatusRequest, opts ...grpc.CallOption) (*ServerSvcStatusResponse, error) {
-	out := new(ServerSvcStatusResponse)
+func (c *serverSvcClient) GetStatus(ctx context.Context, in *ServerSvcStatusReq, opts ...grpc.CallOption) (*ServerSvcStatusReply, error) {
+	out := new(ServerSvcStatusReply)
 	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/GetStatus", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -485,7 +895,7 @@ func (c *serverSvcClient) GetStatus(ctx context.Context, in *ServerSvcStatusRequ
 	return out, nil
 }
 
-func (c *serverSvcClient) GetSessions(ctx context.Context, in *GetSessionsRequest, opts ...grpc.CallOption) (*GetSessionsReply, error) {
+func (c *serverSvcClient) GetSessions(ctx context.Context, in *GetSessionsReq, opts ...grpc.CallOption) (*GetSessionsReply, error) {
 	out := new(GetSessionsReply)
 	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/GetSessions", in, out, c.cc, opts...)
 	if err != nil {
@@ -494,7 +904,7 @@ func (c *serverSvcClient) GetSessions(ctx context.Context, in *GetSessionsReques
 	return out, nil
 }
 
-func (c *serverSvcClient) PostSession(ctx context.Context, in *PostSessionRequest, opts ...grpc.CallOption) (*PostSessionReply, error) {
+func (c *serverSvcClient) PostSession(ctx context.Context, in *PostSessionReq, opts ...grpc.CallOption) (*PostSessionReply, error) {
 	out := new(PostSessionReply)
 	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/PostSession", in, out, c.cc, opts...)
 	if err != nil {
@@ -503,8 +913,8 @@ func (c *serverSvcClient) PostSession(ctx context.Context, in *PostSessionReques
 	return out, nil
 }
 
-func (c *serverSvcClient) EnrollInstructor(ctx context.Context, in *EnrollInstructorRequest, opts ...grpc.CallOption) (*EnrollInstructorResponse, error) {
-	out := new(EnrollInstructorResponse)
+func (c *serverSvcClient) EnrollInstructor(ctx context.Context, in *EnrollInstructorReq, opts ...grpc.CallOption) (*EnrollInstructorReply, error) {
+	out := new(EnrollInstructorReply)
 	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/EnrollInstructor", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -512,9 +922,45 @@ func (c *serverSvcClient) EnrollInstructor(ctx context.Context, in *EnrollInstru
 	return out, nil
 }
 
-func (c *serverSvcClient) EnrollUser(ctx context.Context, in *EnrollUserRequest, opts ...grpc.CallOption) (*EnrollUserResponse, error) {
-	out := new(EnrollUserResponse)
+func (c *serverSvcClient) GetInstructors(ctx context.Context, in *GetInstructorsReq, opts ...grpc.CallOption) (*GetInstructorsReply, error) {
+	out := new(GetInstructorsReply)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/GetInstructors", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) EnrollUser(ctx context.Context, in *EnrollUserReq, opts ...grpc.CallOption) (*EnrollUserReply, error) {
+	out := new(EnrollUserReply)
 	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/EnrollUser", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) GetUsers(ctx context.Context, in *GetUsersReq, opts ...grpc.CallOption) (*GetUsersReply, error) {
+	out := new(GetUsersReply)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/GetUsers", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginReply, error) {
+	out := new(LoginReply)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/Login", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverSvcClient) RecordEvent(ctx context.Context, in *RecordEventReq, opts ...grpc.CallOption) (*RecordEventReply, error) {
+	out := new(RecordEventReply)
+	err := grpc.Invoke(ctx, "/serversvc.ServerSvc/RecordEvent", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -524,15 +970,21 @@ func (c *serverSvcClient) EnrollUser(ctx context.Context, in *EnrollUserRequest,
 // Server API for ServerSvc service
 
 type ServerSvcServer interface {
-	// Sends a greeting
-	GetStatus(context.Context, *ServerSvcStatusRequest) (*ServerSvcStatusResponse, error)
+	// Is it running?
+	GetStatus(context.Context, *ServerSvcStatusReq) (*ServerSvcStatusReply, error)
 	// Session handling
-	GetSessions(context.Context, *GetSessionsRequest) (*GetSessionsReply, error)
-	PostSession(context.Context, *PostSessionRequest) (*PostSessionReply, error)
+	GetSessions(context.Context, *GetSessionsReq) (*GetSessionsReply, error)
+	PostSession(context.Context, *PostSessionReq) (*PostSessionReply, error)
 	// Instructor handling
-	EnrollInstructor(context.Context, *EnrollInstructorRequest) (*EnrollInstructorResponse, error)
+	EnrollInstructor(context.Context, *EnrollInstructorReq) (*EnrollInstructorReply, error)
+	GetInstructors(context.Context, *GetInstructorsReq) (*GetInstructorsReply, error)
 	// User handling
-	EnrollUser(context.Context, *EnrollUserRequest) (*EnrollUserResponse, error)
+	EnrollUser(context.Context, *EnrollUserReq) (*EnrollUserReply, error)
+	GetUsers(context.Context, *GetUsersReq) (*GetUsersReply, error)
+	Login(context.Context, *LoginReq) (*LoginReply, error)
+	// Used for analytics
+	// Client will record much of the user interaction with the app
+	RecordEvent(context.Context, *RecordEventReq) (*RecordEventReply, error)
 }
 
 func RegisterServerSvcServer(s *grpc.Server, srv ServerSvcServer) {
@@ -540,7 +992,7 @@ func RegisterServerSvcServer(s *grpc.Server, srv ServerSvcServer) {
 }
 
 func _ServerSvc_GetStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ServerSvcStatusRequest)
+	in := new(ServerSvcStatusReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -552,13 +1004,13 @@ func _ServerSvc_GetStatus_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/serversvc.ServerSvc/GetStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerSvcServer).GetStatus(ctx, req.(*ServerSvcStatusRequest))
+		return srv.(ServerSvcServer).GetStatus(ctx, req.(*ServerSvcStatusReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ServerSvc_GetSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSessionsRequest)
+	in := new(GetSessionsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -570,13 +1022,13 @@ func _ServerSvc_GetSessions_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/serversvc.ServerSvc/GetSessions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerSvcServer).GetSessions(ctx, req.(*GetSessionsRequest))
+		return srv.(ServerSvcServer).GetSessions(ctx, req.(*GetSessionsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ServerSvc_PostSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PostSessionRequest)
+	in := new(PostSessionReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -588,13 +1040,13 @@ func _ServerSvc_PostSession_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/serversvc.ServerSvc/PostSession",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerSvcServer).PostSession(ctx, req.(*PostSessionRequest))
+		return srv.(ServerSvcServer).PostSession(ctx, req.(*PostSessionReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ServerSvc_EnrollInstructor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EnrollInstructorRequest)
+	in := new(EnrollInstructorReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -606,13 +1058,31 @@ func _ServerSvc_EnrollInstructor_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/serversvc.ServerSvc/EnrollInstructor",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerSvcServer).EnrollInstructor(ctx, req.(*EnrollInstructorRequest))
+		return srv.(ServerSvcServer).EnrollInstructor(ctx, req.(*EnrollInstructorReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_GetInstructors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInstructorsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).GetInstructors(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/GetInstructors",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).GetInstructors(ctx, req.(*GetInstructorsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ServerSvc_EnrollUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EnrollUserRequest)
+	in := new(EnrollUserReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -624,7 +1094,61 @@ func _ServerSvc_EnrollUser_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/serversvc.ServerSvc/EnrollUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerSvcServer).EnrollUser(ctx, req.(*EnrollUserRequest))
+		return srv.(ServerSvcServer).EnrollUser(ctx, req.(*EnrollUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).GetUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/GetUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).GetUsers(ctx, req.(*GetUsersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).Login(ctx, req.(*LoginReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerSvc_RecordEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecordEventReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerSvcServer).RecordEvent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/serversvc.ServerSvc/RecordEvent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerSvcServer).RecordEvent(ctx, req.(*RecordEventReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -650,8 +1174,24 @@ var _ServerSvc_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ServerSvc_EnrollInstructor_Handler,
 		},
 		{
+			MethodName: "GetInstructors",
+			Handler:    _ServerSvc_GetInstructors_Handler,
+		},
+		{
 			MethodName: "EnrollUser",
 			Handler:    _ServerSvc_EnrollUser_Handler,
+		},
+		{
+			MethodName: "GetUsers",
+			Handler:    _ServerSvc_GetUsers_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _ServerSvc_Login_Handler,
+		},
+		{
+			MethodName: "RecordEvent",
+			Handler:    _ServerSvc_RecordEvent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -661,43 +1201,89 @@ var _ServerSvc_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("serverrpc.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 605 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xa4, 0x55, 0x51, 0x6f, 0xd3, 0x30,
-	0x10, 0xa6, 0x6d, 0xd4, 0x92, 0x2b, 0x82, 0xee, 0x34, 0x75, 0x51, 0xd9, 0xd0, 0x30, 0x42, 0x02,
-	0x34, 0x55, 0xa2, 0x48, 0x3c, 0xf0, 0x84, 0x20, 0x15, 0x2a, 0xf0, 0x30, 0xa5, 0xe3, 0x0d, 0x84,
-	0x42, 0xea, 0x4d, 0x91, 0xba, 0x38, 0xd8, 0x69, 0x45, 0x7f, 0x09, 0x3f, 0x81, 0xbf, 0x89, 0xe3,
-	0xd8, 0xa9, 0xd3, 0xb4, 0x93, 0xd6, 0xbd, 0xf9, 0xee, 0x3e, 0x7f, 0xf7, 0x5d, 0xee, 0xab, 0x0b,
-	0x8f, 0x04, 0xe5, 0x4b, 0xca, 0x79, 0x1a, 0x0d, 0x53, 0xce, 0x32, 0x86, 0x6e, 0x91, 0x10, 0xcb,
-	0x88, 0x8c, 0xc1, 0x1d, 0x73, 0xce, 0xb8, 0x1f, 0x66, 0x21, 0x1e, 0x83, 0x4b, 0xf3, 0xe0, 0x23,
-	0x9b, 0x51, 0xaf, 0x71, 0xda, 0x78, 0xe1, 0x06, 0xeb, 0x04, 0x0e, 0xe0, 0xbe, 0x0a, 0xa6, 0x19,
-	0xf7, 0x9a, 0xaa, 0x58, 0xc6, 0xe4, 0x0c, 0xfa, 0x53, 0xc5, 0x39, 0x5d, 0x46, 0xd3, 0x2c, 0xcc,
-	0x16, 0x22, 0xa0, 0xbf, 0x17, 0x54, 0x64, 0x88, 0xe0, 0x24, 0xe1, 0xb5, 0xa1, 0x53, 0x67, 0x12,
-	0xc1, 0x51, 0x0d, 0x2d, 0x52, 0x96, 0x08, 0x8a, 0x43, 0xe8, 0x48, 0xd2, 0x5c, 0x8d, 0xba, 0xd1,
-	0x1d, 0x1d, 0x0e, 0x4b, 0xb1, 0xc3, 0x52, 0x69, 0x60, 0x40, 0xe8, 0x41, 0xe7, 0x9a, 0x0a, 0x11,
-	0x5e, 0x51, 0xad, 0xc9, 0x84, 0xe4, 0x6f, 0x03, 0xba, 0x53, 0x79, 0x8e, 0x59, 0x32, 0x49, 0x2e,
-	0x19, 0x9e, 0x42, 0x57, 0x14, 0xe1, 0x45, 0x5c, 0xea, 0xb1, 0x53, 0x16, 0xc2, 0xa7, 0x22, 0xd2,
-	0x7c, 0x76, 0x0a, 0x09, 0x3c, 0x88, 0x13, 0x91, 0xf1, 0x45, 0x94, 0x31, 0x3e, 0xf1, 0xbd, 0x96,
-	0x82, 0x54, 0x72, 0x76, 0x9f, 0x55, 0x4a, 0x3d, 0xa7, 0xda, 0x47, 0xa6, 0xc8, 0x0a, 0x3a, 0x5a,
-	0x18, 0xbe, 0x02, 0x27, 0x96, 0xe2, 0xf4, 0xac, 0x7d, 0x6b, 0x56, 0x4b, 0x7a, 0xa0, 0x30, 0x38,
-	0x82, 0x43, 0xcd, 0xf2, 0x4d, 0xc2, 0xc4, 0x38, 0xe1, 0x6c, 0x3e, 0xa7, 0x33, 0xa5, 0xd3, 0x09,
-	0xb6, 0xd6, 0xf0, 0x21, 0x34, 0x4b, 0x99, 0xcd, 0xd8, 0x27, 0xdf, 0xa1, 0x7d, 0x2e, 0xeb, 0xb2,
-	0xf3, 0x96, 0xbd, 0x60, 0x0f, 0x5a, 0xeb, 0x0f, 0x99, 0x1f, 0xf3, 0x8c, 0xa0, 0x7f, 0x34, 0x41,
-	0x7e, 0xcc, 0x5d, 0x30, 0x67, 0x51, 0x98, 0xc9, 0x56, 0x7a, 0xb6, 0x32, 0x26, 0x3f, 0x01, 0x26,
-	0xe5, 0xa7, 0xc0, 0x97, 0xd0, 0x4e, 0x55, 0x2f, 0x3d, 0xdd, 0x81, 0x35, 0x5d, 0x21, 0x22, 0xd0,
-	0x00, 0x2d, 0xb3, 0x69, 0x64, 0x62, 0x1f, 0xda, 0x5c, 0x52, 0x26, 0x57, 0xaa, 0x73, 0x33, 0xd0,
-	0x11, 0x09, 0xc1, 0xc9, 0xe7, 0xbb, 0x0b, 0xf5, 0x13, 0x80, 0x4b, 0x1e, 0xd3, 0x64, 0x26, 0x26,
-	0xbe, 0x90, 0xf4, 0x2d, 0x99, 0xb7, 0x32, 0xe4, 0x2d, 0xe0, 0x27, 0x9a, 0xe9, 0xaf, 0x5f, 0xba,
-	0x78, 0x63, 0xa9, 0x8d, 0xfa, 0x52, 0x53, 0xe8, 0x55, 0xee, 0xa5, 0xf3, 0xd5, 0xad, 0xcd, 0x7c,
-	0x06, 0x1d, 0x4d, 0x29, 0x05, 0xb7, 0x24, 0x1e, 0xeb, 0x86, 0x08, 0x0c, 0x84, 0xbc, 0x07, 0x3c,
-	0x67, 0xc2, 0xb4, 0x34, 0x4a, 0x6f, 0xe1, 0x28, 0xf2, 0x01, 0x7a, 0x15, 0x86, 0x3d, 0x34, 0x93,
-	0xaf, 0x70, 0x54, 0xb8, 0x6d, 0xbd, 0x79, 0x23, 0xe5, 0x35, 0xc0, 0xfa, 0x97, 0xb1, 0x7b, 0x53,
-	0x16, 0x88, 0x7c, 0x06, 0xaf, 0xce, 0xb6, 0xdf, 0xd3, 0x40, 0xde, 0xc1, 0x41, 0xc1, 0x95, 0x5b,
-	0xc6, 0x68, 0x7a, 0x0e, 0xce, 0x42, 0x86, 0xbb, 0xd5, 0xa8, 0x32, 0xf1, 0x01, 0xed, 0xbb, 0xfb,
-	0x29, 0x18, 0xfd, 0x6b, 0x81, 0x5b, 0x3e, 0x74, 0x78, 0x01, 0x6e, 0xee, 0x10, 0xf5, 0xde, 0xe1,
-	0xd3, 0xca, 0x62, 0xb6, 0xbd, 0x9c, 0x03, 0x72, 0x13, 0xa4, 0x50, 0x44, 0xee, 0xe1, 0x17, 0xe8,
-	0x5a, 0xbe, 0xc3, 0x13, 0xeb, 0x52, 0xdd, 0xc7, 0x83, 0xc7, 0xbb, 0xca, 0x72, 0xf5, 0x05, 0x99,
-	0x65, 0x88, 0x0a, 0x59, 0xdd, 0x6a, 0x15, 0xb2, 0x4d, 0x1f, 0x49, 0xb2, 0x1f, 0xd0, 0xdb, 0xdc,
-	0x25, 0xda, 0x33, 0xed, 0xb0, 0xcd, 0xe0, 0xd9, 0x8d, 0x18, 0x6b, 0x70, 0x58, 0xaf, 0x08, 0x8f,
-	0x6b, 0x97, 0xac, 0xad, 0x0f, 0x4e, 0x76, 0x54, 0x0d, 0xd9, 0xaf, 0xb6, 0xfa, 0x63, 0x7c, 0xf3,
-	0x3f, 0x00, 0x00, 0xff, 0xff, 0xf7, 0x6f, 0x91, 0xef, 0x2b, 0x07, 0x00, 0x00,
+	// 1338 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xa4, 0x57, 0xcd, 0x72, 0xdb, 0x54,
+	0x14, 0x8e, 0xf2, 0xe3, 0xd8, 0x27, 0x89, 0xa3, 0xdc, 0x26, 0xc5, 0x88, 0x52, 0x32, 0x1a, 0x06,
+	0x32, 0x59, 0x04, 0xc6, 0xd0, 0x99, 0x32, 0xd3, 0x61, 0x70, 0x25, 0x35, 0x51, 0xeb, 0xd8, 0x1e,
+	0xd9, 0x4e, 0xa7, 0x6c, 0x8c, 0x22, 0x5f, 0x07, 0x0d, 0x8e, 0x64, 0x24, 0xd9, 0xad, 0x57, 0x6c,
+	0x58, 0xb2, 0x67, 0xc3, 0x13, 0xf0, 0x1c, 0x6c, 0x80, 0x07, 0x61, 0xc1, 0x4b, 0x70, 0xff, 0x24,
+	0x5d, 0xd9, 0x4e, 0x61, 0x86, 0xdd, 0x3d, 0xe7, 0x7c, 0xf7, 0x9c, 0x73, 0xcf, 0xcf, 0x67, 0x19,
+	0xf6, 0x63, 0x1c, 0xcd, 0x70, 0x14, 0x4d, 0xbc, 0xb3, 0x49, 0x14, 0x26, 0x21, 0xaa, 0x70, 0x45,
+	0x3c, 0xf3, 0xf4, 0x13, 0x40, 0x5d, 0x26, 0x74, 0x67, 0x5e, 0x37, 0x71, 0x93, 0x69, 0xec, 0xe0,
+	0xef, 0x11, 0x82, 0xcd, 0xc0, 0xbd, 0xc5, 0x35, 0xe5, 0x58, 0x39, 0xa9, 0x38, 0xec, 0xac, 0x7f,
+	0x0a, 0x87, 0x4b, 0xc8, 0xc9, 0x78, 0x8e, 0x6a, 0xb0, 0x7d, 0x8b, 0xe3, 0xd8, 0xbd, 0x49, 0xe1,
+	0xa9, 0xa8, 0xff, 0xa5, 0xc0, 0x4e, 0x97, 0x9c, 0xfd, 0x30, 0xb0, 0x83, 0x51, 0x88, 0x8e, 0x61,
+	0x27, 0xe6, 0x62, 0xcf, 0xcf, 0x9c, 0xcb, 0x2a, 0x09, 0x61, 0xe2, 0xd8, 0xab, 0xad, 0x17, 0x10,
+	0x54, 0x85, 0x74, 0xd8, 0xf5, 0x83, 0x38, 0x89, 0xa6, 0x5e, 0x12, 0x46, 0xb6, 0x59, 0xdb, 0x60,
+	0x90, 0x82, 0x0e, 0x3d, 0xc9, 0xe3, 0xcc, 0x27, 0xb8, 0xb6, 0x79, 0xbc, 0x71, 0x52, 0xad, 0x6b,
+	0x67, 0xd9, 0xa3, 0xcf, 0x9e, 0xf9, 0x49, 0x40, 0x00, 0x86, 0x9b, 0xe0, 0x9b, 0x30, 0x9a, 0x3b,
+	0x32, 0x1c, 0xd5, 0xe1, 0x50, 0x88, 0x7d, 0x72, 0x23, 0xb6, 0x82, 0x28, 0x1c, 0x8f, 0xf1, 0xb0,
+	0xb6, 0x45, 0x22, 0x6d, 0x3a, 0x2b, 0x6d, 0xfa, 0x8f, 0x0a, 0x80, 0x83, 0x67, 0x3e, 0x7e, 0xcd,
+	0x1e, 0xfa, 0x04, 0x20, 0x62, 0x52, 0xd3, 0x8f, 0x13, 0xf2, 0xce, 0x8d, 0x93, 0x9d, 0xfa, 0x03,
+	0x29, 0x7e, 0x0e, 0x15, 0x47, 0x47, 0xc2, 0x6b, 0x8f, 0xa1, 0xc4, 0xb5, 0xe8, 0x3e, 0x94, 0x22,
+	0x37, 0xf1, 0x83, 0x1b, 0x56, 0xab, 0x75, 0x47, 0x48, 0x4c, 0xcf, 0x10, 0xa2, 0x42, 0x42, 0xd2,
+	0xff, 0x56, 0xa0, 0x64, 0x18, 0x2c, 0x85, 0xcf, 0xa1, 0xe4, 0x79, 0x77, 0x84, 0xe7, 0x90, 0x33,
+	0x23, 0xc2, 0x43, 0x3f, 0x31, 0xdc, 0x68, 0xe8, 0x08, 0xac, 0xf6, 0x2b, 0x79, 0x47, 0xae, 0xa6,
+	0x63, 0xd0, 0x5a, 0x18, 0x03, 0x1a, 0xbb, 0x35, 0xbd, 0xbd, 0xc6, 0x51, 0x1a, 0x3b, 0x60, 0x12,
+	0x6d, 0x9d, 0xf5, 0x66, 0xe2, 0x47, 0xf3, 0xcb, 0x30, 0x48, 0xbe, 0x15, 0x7d, 0xd9, 0xc1, 0xb9,
+	0x0a, 0x3d, 0x04, 0xe0, 0x88, 0x57, 0xd8, 0x8d, 0x48, 0x57, 0x28, 0x00, 0x70, 0xa6, 0x41, 0x2a,
+	0x6c, 0x18, 0xc6, 0x15, 0xab, 0x73, 0xc5, 0xd9, 0xf0, 0x8c, 0x2b, 0xf4, 0x00, 0x2a, 0x7e, 0x6c,
+	0xe2, 0x91, 0x3b, 0x1d, 0x27, 0xb5, 0x12, 0xd1, 0x97, 0x9d, 0x5c, 0xa1, 0x7f, 0x03, 0xe5, 0xa7,
+	0x6e, 0xf0, 0x1d, 0x7b, 0x2e, 0xf1, 0xed, 0x84, 0x53, 0x5a, 0x1c, 0x92, 0x9c, 0xc8, 0x17, 0xa2,
+	0x4c, 0x43, 0x87, 0xb4, 0xe1, 0x79, 0x09, 0x35, 0xf2, 0xb4, 0xb7, 0x5d, 0x2e, 0x22, 0x8d, 0x7b,
+	0x61, 0xef, 0xe4, 0x49, 0x97, 0xaf, 0x85, 0xac, 0xff, 0xb6, 0x0e, 0x55, 0x3b, 0x9f, 0x2c, 0x1a,
+	0x68, 0xc5, 0x66, 0xd0, 0xc4, 0xe9, 0xf4, 0x73, 0xc7, 0xf4, 0x48, 0x35, 0x31, 0x7e, 0x23, 0xfc,
+	0xd1, 0x23, 0x0d, 0x33, 0x0e, 0x3d, 0xd2, 0xbe, 0x30, 0x10, 0x4f, 0xcf, 0x64, 0x74, 0x08, 0x5b,
+	0xf8, 0xd6, 0xf5, 0xc7, 0xe2, 0xe9, 0x5c, 0xa0, 0x91, 0x86, 0x74, 0x09, 0x4a, 0x3c, 0x12, 0x3d,
+	0xa3, 0x0f, 0x61, 0xcf, 0xc3, 0x51, 0xe2, 0x8f, 0x7c, 0xe1, 0x6a, 0x9b, 0x19, 0x8b, 0x4a, 0xf4,
+	0x1c, 0xd0, 0x88, 0x4f, 0x78, 0x77, 0x82, 0x3d, 0xdf, 0x1d, 0x27, 0x3e, 0x8e, 0x6b, 0xe5, 0x7f,
+	0x5d, 0x83, 0x15, 0xb7, 0xe8, 0xbe, 0xe5, 0xd3, 0x4a, 0xf6, 0xad, 0xc2, 0xf7, 0x2d, 0x92, 0x74,
+	0xb4, 0xf8, 0x69, 0x23, 0x08, 0x02, 0x78, 0xf1, 0xaf, 0x33, 0x8d, 0x6e, 0x42, 0xc9, 0x24, 0x78,
+	0x0f, 0xd3, 0x2a, 0xf0, 0x13, 0xc1, 0xf1, 0x0a, 0x96, 0x87, 0x42, 0xa6, 0x5e, 0xb8, 0x4d, 0x5a,
+	0x7d, 0x18, 0x66, 0x1a, 0xfd, 0xa7, 0x75, 0x28, 0xd3, 0xad, 0xfb, 0x5f, 0x6d, 0x20, 0xf7, 0x3c,
+	0x3f, 0x99, 0x8b, 0x16, 0xb0, 0x33, 0x9d, 0x0d, 0x2f, 0x9c, 0x06, 0x49, 0x34, 0x17, 0x0d, 0x48,
+	0xc5, 0xbc, 0x31, 0x25, 0xb9, 0x31, 0xe4, 0x11, 0x7c, 0x83, 0xc8, 0x23, 0x78, 0xfd, 0xcb, 0x9e,
+	0x91, 0x97, 0x62, 0x14, 0xf9, 0x38, 0x18, 0xc6, 0xb6, 0xc9, 0x4b, 0x4e, 0x1e, 0x91, 0x6b, 0xe8,
+	0x44, 0x8f, 0x08, 0x65, 0x84, 0xaf, 0xa9, 0xb9, 0xc2, 0xcc, 0xb9, 0x02, 0x9d, 0x82, 0xea, 0x60,
+	0x2f, 0x8c, 0x86, 0x0d, 0x2f, 0xf1, 0x67, 0x24, 0xb7, 0xac, 0x9c, 0x6a, 0xb4, 0xa0, 0xd7, 0xeb,
+	0x50, 0x3d, 0xc7, 0x89, 0xa0, 0x57, 0x46, 0xda, 0xc7, 0x45, 0xda, 0x5b, 0xa0, 0x57, 0xa2, 0xd2,
+	0x9b, 0xa0, 0x16, 0xee, 0x50, 0xfa, 0x7e, 0x9c, 0xdd, 0x62, 0x6c, 0xb1, 0xce, 0xd8, 0xe2, 0xbe,
+	0x34, 0x25, 0x12, 0x83, 0x3b, 0x32, 0x54, 0x7f, 0x02, 0xd5, 0x4e, 0x18, 0xa7, 0xee, 0x68, 0x06,
+	0xa7, 0xb0, 0xe9, 0x13, 0x18, 0x0b, 0x7d, 0xb7, 0x13, 0x86, 0xd1, 0x11, 0xa8, 0x85, 0xdb, 0x24,
+	0x17, 0xbd, 0x03, 0xf7, 0x38, 0xa5, 0xe6, 0x4b, 0x47, 0xdd, 0x7e, 0x01, 0x90, 0xf3, 0xbb, 0x70,
+	0xfe, 0xae, 0xe4, 0xbc, 0xb8, 0xa2, 0x8e, 0x04, 0xd6, 0xdf, 0x81, 0xa3, 0x65, 0x8f, 0x34, 0xd4,
+	0x23, 0x38, 0x20, 0xa5, 0xc8, 0xb5, 0xff, 0xb1, 0x82, 0x47, 0x70, 0x6f, 0xf1, 0x1a, 0xf5, 0xf6,
+	0x18, 0xf6, 0x78, 0x18, 0x3a, 0xa0, 0xd4, 0xd3, 0xc7, 0xb0, 0x39, 0x25, 0x47, 0x91, 0xec, 0x3d,
+	0x29, 0xd9, 0x74, 0x84, 0x1d, 0x06, 0xd0, 0x0f, 0x60, 0x5f, 0xbe, 0x49, 0x9d, 0xed, 0xc1, 0x0e,
+	0x89, 0xc1, 0x7e, 0x60, 0x88, 0x2b, 0xfd, 0x2b, 0xd8, 0xcb, 0x45, 0xda, 0xb1, 0x4f, 0xa0, 0x4c,
+	0xaf, 0x4a, 0xe4, 0xbe, 0xd2, 0x7f, 0x06, 0xd2, 0x5f, 0xc1, 0x96, 0x35, 0xc3, 0x41, 0x42, 0x7e,
+	0xda, 0x2a, 0x98, 0x1e, 0xb2, 0xd7, 0x55, 0xeb, 0x87, 0xd2, 0x55, 0x2b, 0xb5, 0x39, 0x39, 0x8c,
+	0x4e, 0x2c, 0x13, 0xd8, 0x56, 0xf2, 0xb5, 0xc9, 0x15, 0x24, 0xb9, 0x6a, 0x71, 0x62, 0xd1, 0x99,
+	0xc0, 0x4b, 0xe9, 0xa9, 0x8b, 0x31, 0x9c, 0x1c, 0x42, 0x4a, 0x27, 0x3c, 0x70, 0x0b, 0xa9, 0xdd,
+	0x47, 0x64, 0xeb, 0xe8, 0x59, 0x14, 0x6f, 0xf9, 0x36, 0x37, 0xd3, 0x09, 0x2a, 0xdc, 0xe4, 0x13,
+	0x54, 0x6e, 0x86, 0x37, 0x3e, 0x9b, 0xc6, 0x6c, 0x7b, 0x15, 0x79, 0x7b, 0xcf, 0x00, 0xd1, 0xc2,
+	0xb4, 0x23, 0x5b, 0xfe, 0x8c, 0xe0, 0xa4, 0xb1, 0xc2, 0xa2, 0xef, 0x02, 0x08, 0x8f, 0xc4, 0xff,
+	0xe9, 0xcf, 0x0a, 0xec, 0x2f, 0xd0, 0x26, 0x2a, 0xc3, 0xe6, 0xab, 0xf6, 0x79, 0x43, 0x5d, 0x43,
+	0x55, 0x80, 0x8b, 0x46, 0xef, 0xa2, 0x31, 0x60, 0xb2, 0x42, 0xd8, 0xa6, 0xfa, 0xa2, 0xdf, 0x32,
+	0x1b, 0x4d, 0xbb, 0x65, 0x73, 0xdd, 0x3a, 0xda, 0x83, 0xca, 0xb3, 0x46, 0xb7, 0xc7, 0xc5, 0x0d,
+	0x7a, 0xe5, 0xd2, 0x32, 0xed, 0x5e, 0xa3, 0x67, 0xb7, 0x5b, 0x2a, 0x46, 0x07, 0xb0, 0xd7, 0xbb,
+	0x1c, 0x48, 0xaa, 0x11, 0x02, 0xd8, 0x32, 0x1b, 0x2d, 0xc3, 0x52, 0x7f, 0x57, 0xd0, 0x2e, 0x6c,
+	0x5f, 0xd8, 0x9d, 0xc1, 0x45, 0xbb, 0xa3, 0xfe, 0xa1, 0x50, 0xcb, 0xd7, 0xfd, 0xcb, 0xa7, 0x0d,
+	0xf5, 0x4f, 0xe5, 0xf4, 0x07, 0xa8, 0x64, 0xfd, 0x43, 0xfb, 0xb0, 0xd3, 0x6c, 0x9f, 0xdb, 0xad,
+	0x81, 0x75, 0x65, 0xb5, 0x7a, 0x24, 0x33, 0x15, 0x76, 0x89, 0xa2, 0xdd, 0xef, 0x09, 0x8d, 0x42,
+	0x21, 0xa6, 0x75, 0x65, 0x1b, 0xd6, 0xa0, 0xdf, 0xb5, 0x4c, 0x92, 0x18, 0x81, 0x3c, 0x6f, 0x93,
+	0x2b, 0x5d, 0xab, 0xdb, 0xe5, 0xb9, 0x1c, 0xc1, 0xc1, 0xb3, 0x76, 0xb3, 0xd9, 0x7e, 0x39, 0xb0,
+	0x5b, 0xdd, 0x9e, 0xd3, 0x37, 0x7a, 0x6d, 0x87, 0xe4, 0x73, 0x04, 0x6a, 0xd3, 0x7e, 0x61, 0x0d,
+	0x3a, 0x0e, 0x41, 0x0e, 0x5e, 0x36, 0x7a, 0xc6, 0x05, 0x49, 0xad, 0xfe, 0xcb, 0x16, 0x54, 0xb2,
+	0x0f, 0x44, 0x74, 0x09, 0x15, 0x4a, 0x35, 0xec, 0x3b, 0x11, 0xbd, 0x5f, 0x60, 0x82, 0xc5, 0xaf,
+	0x4d, 0xed, 0x83, 0xb7, 0x99, 0x69, 0x57, 0xd7, 0xd0, 0x39, 0xdb, 0x89, 0x94, 0xb9, 0x90, 0xbc,
+	0xfd, 0x45, 0x16, 0xd4, 0xde, 0xbb, 0xcb, 0x94, 0x39, 0x92, 0x68, 0xa7, 0xe0, 0xa8, 0x48, 0x66,
+	0x05, 0x47, 0x4b, 0x4c, 0xb5, 0x86, 0xae, 0x40, 0x5d, 0x64, 0x16, 0xf4, 0x50, 0x1e, 0xd5, 0x65,
+	0x22, 0xd3, 0x8e, 0xdf, 0x6a, 0xe7, 0x7e, 0x3b, 0x8c, 0xd7, 0x25, 0x86, 0x41, 0x0f, 0x8a, 0x2f,
+	0x2a, 0x72, 0x96, 0xf6, 0xf0, 0x2d, 0x56, 0xee, 0xd1, 0x24, 0xdf, 0x5d, 0x19, 0xc5, 0xa0, 0xda,
+	0x52, 0x0e, 0x82, 0xb3, 0x34, 0xed, 0x0e, 0x0b, 0xf7, 0xf2, 0x25, 0x94, 0x53, 0x1a, 0x42, 0xf7,
+	0x8b, 0x31, 0x53, 0xaa, 0xd2, 0x6a, 0x2b, 0xf5, 0xfc, 0xfe, 0x23, 0xd8, 0x62, 0x7b, 0x84, 0x64,
+	0xb2, 0x4a, 0x77, 0x55, 0x3b, 0x5a, 0x56, 0x66, 0xfd, 0x92, 0x96, 0xbc, 0xd0, 0xaf, 0x22, 0x6d,
+	0x14, 0xfa, 0xb5, 0xc4, 0x0b, 0x6b, 0xd7, 0x25, 0xf6, 0xd7, 0xe7, 0xb3, 0x7f, 0x02, 0x00, 0x00,
+	0xff, 0xff, 0x40, 0x88, 0x14, 0x98, 0x0d, 0x0d, 0x00, 0x00,
 }

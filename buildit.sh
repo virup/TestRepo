@@ -9,17 +9,6 @@ build_protoc() {
  go_back
 }
 
-build_cli() {
- echo "Cleaning up old cli..."
- rm -f $OUTDIR/cli
-
- echo "Building cli..."
- cd src/test/cli
- go build -gcflags "-N -l" -o $OUTDIR/cli
- go_back
-}
-
-
 build_grpctest() {
  echo "Cleaning up old grpctest..."
  rm -f $OUTDIR/grpctest
@@ -43,7 +32,6 @@ build_server() {
 # Build everything. At a later date we could give command line options to
 # build only specific things
 main() {
- build_cli
  build_protoc
  build_server
  build_grpctest

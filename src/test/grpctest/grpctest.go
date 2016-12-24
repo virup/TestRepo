@@ -23,7 +23,7 @@ func main() {
 	c := pb.NewServerSvcClient(conn)
 
 	r, err := c.GetStatus(context.Background(),
-		&pb.ServerSvcStatusRequest{Name: "grpctest"})
+		&pb.ServerSvcStatusReq{Name: "grpctest"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
