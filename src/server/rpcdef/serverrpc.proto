@@ -6,14 +6,20 @@ package serversvc;
 //import "google/protobuf/any.proto";
 //import "google/protobuf/timestamp.proto";
 
+// XXX Only the APIs mentioned as DONE work for now.
 service ServerSvc {
   // Is it running?
+  // DONE
   rpc GetStatus (ServerSvcStatusReq) returns (ServerSvcStatusReply) {
   }
 
   // Session handling
   rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
+
+  // DONE
   rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
+  // DONE
+  rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
   
   // Instructor handling
   rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
@@ -138,11 +144,21 @@ message GetSessionsReply {
   repeated SessionInfo sessionList = 2;
 }
 
+message GetSessionReply {
+  SessionInfo info = 1;
+}
+
+message GetSessionReq {
+   string sessionKey = 1;
+}
+
+
 message PostSessionReq {
   SessionInfo info = 1;
 }
 
 message PostSessionReply {
+   string sessionKey = 1;
 }
 
 message EnrollInstructorReq {

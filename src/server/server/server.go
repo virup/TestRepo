@@ -69,24 +69,25 @@ func getSessionFromDB(sKey string) (error, pb.SessionInfo) {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
 		return err, s
-	} else {
-
-		if v.Size() > 0 {
-			buf = make([]byte, v.Size())
-			copy(buf, v.Data())
-			v.Free()
-		} else {
-			log.WithFields(log.Fields{"error": err}).Error("corrupted" +
-				" session from DB")
-		}
-		err = proto.Unmarshal(buf, &s)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to unmarshal proto from DB")
-		}
-		log.WithFields(log.Fields{"sessionInfo": s, "key": sKey}).
-			Debug("Read from DB")
 	}
+	log.WithFields(log.Fields{"value": v}).Debug("Read" +
+		"session value from DB")
+
+	if v.Size() > 0 {
+		buf = make([]byte, v.Size())
+		copy(buf, v.Data())
+		v.Free()
+	} else {
+		log.WithFields(log.Fields{"error": err}).Error("corrupted" +
+			" session from DB")
+	}
+	err = proto.Unmarshal(buf, &s)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to unmarshal proto from DB")
+	}
+	log.WithFields(log.Fields{"sessionInfo": s, "key": sKey}).
+		Debug("Read from DB")
 	return err, s
 }
 
@@ -94,12 +95,29 @@ func (s *server) GetSessions(ctx context.Context,
 	in *pb.GetSessionsReq) (*pb.GetSessionsReply, error) {
 
 	var resp pb.GetSessionsReply
-	err := GetSessions()
+	var err error
+	//err, resp.sessionList := getAllSessionFromDB()
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
 		return &resp, err
 	}
+	return &resp, nil
+}
+
+func (s *server) GetSession(ctx context.Context,
+	in *pb.GetSessionReq) (*pb.GetSessionReply, error) {
+
+	var resp pb.GetSessionReply
+	err, si := getSessionFromDB(in.SessionKey)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get session from DB")
+		return &resp, err
+	}
+
+	log.WithFields(log.Fields{"session": s}).Debug("Get session success")
+	resp.Info = &si
 	return &resp, nil
 }
 
@@ -123,7 +141,8 @@ func postSessionDB(in pb.SessionInfo) (err error, sessionKey string) {
 			Error("Failed to write to DB")
 		return err, ""
 	}
-	log.WithFields(log.Fields{"sessionInfo": in, "key": sessionKey}).Debug("Added to DB")
+	log.WithFields(log.Fields{"sessionInfo": in, "key": sessionKey}).
+		Debug("Added to DB")
 	return nil, sessionKey
 }
 
@@ -337,7 +356,7 @@ func initRocksDB() error {
 
 func main() {
 	// open a file
-	f, err := os.OpenFile("testlogrus.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	f, err := os.OpenFile("server.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("error opening file: %v", err)
 	}
@@ -349,17 +368,18 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 
 	// Output to stderr instead of stdout, could also be a file.
-	log.SetOutput(os.Stdout)
+	//log.SetOutput(os.Stdout)
+	log.SetOutput(f)
 
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
-	fmt.Printf("init rest")
+
 	err = initRocksDB()
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to init rocks DB")
 		return
 	}
-	err = pay.InitPayPlan()
+	//err = pay.InitPayPlan()
 	initGprcServer()
 }
