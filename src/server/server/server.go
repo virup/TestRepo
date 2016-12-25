@@ -58,11 +58,12 @@ func getAllSessionFromDB() (error, []pb.SessionInfo) {
 	return err, sList
 }
 
-func getSessionFromDB(sKey string) (error, pb.SessionInfo) {
+// Given a sessionKey, return the SessionInfo
+func getSessionFromDB(sKey string) (error, *pb.SessionInfo) {
 	var err error
 	var buf []byte
 
-	s := pb.SessionInfo{}
+	var s *pb.SessionInfo = new(pb.SessionInfo)
 
 	v, err := rdb.GetCF(ro, sessionsCF, []byte(sKey))
 	if err != nil {
@@ -78,13 +79,14 @@ func getSessionFromDB(sKey string) (error, pb.SessionInfo) {
 		copy(buf, v.Data())
 		v.Free()
 	} else {
-		log.WithFields(log.Fields{"error": err}).Error("corrupted" +
-			" session from DB")
+		log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
+			"session from DB")
 	}
-	err = proto.Unmarshal(buf, &s)
+	err = proto.Unmarshal(buf, s)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to unmarshal proto from DB")
+		return err, nil
 	}
 	log.WithFields(log.Fields{"sessionInfo": s, "key": sKey}).
 		Debug("Read from DB")
@@ -109,15 +111,15 @@ func (s *server) GetSession(ctx context.Context,
 	in *pb.GetSessionReq) (*pb.GetSessionReply, error) {
 
 	var resp pb.GetSessionReply
-	err, si := getSessionFromDB(in.SessionKey)
+	err, sessionInfo := getSessionFromDB(in.SessionKey)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
 		return &resp, err
 	}
 
-	log.WithFields(log.Fields{"session": s}).Debug("Get session success")
-	resp.Info = &si
+	log.WithFields(log.Fields{"session": sessionInfo}).Debug("Get session success")
+	resp.Info = sessionInfo
 	return &resp, nil
 }
 
@@ -133,8 +135,6 @@ func postSessionDB(in pb.SessionInfo) (err error, sessionKey string) {
 		return err, ""
 	}
 
-	log.Debugf("wo %#v sessionsCF %#v, sessionKey %#v byteBuf %#v",
-		wo, sessionsCF, sessionKey, byteBuf)
 	err = rdb.PutCF(wo, sessionsCF, []byte(sessionKey), byteBuf)
 	if err != nil {
 		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
@@ -154,7 +154,7 @@ func (ser *server) PostSession(ctx context.Context,
 	log.WithFields(log.Fields{"sessionInfo": in.Info}).
 		Debug("Received post session request")
 
-	err, _ = postSessionDB(*in.Info)
+	err, resp.SessionKey = postSessionDB(*in.Info)
 	if err != nil {
 		log.WithFields(log.Fields{"session": in.Info, "error": err}).
 			Error("Failed to write to DB")

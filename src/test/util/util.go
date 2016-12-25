@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 
 	pb "server/rpcdef"
 )
+
+var sessionID = 1
 
 func GetNewSession() pb.SessionInfo {
 
@@ -16,7 +19,7 @@ func GetNewSession() pb.SessionInfo {
 	si.SessionTime = t.String()
 	si.SessionType = []pb.FitnessCategory{pb.FitnessCategory_YOGA, pb.FitnessCategory_FAST_YOGA}
 	si.InstructorID = randSeq(10)
-	si.SessionDesc = "my session"
+	si.SessionDesc = "my session" + strconv.Itoa(sessionID)
 	return si
 }
 
