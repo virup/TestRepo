@@ -22,12 +22,16 @@ service ServerSvc {
   rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
   
   // Instructor handling
+  // DONE
   rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
+  // DONE
   rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
   rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
 
   // User handling
+  // DONE
   rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
+  // DONE
   rpc GetUser(GetUserReq) returns (GetUserReply) {}
   rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
 
