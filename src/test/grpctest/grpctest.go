@@ -15,10 +15,77 @@ import (
 
 var client pb.ServerSvcClient
 
-func testSessions() error {
-	numSessions := 32
+var numIter = 4
 
-	for i := 0; i < numSessions; i++ {
+func testInstructors() error {
+
+	for i := 0; i < numIter; i++ {
+
+		var req pb.EnrollInstructorReq
+		var ireq pb.GetInstructorReq
+
+		ins := util.GetNewInstructor()
+		req.Instructor = &ins
+
+		log.WithFields(log.Fields{"instructor req": req}).Debug("Enrolling instructor")
+		r, err := client.EnrollInstructor(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to enroll instructor")
+			return err
+		}
+		log.WithFields(log.Fields{"instructor response": r}).Debug("Enrolled instructor with key")
+
+		ireq.InstructorKey = r.InstructorKey
+		gr, err := client.GetInstructor(context.Background(), &ireq)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get instructor")
+			return err
+		}
+		log.WithFields(log.Fields{"instructorInfo": gr.Info}).
+			Debug("Get instructor success")
+	}
+	return nil
+}
+
+func testUsers() error {
+
+	for i := 0; i < numIter; i++ {
+
+		var req pb.EnrollUserReq
+		var ureq pb.GetUserReq
+
+		u := util.GetNewUser()
+		req.User = &u
+
+		log.WithFields(log.Fields{"user req": req}).Debug("Enrolling user")
+		r, err := client.EnrollUser(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to enroll user")
+			return err
+		}
+		log.WithFields(log.Fields{"user response": r}).Debug("Enrolled user with key")
+
+		ureq.UserKey = r.UserKey
+		gr, err := client.GetUser(context.Background(), &ureq)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get user")
+			return err
+		}
+		log.WithFields(log.Fields{"userInfo": gr.Info}).
+			Debug("Get user success")
+	}
+	return nil
+}
+
+func testSessions() error {
+
+	for i := 0; i < numIter; i++ {
 
 		var req pb.PostSessionReq
 		var greq pb.GetSessionReq
@@ -91,4 +158,17 @@ func main() {
 		log.Error("Session test failed")
 		return
 	}
+
+	err = testUsers()
+	if err != nil {
+		log.Error("Users test failed")
+		return
+	}
+
+	err = testInstructors()
+	if err != nil {
+		log.Error("Instructor test failed")
+		return
+	}
+
 }
