@@ -85,6 +85,7 @@ func testUsers() error {
 
 func testSessions() error {
 
+	var allreq pb.GetSessionsReq
 	for i := 0; i < numIter; i++ {
 
 		var req pb.PostSessionReq
@@ -113,6 +114,16 @@ func testSessions() error {
 		log.WithFields(log.Fields{"session": gr.Info}).
 			Debug("Get session success")
 	}
+
+	gr, err := client.GetSessions(context.Background(), &allreq)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get all sessions")
+		return err
+	}
+	log.WithFields(log.Fields{"sessionList": gr.SessionList}).
+		Debug("Get all session success")
+
 	return nil
 }
 
@@ -158,6 +169,7 @@ func main() {
 		log.Error("Session test failed")
 		return
 	}
+	return
 
 	err = testUsers()
 	if err != nil {

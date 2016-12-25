@@ -14,8 +14,8 @@ service ServerSvc {
   }
 
   // Session handling
+  // DONE
   rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
-
   // DONE
   rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
   // DONE

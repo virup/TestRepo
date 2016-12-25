@@ -1083,11 +1083,15 @@ type ServerSvcClient interface {
 	// DONE
 	GetSession(ctx context.Context, in *GetSessionReq, opts ...grpc.CallOption) (*GetSessionReply, error)
 	// Instructor handling
+	// DONE
 	EnrollInstructor(ctx context.Context, in *EnrollInstructorReq, opts ...grpc.CallOption) (*EnrollInstructorReply, error)
+	// DONE
 	GetInstructor(ctx context.Context, in *GetInstructorReq, opts ...grpc.CallOption) (*GetInstructorReply, error)
 	GetInstructors(ctx context.Context, in *GetInstructorsReq, opts ...grpc.CallOption) (*GetInstructorsReply, error)
 	// User handling
+	// DONE
 	EnrollUser(ctx context.Context, in *EnrollUserReq, opts ...grpc.CallOption) (*EnrollUserReply, error)
+	// DONE
 	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserReply, error)
 	GetUsers(ctx context.Context, in *GetUsersReq, opts ...grpc.CallOption) (*GetUsersReply, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginReply, error)
@@ -1225,11 +1229,15 @@ type ServerSvcServer interface {
 	// DONE
 	GetSession(context.Context, *GetSessionReq) (*GetSessionReply, error)
 	// Instructor handling
+	// DONE
 	EnrollInstructor(context.Context, *EnrollInstructorReq) (*EnrollInstructorReply, error)
+	// DONE
 	GetInstructor(context.Context, *GetInstructorReq) (*GetInstructorReply, error)
 	GetInstructors(context.Context, *GetInstructorsReq) (*GetInstructorsReply, error)
 	// User handling
+	// DONE
 	EnrollUser(context.Context, *EnrollUserReq) (*EnrollUserReply, error)
+	// DONE
 	GetUser(context.Context, *GetUserReq) (*GetUserReply, error)
 	GetUsers(context.Context, *GetUsersReq) (*GetUsersReply, error)
 	Login(context.Context, *LoginReq) (*LoginReply, error)
