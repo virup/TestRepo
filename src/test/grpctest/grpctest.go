@@ -25,15 +25,18 @@ func testSessions() error {
 
 		s := util.GetNewSession()
 		req.Info = &s
-		_, err := client.PostSession(context.Background(),
+
+		log.WithFields(log.Fields{"session req": req}).Debug("Posting session")
+		r, err := client.PostSession(context.Background(),
 			&req)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed" +
 				" to post session")
 			return err
 		}
-		log.WithFields(log.Fields{"session": req}).Debug("Posted session")
+		log.WithFields(log.Fields{"session response": r}).Debug("Posted session with key")
 
+		greq.SessionKey = r.SessionKey
 		gr, err := client.GetSession(context.Background(), &greq)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed" +
