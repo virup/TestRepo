@@ -23,10 +23,12 @@ service ServerSvc {
   
   // Instructor handling
   rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
+  rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
   rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
 
   // User handling
   rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
+  rpc GetUser(GetUserReq) returns (GetUserReply) {}
   rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
 
   rpc Login(LoginReq) returns (LoginReply) {}
@@ -97,19 +99,25 @@ message BankInfo {
 }
 
 message InstructorInfo {
-   string name = 1;
+   string firstName = 1;
    string age = 2;
    string sex = 3;
    string location = 4;
    string email = 5;
+   string userName = 6; // optional
+   string passWord = 7;
    
-   string desc = 6;
-   string certification = 7;
-   repeated FitnessCategory fitnessSpecialties = 8;
+   string desc = 8;
+   string certification = 9;
+   repeated FitnessCategory fitnessSpecialties = 10;
+   string lastName = 11;
+   string city = 12;
+   string country = 13;
+ 
 
    // Internal to server
-   string ReviewInfoID = 9;
-   string BankInfoID = 10;
+   string ReviewInfoID = 101;
+   string BankInfoID = 102;
 }
 
 message Device {
@@ -118,20 +126,24 @@ message Device {
 }
 
 message UserInfo {
-   string name = 1;
+   string firstName = 1;
    string age = 2;
    string sex = 3;
    string city = 4;
    string country = 5;
    string email = 6;
+   string userName = 7;
+   string passWord = 8;
+   string lastName = 9;
 
-   string CCInfoID = 7;
+   string CCInfoID = 50;
+ 
 
    // Internal to server
-   repeated string friendsIDs = 8;
-   repeated string followIDs = 9;
+   repeated string friendsIDs = 101;
+   repeated string followIDs =102; 
    // Pointer to event activity in DB
-   string RecordActivityID = 10;
+   string RecordActivityID = 103;
 }
 
 message GetSessionsReq {
@@ -166,6 +178,15 @@ message EnrollInstructorReq {
 }
 
 message EnrollInstructorReply {
+   string instructorKey = 1;
+}
+
+message GetInstructorReq {
+   string instructorKey = 1;
+}
+
+message GetInstructorReply {
+   InstructorInfo info = 1;
 }
 
 message GetInstructorsReq {
@@ -177,11 +198,20 @@ message GetInstructorsReq {
 message GetInstructorsReply {
 }
 
+message GetUserReq {
+   string userKey = 1;
+}
+
+message GetUserReply {
+   UserInfo info = 1;
+}
+
 message EnrollUserReq {
   UserInfo user = 1;
 }
 
 message EnrollUserReply {
+   string userKey = 1;
 }
 
 message GetUsersReq {
@@ -223,8 +253,10 @@ message RecordEventReply {
 
 message LoginReq {
    string email = 1;
-   string userOrInstructorID = 2;
+   string userName = 2; // Optional
+   string passWord = 3;
 }
 
 message LoginReply {
+   string userOrInstructorID = 2;
 }
