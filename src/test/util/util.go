@@ -41,6 +41,9 @@ func GetNewSession() (error, pb.SessionInfo) {
 	if err != nil {
 		return err, si
 	}
+
+	si.TagList = []pb.SessionTag{pb.SessionTag_CALMING, pb.SessionTag_RELAXING}
+	si.DifficultyLevel = pb.SessionDifficulty(rand.Intn(3)) //pb.SessionDifficulty_MODERATE
 	si.SessionDesc = "my session" + strconv.Itoa(sessionID)
 	sessionID += 1
 	return nil, si
