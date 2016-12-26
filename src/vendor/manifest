@@ -203,6 +203,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/garyburd/redigo",
+			"repository": "https://github.com/garyburd/redigo",
+			"vcs": "git",
+			"revision": "957473377c7765670d0b656e99eafe7b8669f213",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/go-swagger/go-swagger",
 			"repository": "https://github.com/go-swagger/go-swagger",
 			"vcs": "git",
