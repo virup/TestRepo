@@ -15,7 +15,7 @@ import (
 
 var client pb.ServerSvcClient
 
-var numIter = 4
+var numIter = 16
 
 func testInstructors() error {
 
@@ -44,6 +44,7 @@ func testInstructors() error {
 				" to get instructor")
 			return err
 		}
+		util.RegisterEnrolledInstructorID(ireq.InstructorKey)
 		log.WithFields(log.Fields{"instructorInfo": gr.Info}).
 			Debug("Get instructor success")
 	}
@@ -91,7 +92,12 @@ func testSessions() error {
 		var req pb.PostSessionReq
 		var greq pb.GetSessionReq
 
-		s := util.GetNewSession()
+		err, s := util.GetNewSession()
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get new session")
+			return err
+		}
 		req.Info = &s
 
 		log.WithFields(log.Fields{"session req": req}).Debug("Posting session")
@@ -121,7 +127,7 @@ func testSessions() error {
 			" to get all sessions")
 		return err
 	}
-	log.WithFields(log.Fields{"sessionList": gr.SessionList}).
+	log.WithFields(log.Fields{"allsessionResponse": gr}).
 		Debug("Get all session success")
 
 	return nil
@@ -164,6 +170,12 @@ func main() {
 	}
 	log.Printf("Greeting: %s", r.Message)
 
+	err = testInstructors()
+	if err != nil {
+		log.Error("Instructor test failed")
+		return
+	}
+
 	err = testSessions()
 	if err != nil {
 		log.Error("Session test failed")
@@ -174,12 +186,6 @@ func main() {
 	err = testUsers()
 	if err != nil {
 		log.Error("Users test failed")
-		return
-	}
-
-	err = testInstructors()
-	if err != nil {
-		log.Error("Instructor test failed")
 		return
 	}
 

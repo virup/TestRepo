@@ -10,7 +10,7 @@ import (
 )
 
 // Given a instructKey, return the UserInfo
-func getInstructorFromDB(iKey string) (error, *pb.InstructorInfo) {
+func GetInstructorFromDB(iKey string) (error, *pb.InstructorInfo) {
 	var err error
 	var buf []byte
 
@@ -62,7 +62,7 @@ func (s *server) GetInstructor(ctx context.Context,
 	in *pb.GetInstructorReq) (*pb.GetInstructorReply, error) {
 
 	var resp pb.GetInstructorReply
-	err, iInfo := getInstructorFromDB(in.InstructorKey)
+	err, iInfo := GetInstructorFromDB(in.InstructorKey)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")

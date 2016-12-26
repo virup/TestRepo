@@ -57,9 +57,26 @@ message SessionInfo {
   string sessionDesc = 2;
   string instructorID = 3;
   repeated FitnessCategory sessionType = 4;
+  SessionDifficulty difficultyLevel = 5;
+  repeated SessionTag tagList = 6;
 
   // Maintained by server
-  uint64 sessionUsersEnrolled = 5;
+  uint64 sessionUsersEnrolled = 101;
+}
+
+enum SessionDifficulty {
+    EASY = 0;
+    MODERATE = 1;
+    DIFFICULT = 2;
+}
+
+// General attributes used to describe a session.
+enum SessionTag {
+    FAST = 0;
+    RELAXING = 1;
+    CALMING = 2;
+    AEROBIC = 3;
+    LATIN_MUSIC = 4;
 }
 
 enum FitnessCategory {
@@ -157,7 +174,8 @@ message GetSessionsReq {
 }
 
 message GetSessionsReply {
-  repeated SessionInfo sessionList = 2;
+  repeated SessionInfo sessionList = 1;
+  repeated InstructorInfo instructorList = 2;
 }
 
 message GetSessionReply {

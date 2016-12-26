@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -14,16 +15,35 @@ import (
 
 var sessionID = 1
 
-func GetNewSession() pb.SessionInfo {
+var enrolledInstructorsID []string
+
+func RegisterEnrolledInstructorID(instructorID string) {
+
+	enrolledInstructorsID = append(enrolledInstructorsID, instructorID)
+}
+
+func GetEnrolledInstructorID() (error, string) {
+	numIns := len(enrolledInstructorsID)
+	if numIns == 0 {
+		return errors.New("Instructors not registered"), ""
+	}
+	return nil, enrolledInstructorsID[rand.Intn(len(enrolledInstructorsID))]
+}
+
+func GetNewSession() (error, pb.SessionInfo) {
 
 	var si pb.SessionInfo
+	var err error
 	t := time.Now()
 	si.SessionTime = t.String()
 	si.SessionType = []pb.FitnessCategory{pb.FitnessCategory_YOGA, pb.FitnessCategory_FAST_YOGA}
-	si.InstructorID = randSeq(10)
+	err, si.InstructorID = GetEnrolledInstructorID()
+	if err != nil {
+		return err, si
+	}
 	si.SessionDesc = "my session" + strconv.Itoa(sessionID)
 	sessionID += 1
-	return si
+	return nil, si
 }
 
 var certID = 1

@@ -55,6 +55,20 @@ func (s *server) GetSessions(ctx context.Context,
 			" to get sessions from DB")
 		return &resp, err
 	}
+	for _, session := range resp.SessionList {
+
+		err, insInfo := GetInstructorFromDB(session.InstructorID)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get instructor from session from DB")
+			return &resp, err
+		}
+		resp.InstructorList = append(resp.InstructorList, insInfo)
+	}
+
+	log.WithFields(log.Fields{"sessionList": resp.SessionList}).Debug("Returning sessionlist success")
+	log.WithFields(log.Fields{"instructorList": resp.InstructorList}).Debug("Returning instructorList success")
+
 	return &resp, nil
 }
 
