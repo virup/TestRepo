@@ -97,5 +97,5 @@ func GetHttpUrl() string {
 		fmt.Printf("SERVERIP not set")
 		os.Exit(-1)
 	}
-	return "http://" + serv + ":8080"
+	return "http://" + serv + ":8099"
 }
