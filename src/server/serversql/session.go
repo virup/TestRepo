@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "server/rpcdef"
+	pb "server/rpcdefsql"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -16,23 +16,25 @@ func getSessionFromDB(sKey string) (error, *pb.SessionInfo) {
 
 	var s *pb.SessionInfo = new(pb.SessionInfo)
 
-	v, err := rdb.GetCF(ro, sessionsCF, []byte(sKey))
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to get session from DB")
-		return err, s
-	}
-	log.WithFields(log.Fields{"value": v}).Debug("Read" +
-		"session value from DB")
+	/*
+		v, err := rdb.GetCF(ro, sessionsCF, []byte(sKey))
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get session from DB")
+			return err, s
+		}
+		log.WithFields(log.Fields{"value": v}).Debug("Read" +
+			"session value from DB")
 
-	if v.Size() > 0 {
-		buf = make([]byte, v.Size())
-		copy(buf, v.Data())
-		v.Free()
-	} else {
-		log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
-			"session from DB")
-	}
+		if v.Size() > 0 {
+			buf = make([]byte, v.Size())
+			copy(buf, v.Data())
+			v.Free()
+		} else {
+			log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
+				"session from DB")
+		}
+	*/
 	err = proto.Unmarshal(buf, s)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -93,14 +95,15 @@ func postSessionDB(in pb.SessionInfo) (err error, sessionKey string) {
 	log.WithFields(log.Fields{"sessionInfo": in}).Debug("Adding to DB")
 	sessionKey = GetRandomID()
 
-	byteBuf, err := proto.Marshal(&in)
+	//var err error
+	//byteBuf, err := proto.Marshal(&in)
 	if err != nil {
 		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
 			Error("Failed to convert to binary")
 		return err, ""
 	}
 
-	err = rdb.PutCF(wo, sessionsCF, []byte(sessionKey), byteBuf)
+	//err = rdb.PutCF(wo, sessionsCF, []byte(sessionKey), byteBuf)
 	if err != nil {
 		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
 			Error("Failed to write to DB")
@@ -135,32 +138,34 @@ func getAllSessionFromDB() (error, []*pb.SessionInfo) {
 	var err error
 
 	log.Debug("Reading all sessions from DB")
-	it := rdb.NewIteratorCF(ro, sessionsCF)
-	defer it.Close()
+	/*
+		it := rdb.NewIteratorCF(ro, sessionsCF)
+		defer it.Close()
 
-	it.SeekToFirst()
-	for ; it.Valid(); it.Next() {
+		it.SeekToFirst()
+		for ; it.Valid(); it.Next() {
 
-		var s *pb.SessionInfo = new(pb.SessionInfo)
-		var buf []byte
-		buf = make([]byte, it.Value().Size())
-		copy(buf, it.Value().Data())
-		err = proto.Unmarshal(buf, s)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to unmarshal proto from DB")
-			return err, nil
+			var s *pb.SessionInfo = new(pb.SessionInfo)
+			var buf []byte
+			buf = make([]byte, it.Value().Size())
+			copy(buf, it.Value().Data())
+			err = proto.Unmarshal(buf, s)
+			if err != nil {
+				log.WithFields(log.Fields{"error": err}).Error("Failed" +
+					" to unmarshal proto from DB")
+				return err, nil
+			}
+
+			log.WithFields(log.Fields{"key": it.Key().Data(),
+				"session": s}).Debug("Iterating sessions from DB")
+
+			sList = append(sList, s)
 		}
 
-		log.WithFields(log.Fields{"key": it.Key().Data(),
-			"session": s}).Debug("Iterating sessions from DB")
-
-		sList = append(sList, s)
-	}
-
-	if err := it.Err(); err != nil {
-		return err, sList
-	}
+		if err := it.Err(); err != nil {
+			return err, sList
+		}
+	*/
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")

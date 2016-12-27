@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "server/rpcdef"
+	pb "server/rpcdefsql"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
@@ -15,23 +15,25 @@ func getUserFromDB(uKey string) (error, *pb.UserInfo) {
 
 	var u *pb.UserInfo = new(pb.UserInfo)
 
-	v, err := rdb.GetCF(ro, usersCF, []byte(uKey))
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to get user from DB")
-		return err, u
-	}
-	log.WithFields(log.Fields{"value": v}).Debug("Read" +
-		"user value from DB")
+	/*
+		v, err := rdb.GetCF(ro, usersCF, []byte(uKey))
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get user from DB")
+			return err, u
+		}
+		log.WithFields(log.Fields{"value": v}).Debug("Read" +
+			"user value from DB")
 
-	if v.Size() > 0 {
-		buf = make([]byte, v.Size())
-		copy(buf, v.Data())
-		v.Free()
-	} else {
-		log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
-			"user from DB")
-	}
+		if v.Size() > 0 {
+			buf = make([]byte, v.Size())
+			copy(buf, v.Data())
+			v.Free()
+		} else {
+			log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
+				"user from DB")
+		}
+	*/
 	err = proto.Unmarshal(buf, u)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -129,19 +131,22 @@ func postUserDB(in pb.UserInfo) (err error, uKey string) {
 	log.WithFields(log.Fields{"userInfo": in}).Debug("Adding to DB")
 	uKey = GetRandomID()
 
-	byteBuf, err := proto.Marshal(&in)
+	//var err error
+	//byteBuf, err := proto.Marshal(&in)
 	if err != nil {
 		log.WithFields(log.Fields{"userInfo": in, "error": err}).
 			Error("Failed to convert to binary")
 		return err, ""
 	}
 
-	err = rdb.PutCF(wo, usersCF, []byte(uKey), byteBuf)
-	if err != nil {
-		log.WithFields(log.Fields{"userInfo": in, "error": err}).
-			Error("Failed to write to DB")
-		return err, ""
-	}
+	/*
+		err = rdb.PutCF(wo, usersCF, []byte(uKey), byteBuf)
+		if err != nil {
+			log.WithFields(log.Fields{"userInfo": in, "error": err}).
+				Error("Failed to write to DB")
+			return err, ""
+		}
+	*/
 	log.WithFields(log.Fields{"userInfo": in, "key": uKey}).
 		Debug("Added to DB")
 	return nil, uKey

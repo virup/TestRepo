@@ -55,10 +55,13 @@ message SessionInfo {
   //Timestamp sessionTime = 1;
   string sessionTime = 1;
   string sessionDesc = 2;
-  string instructorID = 3;
-  repeated FitnessCategory sessionType = 4;
+  int32 instructorID = 3;
+  //repeated FitnessCategory sessionType = 4;
+   FitnessCategory sessionType = 4;
   SessionDifficulty difficultyLevel = 5;
-  repeated SessionTag tagList = 6;
+  //repeated SessionTag tagList = 6;
+   SessionTag tagList = 6;
+   int32 ID = 7;
 
   // Maintained by server
   uint64 sessionUsersEnrolled = 101;
@@ -130,20 +133,22 @@ message InstructorInfo {
    
    string desc = 8;
    string certification = 9;
-   repeated FitnessCategory fitnessSpecialties = 10;
+   //repeated FitnessCategory fitnessSpecialties = 10;
+// XXX sqlite doesn't support array
+   FitnessCategory fitnessSpecialties = 10;
    string lastName = 11;
    string city = 12;
    string country = 13;
+   int32 ID = 14;
  
-
    // Internal to server
-   string ReviewInfoID = 101;
-   string BankInfoID = 102;
+   string reviewInfoID = 101;
+   string bankInfoID = 102;
 }
 
 message Device {
-   string DeviceID = 1;
-   string DeviceDesc = 2;
+   string deviceID = 1;
+   string deviceDesc = 2;
 }
 
 message UserInfo {
@@ -156,13 +161,14 @@ message UserInfo {
    string userName = 7;
    string passWord = 8;
    string lastName = 9;
+   int32 ID = 10;
 
    string CCInfoID = 50;
  
 
    // Internal to server
-   repeated string friendsIDs = 101;
-   repeated string followIDs =102; 
+   //repeated string friendsIDs = 101;
+   //repeated string followIDs =102; 
    // Pointer to event activity in DB
    string RecordActivityID = 103;
 }
@@ -200,11 +206,11 @@ message EnrollInstructorReq {
 }
 
 message EnrollInstructorReply {
-   string instructorKey = 1;
+   int32 instructorKey = 1;
 }
 
 message GetInstructorReq {
-   string instructorKey = 1;
+   int32 instructorKey = 1;
 }
 
 message GetInstructorReply {

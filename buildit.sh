@@ -60,12 +60,12 @@ build_server() {
 # Build everything. At a later date we could give command line options to
 # build only specific things
 main() {
- build_protoc
+ #build_protoc
  build_protocsql
- build_server
+ #build_server
  build_serversql
- build_grpctest
- build_clienttest
+ #build_grpctest
+ #build_clienttest
 }
 
 # Get the parent directory of this script and store all the binaries in the

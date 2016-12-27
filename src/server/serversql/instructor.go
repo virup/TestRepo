@@ -1,43 +1,32 @@
 package main
 
 import (
-	pb "server/rpcdef"
+	pb "server/rpcdefsql"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
 
 	"golang.org/x/net/context"
 )
 
+var lastInsID int32 = 1
+
+func getInstructorID() int32 {
+
+	ret := lastInsID
+	lastInsID++
+	return ret
+}
+
 // Given a instructKey, return the UserInfo
-func GetInstructorFromDB(iKey string) (error, *pb.InstructorInfo) {
+func GetInstructorFromDB(iKey int32) (error, *pb.InstructorInfo) {
 	var err error
-	var buf []byte
 
 	var i *pb.InstructorInfo = new(pb.InstructorInfo)
-
-	v, err := rdb.GetCF(ro, instructorsCF, []byte(iKey))
+	err = InsTable.First(i, iKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructor from DB")
 		return err, i
-	}
-	log.WithFields(log.Fields{"value": v}).Debug("Read" +
-		"instructor value from DB")
-
-	if v.Size() > 0 {
-		buf = make([]byte, v.Size())
-		copy(buf, v.Data())
-		v.Free()
-	} else {
-		log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
-			"instructor from DB")
-	}
-	err = proto.Unmarshal(buf, i)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to unmarshal proto from DB")
-		return err, nil
 	}
 	log.WithFields(log.Fields{"instructorInfo": i, "key": iKey}).
 		Debug("Read from DB")
@@ -91,25 +80,18 @@ func (s *server) EnrollInstructor(ctx context.Context,
 	return &resp, nil
 }
 
-func postInstructorDB(in pb.InstructorInfo) (err error, iKey string) {
+func postInstructorDB(in pb.InstructorInfo) (err error, iKey int32) {
 
 	log.WithFields(log.Fields{"instructorInfo": in}).Debug("Adding to DB")
-	iKey = GetRandomID()
-
-	byteBuf, err := proto.Marshal(&in)
-	if err != nil {
-		log.WithFields(log.Fields{"instructorInfo": in, "error": err}).
-			Error("Failed to convert to binary")
-		return err, ""
-	}
-
-	err = rdb.PutCF(wo, instructorsCF, []byte(iKey), byteBuf)
+	iKey = getInstructorID()
+	in.ID = iKey
+	err = InsTable.Create(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorInfo": in, "error": err}).
 			Error("Failed to write to DB")
-		return err, ""
+		return err, 0
 	}
-	log.WithFields(log.Fields{"instructorInfo": in, "key": iKey}).
+	log.WithFields(log.Fields{"instructorInfo": in}).
 		Debug("Added to DB")
 	return nil, iKey
 }

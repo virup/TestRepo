@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"net"
 	"os"
-	pb "server/rpcdef"
+	pb "server/rpcdefsql"
 
 	log "github.com/Sirupsen/logrus"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 const (
@@ -62,16 +66,41 @@ func initGprcServer() {
 
 }
 
-var dbname = "mydb"
+var db *gorm.DB
+var InsTable *gorm.DB
+var UserTable *gorm.DB
+var SessionTable *gorm.DB
 
 func initDB() error {
-	//rdb, err = gorocksdb.OpenDb(opts, RocksDBPath+dbname)
+	//db, _ := gorm.Open("sqlite3", "./gorm.db")
+	db, err := gorm.Open("sqlite3", "./gorm.db")
+	//db, err := gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
+
 	if err != nil {
-		log.Errorf("Opening of rocks DB '%s' failed with error '%v'",
-			dbname, err)
+		log.Errorf("Opening of DB failed with error '%v'",
+			err)
 		return err
 	}
-	log.Debug("Successfully opened  database", dbname)
+	err = db.DB().Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	InsTable = db.CreateTable(&pb.InstructorInfo{})
+	if InsTable == nil {
+		panic("Couldn't create ins table")
+	}
+	UserTable = db.CreateTable(&pb.UserInfo{})
+	if UserTable == nil {
+		panic("Couldn't create user table")
+	}
+
+	SessionTable = db.CreateTable(&pb.SessionInfo{})
+	if SessionTable == nil {
+		panic("Couldn't create session table")
+	}
+
+	log.Debug("Successfully opened  database and created tables")
 	return nil
 }
 
@@ -80,7 +109,7 @@ func main() {
 	f, err := os.OpenFile("serversql.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("error opening file: %v", err)
-		return err
+		return
 	}
 
 	// don't forget to close it
@@ -104,4 +133,5 @@ func main() {
 	}
 	//err = pay.InitPayPlan()
 	initGprcServer()
+	db.Close()
 }
