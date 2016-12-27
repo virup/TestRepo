@@ -51,11 +51,6 @@ message ServerSvcStatusReply {
   string message = 1;
 }
 
-message SessionUsers {
-  string sessionID = 1;
-  string userID = 2;
-}
-
 message SessionInfo {
   //Timestamp sessionTime = 1;
   string sessionTime = 1;
@@ -64,7 +59,9 @@ message SessionInfo {
   repeated FitnessCategory sessionType = 4;
   SessionDifficulty difficultyLevel = 5;
   repeated SessionTag tagList = 6;
-  string sessionID = 7;
+
+  // Maintained by server
+  uint64 sessionUsersEnrolled = 101;
 }
 
 enum SessionDifficulty {
@@ -96,42 +93,30 @@ enum FitnessCategory {
     ZUMBA = 203;
 }
 
-message Review {
-   float rating = 1;
-   string review = 2;
-   string reviewID = 3;
+message ReviewInfo {
+   message Review {
+      float rating = 1;
+      string review = 2;
+   } 
+   repeated Review reviewList = 1;
 }
 
-message InstructorReview {
-    string instructorID = 1;
-    string reviewID = 2;
-}
-
-message CreditCard {
+message CCInfo {
+   message CreditCard {
      string Name = 1;
      string Number = 2;
      string ExpiryMonth = 3;
      string ExpiryYear = 4;
      string CCV = 5;
      bool isDefault = 6;
-     string creditCardID = 7;
+   }
+   repeated CreditCard ccList = 1; 
 }
 
-message UserCreditCard {
-   string userID = 1;
-   string creditCardID = 2;
-}
-
-message BankAcct {
-     string routingNum = 1;
-     string acctNum = 2;
-     string bankName = 3;
-     string bankAcctID = 4;
-}
-
-message InstructorBankAcct {
-    string instructorID = 1;
-    string bankAcctID = 2;
+message BankInfo {
+     string RoutingNum = 1;
+     string AcctNum = 2;
+     string BankName = 3;
 }
 
 message InstructorInfo {
@@ -149,27 +134,16 @@ message InstructorInfo {
    string lastName = 11;
    string city = 12;
    string country = 13;
-   string instructorID = 14;
-}
+ 
 
-enum DeviceType {
-
-    ANDROID_PHONE = 0;
-    ANDROID_TABLET = 1;
-
-    IPHONE = 2;
-    IPAD = 3;
+   // Internal to server
+   string ReviewInfoID = 101;
+   string BankInfoID = 102;
 }
 
 message Device {
-   string deviceID = 1;
-   string deviceDesc = 2;
-   DeviceType deviceType = 3;
-}
-
-message UserDevice {
-   string userID = 1;
-   string deviceID = 2;
+   string DeviceID = 1;
+   string DeviceDesc = 2;
 }
 
 message UserInfo {
@@ -182,20 +156,15 @@ message UserInfo {
    string userName = 7;
    string passWord = 8;
    string lastName = 9;
-   string userID = 10;
 
+   string CCInfoID = 50;
+ 
+
+   // Internal to server
+   repeated string friendsIDs = 101;
+   repeated string followIDs =102; 
    // Pointer to event activity in DB
    string RecordActivityID = 103;
-}
-
-message UserFriend {
-	string userID = 1;
-	string friendID = 2;
-}
-
-message UserFollow {
-   string userID = 1;
-   string followID = 2;
 }
 
 message GetSessionsReq {
@@ -257,8 +226,6 @@ message GetUserReq {
 
 message GetUserReply {
    UserInfo info = 1;
-   repeated UserInfo friendInfoList = 2;
-   repeated UserInfo followList = 3;
 }
 
 message EnrollUserReq {
