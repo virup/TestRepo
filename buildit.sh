@@ -18,6 +18,16 @@ build_grpctest() {
  go_back
 }
 
+build_clienttest() {
+ echo "Cleaning up old clientest..."
+ rm -f $OUTDIR/clientest
+ echo "Building clientest..."
+ cd src/test/clientest
+ go build -gcflags "-N -l" -o $OUTDIR/clientest
+ go_back
+}
+
+
 
 build_server() {
  echo "Cleaning up old server..."
@@ -35,6 +45,7 @@ main() {
  build_protoc
  build_server
  build_grpctest
+ build_clienttest
 }
 
 # Get the parent directory of this script and store all the binaries in the

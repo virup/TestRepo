@@ -15,10 +15,11 @@ import (
 
 var client pb.ServerSvcClient
 
+var numIter = 16
+
 func testInstructors() error {
 
-	var numIns = 4
-	for i := 0; i < numIns; i++ {
+	for i := 0; i < numIter; i++ {
 
 		var req pb.EnrollInstructorReq
 		var ireq pb.GetInstructorReq
@@ -52,8 +53,7 @@ func testInstructors() error {
 
 func testUsers() error {
 
-	var numUsers = 4
-	for i := 0; i < numUsers; i++ {
+	for i := 0; i < numIter; i++ {
 
 		var req pb.EnrollUserReq
 		var ureq pb.GetUserReq
@@ -84,43 +84,9 @@ func testUsers() error {
 	return nil
 }
 
-func testSessions() error {
+func getData() error {
 
 	var allreq pb.GetSessionsReq
-	var numSessions = 16
-	for i := 0; i < numSessions; i++ {
-
-		var req pb.PostSessionReq
-		var greq pb.GetSessionReq
-
-		err, s := util.GetNewSession()
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to get new session")
-			return err
-		}
-		req.Info = &s
-
-		log.WithFields(log.Fields{"session req": req}).Debug("Posting session")
-		r, err := client.PostSession(context.Background(),
-			&req)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to post session")
-			return err
-		}
-		log.WithFields(log.Fields{"session response": r}).Debug("Posted session with key")
-
-		greq.SessionKey = r.SessionKey
-		gr, err := client.GetSession(context.Background(), &greq)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to get all sessions")
-			return err
-		}
-		log.WithFields(log.Fields{"session": gr.Info}).
-			Debug("Get session success")
-	}
 
 	gr, err := client.GetSessions(context.Background(), &allreq)
 	if err != nil {
@@ -131,13 +97,33 @@ func testSessions() error {
 	log.WithFields(log.Fields{"allsessionResponse": gr}).
 		Debug("Get all session success")
 
+	//var alluser pb.GetUsersReq
+	//ur, err := client.GetUsers(context.Background(), &alluser)
+	//if err != nil {
+	//	log.WithFields(log.Fields{"error": err}).Error("Failed" +
+	//		" to get all users")
+	//	return err
+	//}
+	//log.WithFields(log.Fields{"allusersResponse": ur}).
+	//	Debug("Get all user success")
+
+	//var allins pb.GetInstructorsReq
+	//ir, err := client.GetInstructors(context.Background(), &allins)
+	//if err != nil {
+	//	log.WithFields(log.Fields{"error": err}).Error("Failed" +
+	//		" to get all instructors")
+	//	return err
+	//}
+	//log.WithFields(log.Fields{"allinsResponse": ir}).
+	//	Debug("Get all instructor success")
+
 	return nil
 }
 
 func main() {
 
 	// open a file
-	f, err := os.OpenFile("test.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	f, err := os.OpenFile("client.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("error opening file: %v", err)
 	}
@@ -171,24 +157,10 @@ func main() {
 	}
 	log.Printf("Greeting: %s", r.Message)
 
-	//err = testUsers()
-	//if err != nil {
-	//	log.Error("Users test failed")
-	//	return
-	//}
-	//return
-
-	log.Printf("\n\n")
-	err = testInstructors()
-	if err != nil {
-		log.Error("Instructor test failed")
-		return
-	}
-
-	log.Printf("\n\n")
-	err = testSessions()
+	err = getData()
 	if err != nil {
 		log.Error("Session test failed")
 		return
 	}
+	return
 }
