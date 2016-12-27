@@ -64,14 +64,14 @@ func initGprcServer() {
 
 var dbname = "mydb"
 
-func initSqlDB() error {
+func initDB() error {
 	//rdb, err = gorocksdb.OpenDb(opts, RocksDBPath+dbname)
 	if err != nil {
 		log.Errorf("Opening of rocks DB '%s' failed with error '%v'",
 			dbname, err)
 		return err
 	}
-	log.Debug("Successfully opened RocksDB's database", dbname)
+	log.Debug("Successfully opened  database", dbname)
 	return nil
 }
 
@@ -80,6 +80,7 @@ func main() {
 	f, err := os.OpenFile("serversql.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("error opening file: %v", err)
+		return err
 	}
 
 	// don't forget to close it
@@ -95,10 +96,10 @@ func main() {
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
 
-	err = initRocksDB()
+	err = initDB()
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to init rocks DB")
+			" to init DB")
 		return
 	}
 	//err = pay.InitPayPlan()
