@@ -1,0 +1,284 @@
+syntax = "proto3";
+
+package serversvc;
+
+// XXX Couldn't compile for now.
+//import "google/protobuf/any.proto";
+//import "google/protobuf/timestamp.proto";
+
+// XXX Only the APIs mentioned as DONE work for now.
+service ServerSvc {
+  // Is it running?
+  // DONE
+  rpc GetStatus (ServerSvcStatusReq) returns (ServerSvcStatusReply) {
+  }
+
+  // Session handling
+  // DONE
+  rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
+  // DONE
+  rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
+  // DONE
+  rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
+  
+  // Instructor handling
+  // DONE
+  rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
+  // DONE
+  rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
+  rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
+
+  // User handling
+  // DONE
+  rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
+  // DONE
+  rpc GetUser(GetUserReq) returns (GetUserReply) {}
+  rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
+
+  rpc Login(LoginReq) returns (LoginReply) {}
+
+  // Used for analytics
+  // Client will record much of the user interaction with the app
+  rpc RecordEvent(RecordEventReq) returns (RecordEventReply) {}
+}
+
+message ServerSvcStatusReq {
+  string name = 1;
+}
+
+message ServerSvcStatusReply {
+  //ErrorData errData = 1;
+  string message = 1;
+}
+
+message SessionInfo {
+  //Timestamp sessionTime = 1;
+  string sessionTime = 1;
+  string sessionDesc = 2;
+  string instructorID = 3;
+  repeated FitnessCategory sessionType = 4;
+  SessionDifficulty difficultyLevel = 5;
+  repeated SessionTag tagList = 6;
+
+  // Maintained by server
+  uint64 sessionUsersEnrolled = 101;
+}
+
+enum SessionDifficulty {
+    EASY = 0;
+    MODERATE = 1;
+    DIFFICULT = 2;
+}
+
+// General attributes used to describe a session.
+enum SessionTag {
+    FAST = 0;
+    RELAXING = 1;
+    CALMING = 2;
+    AEROBIC = 3;
+    LATIN_MUSIC = 4;
+}
+
+enum FitnessCategory {
+    YOGA = 0;
+    HATHA_YOGA = 1;
+    KUNDALINI_YOGA = 2;
+    FAST_YOGA = 3;
+
+    MEDITATION = 101;
+    TM_MEDITATION = 102;
+
+    DANCE = 201;
+    HIP_HOP = 202;
+    ZUMBA = 203;
+}
+
+message ReviewInfo {
+   message Review {
+      float rating = 1;
+      string review = 2;
+   } 
+   repeated Review reviewList = 1;
+}
+
+message CCInfo {
+   message CreditCard {
+     string Name = 1;
+     string Number = 2;
+     string ExpiryMonth = 3;
+     string ExpiryYear = 4;
+     string CCV = 5;
+     bool isDefault = 6;
+   }
+   repeated CreditCard ccList = 1; 
+}
+
+message BankInfo {
+     string RoutingNum = 1;
+     string AcctNum = 2;
+     string BankName = 3;
+}
+
+message InstructorInfo {
+   string firstName = 1;
+   string age = 2;
+   string sex = 3;
+   string location = 4;
+   string email = 5;
+   string userName = 6; // optional
+   string passWord = 7;
+   
+   string desc = 8;
+   string certification = 9;
+   repeated FitnessCategory fitnessSpecialties = 10;
+   string lastName = 11;
+   string city = 12;
+   string country = 13;
+ 
+
+   // Internal to server
+   string ReviewInfoID = 101;
+   string BankInfoID = 102;
+}
+
+message Device {
+   string DeviceID = 1;
+   string DeviceDesc = 2;
+}
+
+message UserInfo {
+   string firstName = 1;
+   string age = 2;
+   string sex = 3;
+   string city = 4;
+   string country = 5;
+   string email = 6;
+   string userName = 7;
+   string passWord = 8;
+   string lastName = 9;
+
+   string CCInfoID = 50;
+ 
+
+   // Internal to server
+   repeated string friendsIDs = 101;
+   repeated string followIDs =102; 
+   // Pointer to event activity in DB
+   string RecordActivityID = 103;
+}
+
+message GetSessionsReq {
+  // If specified, only show sessions of this type.
+  string sessionType = 1;
+  // XXX Search by other attributes later
+}
+
+message GetSessionsReply {
+  repeated SessionInfo sessionList = 1;
+  repeated InstructorInfo instructorList = 2;
+}
+
+message GetSessionReply {
+  SessionInfo info = 1;
+}
+
+message GetSessionReq {
+   string sessionKey = 1;
+}
+
+
+message PostSessionReq {
+  SessionInfo info = 1;
+}
+
+message PostSessionReply {
+   string sessionKey = 1;
+}
+
+message EnrollInstructorReq {
+  InstructorInfo instructor = 1;
+}
+
+message EnrollInstructorReply {
+   string instructorKey = 1;
+}
+
+message GetInstructorReq {
+   string instructorKey = 1;
+}
+
+message GetInstructorReply {
+   InstructorInfo info = 1;
+}
+
+message GetInstructorsReq {
+  // If specified, only show sessions of this type.
+  string sessionType = 1;
+  // XXX Search by other attributes later
+}
+
+message GetInstructorsReply {
+}
+
+message GetUserReq {
+   string userKey = 1;
+}
+
+message GetUserReply {
+   UserInfo info = 1;
+}
+
+message EnrollUserReq {
+  UserInfo user = 1;
+}
+
+message EnrollUserReply {
+   string userKey = 1;
+}
+
+message GetUsersReq {
+
+}
+
+message GetUsersReply {
+   repeated UserInfo userList = 1;
+}
+
+enum EventType {
+    LOGIN_EVENT = 0;
+    LOGOUT_EVENT = 1;
+    DEVICE_USED = 2;
+
+    JOIN_SESSION = 101;
+    FOLLOW_INSTRUCTOR = 102;
+
+    LIKE_PRESS_WATCH = 201;
+}
+
+message Event {
+   EventType eventType = 1;
+   //Duration eventDuration = 2;
+   //google.protobuf.Timestamp eventTS = 3;
+   string eventDesc = 4;
+}
+ 
+message RecordActivity {
+  repeated Event eventList = 1;
+}
+
+message RecordEventReq {
+   Event event = 1;
+}
+
+message RecordEventReply {
+}
+
+message LoginReq {
+   string email = 1;
+   string userName = 2; // Optional
+   string passWord = 3;
+}
+
+message LoginReply {
+   string userOrInstructorID = 2;
+}

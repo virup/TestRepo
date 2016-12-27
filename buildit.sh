@@ -9,6 +9,14 @@ build_protoc() {
  go_back
 }
 
+build_protocsql() {
+ echo "Building proto sql files..."
+ cd $SCRIPTDIR/bin
+ protoc -I$SCRIPTDIR/src/server/rpcdefsql/ --go_out=plugins=grpc:$SCRIPTDIR/src/server/rpcdefsql/ $SCRIPTDIR/src/server/rpcdefsql/serverrpc.proto
+ go_back
+}
+
+
 build_grpctest() {
  echo "Cleaning up old grpctest..."
  rm -f $OUTDIR/grpctest
@@ -28,6 +36,16 @@ build_clienttest() {
 }
 
 
+build_serversql() {
+ echo "Cleaning up old sql server..."
+ rm -f $OUTDIR/serversql
+ cd src/server/serversql
+
+ echo "Building server sql..."
+ go build -gcflags "-N -l" -o $OUTDIR/serversql
+ go_back
+}
+
 
 build_server() {
  echo "Cleaning up old server..."
@@ -43,7 +61,9 @@ build_server() {
 # build only specific things
 main() {
  build_protoc
+ build_protocsql
  build_server
+ build_serversql
  build_grpctest
  build_clienttest
 }
