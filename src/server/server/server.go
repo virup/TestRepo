@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	port      = ":8080"
+	port      = ":8099"
 	soulFitDB = "SoulFitDB"
 )
 

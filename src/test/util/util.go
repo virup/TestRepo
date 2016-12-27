@@ -89,7 +89,7 @@ func GetUrl() string {
 		fmt.Printf("IP not set")
 		os.Exit(-1)
 	}
-	return serv + ":8080"
+	return serv + ":8099"
 }
 func GetHttpUrl() string {
 	serv := os.Getenv("SERVERIP")
