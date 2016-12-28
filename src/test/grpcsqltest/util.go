@@ -37,7 +37,7 @@ func GetNewSession() (error, pb.SessionInfo) {
 	t := time.Now()
 	si.SessionTime = t.String()
 	si.SessionType = pb.FitnessCategory_YOGA
-	err, si.InstructorID = getEnrolledInstructorID()
+	err, si.InstructorInfoID = getEnrolledInstructorID()
 	if err != nil {
 		return err, si
 	}
