@@ -34,6 +34,7 @@ service ServerSvc {
   rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
   // DONE
   rpc GetUser(GetUserReq) returns (GetUserReply) {}
+  // DONE
   rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
 
   rpc Login(LoginReq) returns (LoginReply) {}
@@ -177,7 +178,8 @@ message UserInfo {
 
 message GetSessionsReq {
   // If specified, only show sessions of this type.
-  string sessionType = 1;
+  FitnessCategory sessionType = 1;
+  int32 instructorID = 1;
   // XXX Search by other attributes later
 }
 
