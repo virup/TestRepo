@@ -16,7 +16,7 @@ var client pb.ServerSvcClient
 
 func testInstructors() error {
 
-	var numIns = 4
+	var numIns = 8
 	var allreq pb.GetInstructorsReq
 	for i := 0; i < numIns; i++ {
 
@@ -108,7 +108,7 @@ func testUsers() error {
 func testSessions() error {
 
 	var allreq pb.GetSessionsReq
-	var numSessions = 16
+	var numSessions = 4
 	for i := 0; i < numSessions; i++ {
 
 		var req pb.PostSessionReq

@@ -32,6 +32,54 @@ func getSessionFromDB(sKey int32) (error, *pb.SessionInfo) {
 	return err, s
 }
 
+func (s *server) GetSessionsForInstructor(ctx context.Context,
+	in *pb.GetSessionsForInstructorReq) (*pb.GetSessionsForInstructorReply,
+	error) {
+
+	var resp pb.GetSessionsForInstructorReply
+	var err error
+	var sList []pb.SessionInfo
+
+	err = SessionTable.
+		Where(pb.SessionInfo{InstructorInfoID: in.InstructorInfoID}).
+		Find(&sList).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get sessions from DB")
+		return &resp, err
+	}
+	for i, _ := range sList {
+		resp.SessionList = append(resp.SessionList, &sList[i])
+	}
+
+	log.WithFields(log.Fields{"sessionFitList": resp.SessionList}).Debug("Returning instructor sessionlist success")
+	return &resp, err
+}
+
+func (s *server) GetSessionsForFitnessType(ctx context.Context,
+	in *pb.GetSessionsForFitnessReq) (*pb.GetSessionsForFitnessReply,
+	error) {
+
+	var resp pb.GetSessionsForFitnessReply
+	var err error
+	var sList []pb.SessionInfo
+
+	err = SessionTable.
+		Where(pb.SessionInfo{SessionType: in.FitCategory}).
+		Find(&sList).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get sessions from DB")
+		return &resp, err
+	}
+	for i, _ := range sList {
+		resp.SessionList = append(resp.SessionList, &sList[i])
+	}
+
+	log.WithFields(log.Fields{"sessionFitList": resp.SessionList}).Debug("Returning fitness sessionlist success")
+	return &resp, err
+}
+
 func (s *server) GetSessions(ctx context.Context,
 	in *pb.GetSessionsReq) (*pb.GetSessionsReply, error) {
 
@@ -47,18 +95,30 @@ func (s *server) GetSessions(ctx context.Context,
 	}
 
 	log.Printf("\n")
+	insKeys := make(map[int32]int32)
 	for i, _ := range sList {
 		resp.SessionList = append(resp.SessionList, &sList[i])
+		insID := sList[i].InstructorInfoID
+		insKeys[insID] = 0
 	}
 
-	for _, session := range resp.SessionList {
-		err, insInfo := GetInstructorFromDB(session.InstructorID)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to get instructor from session from DB")
-			return &resp, err
-		}
-		resp.InstructorList = append(resp.InstructorList, insInfo)
+	// Get non-duplicate instructors who are offering sessions
+	var insKeySlice []int32
+	for k, _ := range insKeys {
+		insKeySlice = append(insKeySlice, k)
+	}
+
+	log.WithFields(log.Fields{"insKeySlice": insKeySlice}).Debug("Query sessions with ins slice")
+
+	var iList []pb.InstructorInfo
+	err = InsTable.Where(insKeySlice).Find(&iList).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get instructor rows from DB")
+		return &resp, err
+	}
+	for i, _ := range iList {
+		resp.InstructorList = append(resp.InstructorList, &iList[i])
 	}
 
 	log.WithFields(log.Fields{"sessionList": resp.SessionList}).Debug("Returning sessionlist success")

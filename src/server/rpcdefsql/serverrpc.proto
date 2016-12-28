@@ -14,10 +14,15 @@ service ServerSvc {
   }
 
   // Session handling
-  // DONE
-  rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
+
   // DONE
   rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
+  // DONE
+  rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
+  rpc GetSessionsForInstructor(GetSessionsForInstructorReq) returns
+     (GetSessionsForInstructorReply) {}
+  rpc GetSessionsForFitnessType (GetSessionsForFitnessReq) returns
+     (GetSessionsForFitnessReply) {}
   // DONE
   rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
   
@@ -57,7 +62,7 @@ message SessionInfo {
   //Timestamp sessionTime = 1;
   string sessionTime = 1;
   string sessionDesc = 2;
-  int32 instructorID = 3;
+  int32 instructorInfoID = 3;
   //repeated FitnessCategory sessionType = 4;
    FitnessCategory sessionType = 4;
   SessionDifficulty difficultyLevel = 5;
@@ -177,15 +182,27 @@ message UserInfo {
 }
 
 message GetSessionsReq {
-  // If specified, only show sessions of this type.
-  FitnessCategory sessionType = 1;
-  int32 instructorID = 1;
-  // XXX Search by other attributes later
 }
 
 message GetSessionsReply {
   repeated SessionInfo sessionList = 1;
   repeated InstructorInfo instructorList = 2;
+}
+
+message GetSessionsForInstructorReq {
+  int32 instructorInfoID = 1;
+}
+
+message GetSessionsForInstructorReply {
+  repeated SessionInfo sessionList = 1;
+}
+
+message GetSessionsForFitnessReq {
+  FitnessCategory fitCategory = 1;
+}
+
+message GetSessionsForFitnessReply {
+  repeated SessionInfo sessionList = 1;
 }
 
 message GetSessionReply {
