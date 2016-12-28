@@ -22,7 +22,7 @@ func RegisterEnrolledInstructorID(instructorID int32) {
 	enrolledInstructorsID = append(enrolledInstructorsID, instructorID)
 }
 
-func GetEnrolledInstructorID() (error, int32) {
+func getEnrolledInstructorID() (error, int32) {
 	numIns := len(enrolledInstructorsID)
 	if numIns == 0 {
 		return errors.New("Instructors not registered"), 0
@@ -37,7 +37,7 @@ func GetNewSession() (error, pb.SessionInfo) {
 	t := time.Now()
 	si.SessionTime = t.String()
 	si.SessionType = pb.FitnessCategory_YOGA
-	err, si.InstructorID = GetEnrolledInstructorID()
+	err, si.InstructorID = getEnrolledInstructorID()
 	if err != nil {
 		return err, si
 	}

@@ -5,41 +5,27 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 )
 
+var lastSessionID int32 = 1
+
+func getSessionID() int32 {
+
+	ret := lastSessionID
+	lastSessionID++
+	return ret
+}
+
 // Given a sessionKey, return the SessionInfo
-func getSessionFromDB(sKey string) (error, *pb.SessionInfo) {
+func getSessionFromDB(sKey int32) (error, *pb.SessionInfo) {
 	var err error
-	var buf []byte
-
 	var s *pb.SessionInfo = new(pb.SessionInfo)
-
-	/*
-		v, err := rdb.GetCF(ro, sessionsCF, []byte(sKey))
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to get session from DB")
-			return err, s
-		}
-		log.WithFields(log.Fields{"value": v}).Debug("Read" +
-			"session value from DB")
-
-		if v.Size() > 0 {
-			buf = make([]byte, v.Size())
-			copy(buf, v.Data())
-			v.Free()
-		} else {
-			log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
-				"session from DB")
-		}
-	*/
-	err = proto.Unmarshal(buf, s)
+	err = SessionTable.First(s, sKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to unmarshal proto from DB")
-		return err, nil
+			" to get session from DB")
+		return err, s
 	}
 	log.WithFields(log.Fields{"sessionInfo": s, "key": sKey}).
 		Debug("Read from DB")
@@ -51,14 +37,21 @@ func (s *server) GetSessions(ctx context.Context,
 
 	var resp pb.GetSessionsReply
 	var err error
-	err, resp.SessionList = getAllSessionFromDB()
+	var sList []pb.SessionInfo
+
+	err = SessionTable.Find(&sList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get sessions from DB")
 		return &resp, err
 	}
-	for _, session := range resp.SessionList {
 
+	log.Printf("\n")
+	for i, _ := range sList {
+		resp.SessionList = append(resp.SessionList, &sList[i])
+	}
+
+	for _, session := range resp.SessionList {
 		err, insInfo := GetInstructorFromDB(session.InstructorID)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -90,28 +83,20 @@ func (s *server) GetSession(ctx context.Context,
 	return &resp, nil
 }
 
-func postSessionDB(in pb.SessionInfo) (err error, sessionKey string) {
+func postSessionDB(in pb.SessionInfo) (err error, sKey int32) {
 
 	log.WithFields(log.Fields{"sessionInfo": in}).Debug("Adding to DB")
-	sessionKey = GetRandomID()
-
-	//var err error
-	//byteBuf, err := proto.Marshal(&in)
-	if err != nil {
-		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
-			Error("Failed to convert to binary")
-		return err, ""
-	}
-
-	//err = rdb.PutCF(wo, sessionsCF, []byte(sessionKey), byteBuf)
+	sKey = getSessionID()
+	in.ID = sKey
+	err = SessionTable.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
 			Error("Failed to write to DB")
-		return err, ""
+		return err, 0
 	}
-	log.WithFields(log.Fields{"sessionInfo": in, "key": sessionKey}).
+	log.WithFields(log.Fields{"sessionInfo": in, "key": sKey}).
 		Debug("Added to DB")
-	return nil, sessionKey
+	return nil, sKey
 }
 
 func (ser *server) PostSession(ctx context.Context,
@@ -131,17 +116,4 @@ func (ser *server) PostSession(ctx context.Context,
 	log.WithFields(log.Fields{"session": in.Info}).
 		Debug("Post session succeeded")
 	return &resp, nil
-}
-
-func getAllSessionFromDB() (error, []*pb.SessionInfo) {
-	var sList []*pb.SessionInfo
-	var err error
-
-	log.Debug("Reading all sessions from DB")
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to get session from DB")
-		return err, nil
-	}
-	return err, sList
 }

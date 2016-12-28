@@ -204,7 +204,6 @@ func main() {
 		log.Error("Instructor test failed")
 		return
 	}
-	return
 
 	log.Printf("\n\n")
 	err = testSessions()

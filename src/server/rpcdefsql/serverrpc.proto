@@ -191,7 +191,7 @@ message GetSessionReply {
 }
 
 message GetSessionReq {
-   string sessionKey = 1;
+   int32 sessionKey = 1;
 }
 
 
@@ -200,7 +200,7 @@ message PostSessionReq {
 }
 
 message PostSessionReply {
-   string sessionKey = 1;
+   int32 sessionKey = 1;
 }
 
 message EnrollInstructorReq {
