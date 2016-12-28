@@ -8,6 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	pb "server/rpcdef"
+	//pb "server/rpcdefsql"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -15,11 +16,10 @@ import (
 
 var client pb.ServerSvcClient
 
-var numIter = 16
-
 func testInstructors() error {
 
-	for i := 0; i < numIter; i++ {
+	var numIns = 4
+	for i := 0; i < numIns; i++ {
 
 		var req pb.EnrollInstructorReq
 		var ireq pb.GetInstructorReq
@@ -53,7 +53,8 @@ func testInstructors() error {
 
 func testUsers() error {
 
-	for i := 0; i < numIter; i++ {
+	var numUsers = 4
+	for i := 0; i < numUsers; i++ {
 
 		var req pb.EnrollUserReq
 		var ureq pb.GetUserReq
@@ -87,7 +88,8 @@ func testUsers() error {
 func testSessions() error {
 
 	var allreq pb.GetSessionsReq
-	for i := 0; i < numIter; i++ {
+	var numSessions = 16
+	for i := 0; i < numSessions; i++ {
 
 		var req pb.PostSessionReq
 		var greq pb.GetSessionReq
@@ -170,23 +172,25 @@ func main() {
 	}
 	log.Printf("Greeting: %s", r.Message)
 
+	//err = testUsers()
+	//if err != nil {
+	//	log.Error("Users test failed")
+	//	return
+	//}
+	//return
+
+	log.Printf("\n\n")
 	err = testInstructors()
 	if err != nil {
 		log.Error("Instructor test failed")
 		return
 	}
+	return
 
+	log.Printf("\n\n")
 	err = testSessions()
 	if err != nil {
 		log.Error("Session test failed")
 		return
 	}
-	return
-
-	err = testUsers()
-	if err != nil {
-		log.Error("Users test failed")
-		return
-	}
-
 }

@@ -36,6 +36,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/PuerkitoBio/goquery",
+			"repository": "https://github.com/PuerkitoBio/goquery",
+			"vcs": "git",
+			"revision": "152b1a2c8f5d0340f658bb656032a39b94e52958",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/Sereal/Sereal/Go/sereal",
 			"repository": "https://github.com/Sereal/Sereal",
 			"vcs": "git",
@@ -57,6 +65,14 @@
 			"repository": "https://github.com/ajain1990/gorocksdb",
 			"vcs": "git",
 			"revision": "f31ce053e8b2c7b42a3a4ebf39b2599ea04b86d3",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/andybalholm/cascadia",
+			"repository": "https://github.com/andybalholm/cascadia",
+			"vcs": "git",
+			"revision": "349dd0209470eabd9514242c688c403c0926d266",
 			"branch": "master",
 			"notests": true
 		},
@@ -135,6 +151,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/denisenkom/go-mssqldb",
+			"repository": "https://github.com/denisenkom/go-mssqldb",
+			"vcs": "git",
+			"revision": "aa91b9def474faafb2406c8b562ae1e0e1f89ea4",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/dghubble/sling",
 			"repository": "https://github.com/dghubble/sling",
 			"vcs": "git",
@@ -207,6 +231,14 @@
 			"repository": "https://github.com/garyburd/redigo",
 			"vcs": "git",
 			"revision": "957473377c7765670d0b656e99eafe7b8669f213",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/go-sql-driver/mysql",
+			"repository": "https://github.com/go-sql-driver/mysql",
+			"vcs": "git",
+			"revision": "2e00b5cd70399450106cec6431c2e2ce3cae5034",
 			"branch": "master",
 			"notests": true
 		},
@@ -373,6 +405,30 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/jinzhu/gorm",
+			"repository": "https://github.com/jinzhu/gorm",
+			"vcs": "git",
+			"revision": "0fbff1e8f0821fc67ef793a9f403beda5ca372b8",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/jinzhu/inflection",
+			"repository": "https://github.com/jinzhu/inflection",
+			"vcs": "git",
+			"revision": "74387dc39a75e970e7a3ae6a3386b5bd2e5c5cff",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/lib/pq",
+			"repository": "https://github.com/lib/pq",
+			"vcs": "git",
+			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/mattn/go-colorable",
 			"repository": "https://github.com/mattn/go-colorable",
 			"vcs": "git",
@@ -385,6 +441,14 @@
 			"repository": "https://github.com/mattn/go-isatty",
 			"vcs": "git",
 			"revision": "30a891c33c7cde7b02a981314b4228ec99380cca",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/mattn/go-sqlite3",
+			"repository": "https://github.com/mattn/go-sqlite3",
+			"vcs": "git",
+			"revision": "2d44decb4941c9cdf72c22297b7890faf7da9bcb",
 			"branch": "master",
 			"notests": true
 		},
@@ -455,6 +519,15 @@
 			"notests": true
 		},
 		{
+			"importpath": "golang.org/x/crypto/md4",
+			"repository": "https://go.googlesource.com/crypto",
+			"vcs": "git",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"branch": "master",
+			"path": "/md4",
+			"notests": true
+		},
+		{
 			"importpath": "golang.org/x/crypto/ssh/terminal",
 			"repository": "https://go.googlesource.com/crypto",
 			"vcs": "git",
@@ -470,6 +543,15 @@
 			"revision": "4971afdc2f162e82d185353533d3cf16188a9f4e",
 			"branch": "master",
 			"path": "/context",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/html",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "45e771701b814666a7eb299e6c7a57d0b1799e91",
+			"branch": "master",
+			"path": "/html",
 			"notests": true
 		},
 		{
@@ -541,6 +623,78 @@
 			"revision": "30237cf4eefd639b184d1f2cb77a581ea0be8947",
 			"branch": "master",
 			"path": "/unix",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/encoding",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "encoding",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/internal/gen",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "internal/gen",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/internal/tag",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "internal/tag",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/internal/utf8internal",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "internal/utf8internal",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/language",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "language",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/runes",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "runes",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/transform",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "transform",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/text/unicode/cldr",
+			"repository": "https://go.googlesource.com/text",
+			"vcs": "git",
+			"revision": "a49bea13b776691cb1b49873e5d8df96ec74831a",
+			"branch": "master",
+			"path": "unicode/cldr",
 			"notests": true
 		},
 		{
