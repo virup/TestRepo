@@ -51,7 +51,6 @@ func (s *server) GetInstructors(ctx context.Context,
 	for i, _ := range iList {
 		resp.InstructorList = append(resp.InstructorList, &iList[i])
 	}
-	//resp.InstructorList = &iList
 	return &resp, nil
 }
 

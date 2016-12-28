@@ -230,7 +230,7 @@ message GetInstructorsReply {
 }
 
 message GetUserReq {
-   string userKey = 1;
+   int32 userKey = 1;
 }
 
 message GetUserReply {
@@ -242,7 +242,7 @@ message EnrollUserReq {
 }
 
 message EnrollUserReply {
-   string userKey = 1;
+   int32 userKey = 1;
 }
 
 message GetUsersReq {

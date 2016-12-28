@@ -1,44 +1,33 @@
 package main
 
 import (
+	"pay"
 	pb "server/rpcdefsql"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 )
 
-// Given a userKey, return the UserInfo
-func getUserFromDB(uKey string) (error, *pb.UserInfo) {
-	var err error
-	var buf []byte
+var lastUserID int32 = 1
 
+// XXX Retrieve from persisted
+func getUserID() int32 {
+
+	ret := lastUserID
+	lastUserID++
+	return ret
+}
+
+// Given a userKey, return the UserInfo
+func getUserFromDB(uKey int32) (error, *pb.UserInfo) {
+	var err error
 	var u *pb.UserInfo = new(pb.UserInfo)
 
-	/*
-		v, err := rdb.GetCF(ro, usersCF, []byte(uKey))
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to get user from DB")
-			return err, u
-		}
-		log.WithFields(log.Fields{"value": v}).Debug("Read" +
-			"user value from DB")
-
-		if v.Size() > 0 {
-			buf = make([]byte, v.Size())
-			copy(buf, v.Data())
-			v.Free()
-		} else {
-			log.WithFields(log.Fields{"error": err}).Error("invalid key/" +
-				"user from DB")
-		}
-	*/
-	err = proto.Unmarshal(buf, u)
+	err = UserTable.First(u, uKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to unmarshal proto from DB")
-		return err, nil
+			" to get user from DB")
+		return err, u
 	}
 	log.WithFields(log.Fields{"userInfo": u, "key": uKey}).
 		Debug("Read from DB")
@@ -61,7 +50,8 @@ func (s *server) EnrollUser(ctx context.Context,
 	}
 	log.WithFields(log.Fields{"user": in.User}).Debug("Added to DB")
 
-	/*
+	// Enable payment
+	if false {
 		err, customerPayID := pay.CreatePayingCustomer(
 			"mycustomer@gmail.com", "1234-xxxx-xxxx", "06", "19")
 		if err != nil {
@@ -78,7 +68,7 @@ func (s *server) EnrollUser(ctx context.Context,
 				" to start subscription")
 			return &resp, err
 		}
-	*/
+	}
 	return &resp, nil
 }
 
@@ -101,13 +91,21 @@ func (s *server) GetUser(ctx context.Context,
 func (s *server) GetUsers(ctx context.Context,
 	in *pb.GetUsersReq) (*pb.GetUsersReply, error) {
 
+	var uList []pb.UserInfo
 	var resp pb.GetUsersReply
 	var err error
-	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+
+	err = UserTable.Find(&uList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get users from DB")
 		return &resp, err
+	}
+
+	log.Printf("\n")
+	log.WithFields(log.Fields{"users": uList}).Debug("Get alluser success")
+	for i, _ := range uList {
+		resp.UserList = append(resp.UserList, &uList[i])
 	}
 	return &resp, nil
 }
@@ -126,27 +124,17 @@ func (s *server) Login(ctx context.Context,
 	return &resp, nil
 }
 
-func postUserDB(in pb.UserInfo) (err error, uKey string) {
+func postUserDB(in pb.UserInfo) (err error, uKey int32) {
 
 	log.WithFields(log.Fields{"userInfo": in}).Debug("Adding to DB")
-	uKey = GetRandomID()
-
-	//var err error
-	//byteBuf, err := proto.Marshal(&in)
+	uKey = getUserID()
+	in.ID = uKey
+	err = UserTable.Save(&in).Error
 	if err != nil {
-		log.WithFields(log.Fields{"userInfo": in, "error": err}).
-			Error("Failed to convert to binary")
-		return err, ""
+		log.WithFields(log.Fields{"userinfo": in, "error": err}).
+			Error("Failed to write to DB")
+		return err, 0
 	}
-
-	/*
-		err = rdb.PutCF(wo, usersCF, []byte(uKey), byteBuf)
-		if err != nil {
-			log.WithFields(log.Fields{"userInfo": in, "error": err}).
-				Error("Failed to write to DB")
-			return err, ""
-		}
-	*/
 	log.WithFields(log.Fields{"userInfo": in, "key": uKey}).
 		Debug("Added to DB")
 	return nil, uKey

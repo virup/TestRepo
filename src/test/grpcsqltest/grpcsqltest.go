@@ -51,17 +51,18 @@ func testInstructors() error {
 	gr, err := client.GetInstructors(context.Background(), &allreq)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to get all sessions")
+			" to get all instructors")
 		return err
 	}
-	log.WithFields(log.Fields{"allsessionResponse": gr}).
-		Debug("Get all session success")
+	log.WithFields(log.Fields{"allInsResponse": gr}).
+		Debug("Got all instructor success")
 
 	return nil
 }
 
 func testUsers() error {
 
+	var allreq pb.GetUsersReq
 	var numUsers = 4
 	for i := 0; i < numUsers; i++ {
 
@@ -91,6 +92,16 @@ func testUsers() error {
 		log.WithFields(log.Fields{"userInfo": gr.Info}).
 			Debug("Get user success")
 	}
+
+	gr, err := client.GetUsers(context.Background(), &allreq)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get all users")
+		return err
+	}
+	log.WithFields(log.Fields{"allUserResponse": gr}).
+		Debug("Got all user success")
+
 	return nil
 }
 
@@ -181,11 +192,11 @@ func main() {
 	}
 	log.Printf("Greeting: %s", r.Message)
 
-	//err = testUsers()
-	//if err != nil {
-	//	log.Error("Users test failed")
-	//	return
-	//}
+	err = testUsers()
+	if err != nil {
+		log.Error("Users test failed")
+		return
+	}
 
 	log.Printf("\n\n")
 	err = testInstructors()
