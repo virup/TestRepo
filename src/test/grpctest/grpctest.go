@@ -8,6 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	pb "server/rpcdef"
+	//pb "server/rpcdefsql"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -184,6 +185,7 @@ func main() {
 		log.Error("Instructor test failed")
 		return
 	}
+	return
 
 	log.Printf("\n\n")
 	err = testSessions()

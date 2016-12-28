@@ -16,6 +16,14 @@ build_protocsql() {
  go_back
 }
 
+build_grpcsqltest() {
+ echo "Cleaning up old grpcsqltest..."
+ rm -f $OUTDIR/grpcsqltest
+ echo "Building grpcsqltest..."
+ cd src/test/grpcsqltest
+ go build -gcflags "-N -l" -o $OUTDIR/grpcsqltest
+ go_back
+}
 
 build_grpctest() {
  echo "Cleaning up old grpctest..."
@@ -65,6 +73,7 @@ main() {
  #build_server
  build_serversql
  #build_grpctest
+ build_grpcsqltest
  #build_clienttest
 }
 

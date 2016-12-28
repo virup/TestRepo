@@ -26,6 +26,7 @@ service ServerSvc {
   rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
   // DONE
   rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
+  // DONE
   rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
 
   // User handling
@@ -83,10 +84,11 @@ enum SessionTag {
 }
 
 enum FitnessCategory {
-    YOGA = 0;
-    HATHA_YOGA = 1;
-    KUNDALINI_YOGA = 2;
-    FAST_YOGA = 3;
+    NONE = 0;
+    YOGA = 10;
+    HATHA_YOGA = 11;
+    KUNDALINI_YOGA = 12;
+    FAST_YOGA = 13;
 
     MEDITATION = 101;
     TM_MEDITATION = 102;
@@ -218,12 +220,13 @@ message GetInstructorReply {
 }
 
 message GetInstructorsReq {
-  // If specified, only show sessions of this type.
-  string sessionType = 1;
-  // XXX Search by other attributes later
+  // If specified, return instructors by fitness category
+  // else return all
+  //FitnessCategory category = 1;
 }
 
 message GetInstructorsReply {
+   repeated InstructorInfo instructorList = 1;
 }
 
 message GetUserReq {

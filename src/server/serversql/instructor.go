@@ -36,14 +36,22 @@ func GetInstructorFromDB(iKey int32) (error, *pb.InstructorInfo) {
 func (s *server) GetInstructors(ctx context.Context,
 	in *pb.GetInstructorsReq) (*pb.GetInstructorsReply, error) {
 
+	var iList []pb.InstructorInfo
 	var resp pb.GetInstructorsReply
 	var err error
-	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+	err = InsTable.Find(&iList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructors from DB")
 		return &resp, err
 	}
+
+	log.Printf("\n")
+	log.WithFields(log.Fields{"instructor": iList}).Debug("Get allinstructor success")
+	for i, _ := range iList {
+		resp.InstructorList = append(resp.InstructorList, &iList[i])
+	}
+	//resp.InstructorList = &iList
 	return &resp, nil
 }
 
@@ -75,8 +83,8 @@ func (s *server) EnrollInstructor(ctx context.Context,
 			"error": err}).Error("Failed to write to DB")
 		return &resp, err
 	}
-	log.WithFields(log.Fields{"instructor": in.Instructor}).
-		Debug("Added to DB")
+	log.WithFields(log.Fields{"enrollinstructor_response": resp}).
+		Debug("Enrolled instructor response")
 	return &resp, nil
 }
 
@@ -85,7 +93,7 @@ func postInstructorDB(in pb.InstructorInfo) (err error, iKey int32) {
 	log.WithFields(log.Fields{"instructorInfo": in}).Debug("Adding to DB")
 	iKey = getInstructorID()
 	in.ID = iKey
-	err = InsTable.Create(&in).Error
+	err = InsTable.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorInfo": in, "error": err}).
 			Error("Failed to write to DB")

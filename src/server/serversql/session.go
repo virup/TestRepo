@@ -138,34 +138,6 @@ func getAllSessionFromDB() (error, []*pb.SessionInfo) {
 	var err error
 
 	log.Debug("Reading all sessions from DB")
-	/*
-		it := rdb.NewIteratorCF(ro, sessionsCF)
-		defer it.Close()
-
-		it.SeekToFirst()
-		for ; it.Valid(); it.Next() {
-
-			var s *pb.SessionInfo = new(pb.SessionInfo)
-			var buf []byte
-			buf = make([]byte, it.Value().Size())
-			copy(buf, it.Value().Data())
-			err = proto.Unmarshal(buf, s)
-			if err != nil {
-				log.WithFields(log.Fields{"error": err}).Error("Failed" +
-					" to unmarshal proto from DB")
-				return err, nil
-			}
-
-			log.WithFields(log.Fields{"key": it.Key().Data(),
-				"session": s}).Debug("Iterating sessions from DB")
-
-			sList = append(sList, s)
-		}
-
-		if err := it.Err(); err != nil {
-			return err, sList
-		}
-	*/
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
