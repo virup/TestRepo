@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -14,9 +15,8 @@ import (
 
 var client pb.ServerSvcClient
 
-func testInstructors() error {
+func testInstructors(numIns int) error {
 
-	var numIns = 8
 	var allreq pb.GetInstructorsReq
 	for i := 0; i < numIns; i++ {
 
@@ -43,7 +43,7 @@ func testInstructors() error {
 				" to get instructor")
 			return err
 		}
-		RegisterEnrolledInstructorID(ireq.InstructorKey)
+		RegisterEnrolledInstructor(ireq.InstructorKey, gr.Info)
 		log.WithFields(log.Fields{"instructorInfo": gr.Info}).
 			Debug("Get instructor success")
 	}
@@ -60,10 +60,159 @@ func testInstructors() error {
 	return nil
 }
 
-func testUsers() error {
+func testLoginIns(numIns int) error {
+
+	for i := 0; i < numIns; i++ {
+
+		var req pb.LoginReq
+		err, uid := getEnrolledInstructorID()
+		if err != nil {
+			return err
+		}
+
+		i := getEnrolledIns(uid)
+		req.Email = i.Email
+		req.PassWord = i.PassWord
+
+		log.WithFields(log.Fields{"user req": req}).
+			Debug("loggin in user")
+		r, err := client.Login(context.Background(), &req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to enroll user")
+			return err
+		}
+		log.WithFields(log.Fields{"login response": r}).
+			Debug("Logged in user with key")
+	}
+
+	// Invalid password
+	log.Debug("INCORRECT INS PASSWORD test")
+	for i := 0; i < numIns; i++ {
+
+		var req pb.LoginReq
+		err, uid := getEnrolledInstructorID()
+		if err != nil {
+			return err
+		}
+
+		u := getEnrolledIns(uid)
+		req.Email = u.Email
+		req.PassWord = "incorrectpwd"
+
+		log.WithFields(log.Fields{"ins req": req}).
+			Debug("loggin in user")
+		r, err := client.Login(context.Background(), &req)
+		if err == nil {
+			log.WithFields(log.Fields{"resp": r}).Error("Failed" +
+				" to invalidate ins login")
+			return errors.New("Invalidate ins login failure")
+		}
+		log.WithFields(log.Fields{"expected error": err}).
+			Debug("invalid ins login succeeded")
+	}
+
+	// Invalid email
+	log.Debug("INCORRECT INS EMAIL test")
+	for i := 0; i < numIns; i++ {
+
+		var req pb.LoginReq
+		req.Email = "aa@bcac.come"
+		req.PassWord = "incorrectpwd"
+
+		log.WithFields(log.Fields{"user req": req}).
+			Debug("loggin in user")
+		r, err := client.Login(context.Background(), &req)
+		if err == nil {
+			log.WithFields(log.Fields{"resp": r}).Error("Failed" +
+				" to invalidate user login")
+			return errors.New("Invalidate user login failure")
+		}
+		log.WithFields(log.Fields{"expected error": err}).
+			Debug("invalid ins login succeeded")
+	}
+
+	return nil
+}
+
+func testLoginUser(numUsers int) error {
+
+	for i := 0; i < numUsers; i++ {
+
+		var req pb.LoginReq
+		err, uid := getEnrolledUsersID()
+		if err != nil {
+			return err
+		}
+
+		u := getEnrolledUser(uid)
+		req.Email = u.Email
+		req.PassWord = u.PassWord
+
+		log.WithFields(log.Fields{"user req": req}).
+			Debug("loggin in user")
+		r, err := client.Login(context.Background(), &req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to enroll user")
+			return err
+		}
+		log.WithFields(log.Fields{"login response": r}).
+			Debug("Enrolled user with key")
+	}
+
+	// Invalid password
+	log.Debug("INCORRECT USER PASSWORD test")
+	for i := 0; i < numUsers; i++ {
+
+		var req pb.LoginReq
+		err, uid := getEnrolledUsersID()
+		if err != nil {
+			return err
+		}
+
+		u := getEnrolledUser(uid)
+		req.Email = u.Email
+		req.PassWord = "incorrectpwd"
+
+		log.WithFields(log.Fields{"user req": req}).
+			Debug("loggin in user")
+		r, err := client.Login(context.Background(), &req)
+		if err == nil {
+			log.WithFields(log.Fields{"resp": r}).Error("Failed" +
+				" to invalidate user login")
+			return errors.New("Invalidate user login failure")
+		}
+		log.WithFields(log.Fields{"expected error": err}).
+			Debug("invalid user login succeeded")
+	}
+
+	// Invalid email
+	log.Debug("INCORRECT USER EMAIL test")
+	for i := 0; i < numUsers; i++ {
+
+		var req pb.LoginReq
+		req.Email = "aa@bcac.come"
+		req.PassWord = "incorrectpwd"
+
+		log.WithFields(log.Fields{"user req": req}).
+			Debug("loggin in user")
+		r, err := client.Login(context.Background(), &req)
+		if err == nil {
+			log.WithFields(log.Fields{"resp": r}).Error("Failed" +
+				" to invalidate user login")
+			return errors.New("Invalidate user login failure")
+		}
+		log.WithFields(log.Fields{"expected error": err}).
+			Debug("invalid user login succeeded")
+	}
+
+	return nil
+}
+
+func testUsers(numUsers int) error {
 
 	var allreq pb.GetUsersReq
-	var numUsers = 4
 	for i := 0; i < numUsers; i++ {
 
 		var req pb.EnrollUserReq
@@ -89,6 +238,7 @@ func testUsers() error {
 				" to get user")
 			return err
 		}
+		RegisterEnrolledUser(ureq.UserKey, gr.Info)
 		log.WithFields(log.Fields{"userInfo": gr.Info}).
 			Debug("Get user success")
 	}
@@ -105,10 +255,9 @@ func testUsers() error {
 	return nil
 }
 
-func testSessions() error {
+func testSessions(numSessions int) error {
 
 	var allreq pb.GetSessionsReq
-	var numSessions = 4
 	for i := 0; i < numSessions; i++ {
 
 		var req pb.PostSessionReq
@@ -192,21 +341,39 @@ func main() {
 	}
 	log.Printf("Greeting: %s", r.Message)
 
-	err = testUsers()
+	err = testUsers(4)
 	if err != nil {
 		log.Error("Users test failed")
 		return
 	}
 
 	log.Printf("\n\n")
-	err = testInstructors()
+	log.Debug("USER TEST")
+	err = testLoginUser(4)
+	if err != nil {
+		log.Error("user login test failed")
+		return
+	}
+
+	log.Printf("\n\n")
+	log.Debug("INS TEST")
+	err = testInstructors(16)
 	if err != nil {
 		log.Error("Instructor test failed")
 		return
 	}
 
 	log.Printf("\n\n")
-	err = testSessions()
+	log.Debug("LOGIN INS TEST")
+	err = testLoginIns(4)
+	if err != nil {
+		log.Error("user login test failed")
+		return
+	}
+
+	log.Printf("\n\n")
+	log.Debug("SESSIONS TEST")
+	err = testSessions(8)
 	if err != nil {
 		log.Error("Session test failed")
 		return

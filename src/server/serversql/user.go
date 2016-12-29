@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"pay"
 	pb "server/rpcdefsql"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"golang.org/x/net/context"
@@ -34,22 +36,10 @@ func getUserFromDB(uKey int32) (error, *pb.UserInfo) {
 	return err, u
 }
 
-func (s *server) EnrollUser(ctx context.Context,
-	in *pb.EnrollUserReq) (*pb.EnrollUserReply, error) {
+func (s *server) SubscribeUser(ctx context.Context,
+	in *pb.SubscribeUserReq) (*pb.SubscribeUserReply, error) {
 
-	var err error
-	var resp pb.EnrollUserReply
-	log.Debug("Enroll User request")
-	//err := db.Save(&u)
-
-	err, resp.UserKey = postUserDB(*in.User)
-	if err != nil {
-		log.WithFields(log.Fields{"user": in.User, "error": err}).
-			Error("Failed to write to DB for user")
-		return &resp, err
-	}
-	log.WithFields(log.Fields{"user": in.User}).Debug("Added to DB")
-
+	var resp pb.SubscribeUserReply
 	// Enable payment
 	if false {
 		err, customerPayID := pay.CreatePayingCustomer(
@@ -69,6 +59,30 @@ func (s *server) EnrollUser(ctx context.Context,
 			return &resp, err
 		}
 	}
+
+	return &resp, nil
+}
+
+func (s *server) EnrollUser(ctx context.Context,
+	in *pb.EnrollUserReq) (*pb.EnrollUserReply, error) {
+
+	var err error
+	var resp pb.EnrollUserReply
+	log.Debug("Enroll User request")
+
+	if in.User.Email == "" || in.User.PassWord == "" {
+		log.WithFields(log.Fields{"user": in.User, "error": err}).
+			Error("Invalid email/password for user")
+		return &resp, errors.New("Invalid email/password")
+
+	}
+	err, resp.UserKey = postUserDB(*in.User)
+	if err != nil {
+		log.WithFields(log.Fields{"user": in.User, "error": err}).
+			Error("Failed to write to DB for user")
+		return &resp, err
+	}
+	log.WithFields(log.Fields{"user": in.User}).Debug("Added to DB")
 	return &resp, nil
 }
 
@@ -115,8 +129,60 @@ func (s *server) Login(ctx context.Context,
 
 	var resp pb.LoginReply
 	var err error
-	//err = rdb.GetCF(wo, sessionsCF, []byte(sessionKey), binBuf.Bytes())
+	var uList []pb.UserInfo
+	var iList []pb.InstructorInfo
+	userFound := true
+	insFound := true
+
+	err = UserTable.
+		Where(pb.UserInfo{Email: in.Email}).
+		Find(&uList).Error
 	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get user from DB with email")
+		userFound = false
+	}
+
+	err = InsTable.
+		Where(pb.InstructorInfo{Email: in.Email}).
+		Find(&iList).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to get ins from DB with email")
+		insFound = false
+	}
+
+	if !insFound && !userFound {
+		log.WithFields(log.Fields{"loginreq": in}).Error("Failed" +
+			" to get user or ins from DB with email")
+		err = errors.New("Invalid email/password for any role")
+		return &resp, err
+	}
+
+	if len(iList) > 0 {
+		if 0 == strings.Compare(in.PassWord, iList[0].PassWord) {
+			log.WithFields(log.Fields{"insLoginInfo": in}).
+				Debug("Authenticated instructor")
+			resp.Instructor = &iList[0]
+			resp.PersonType = pb.PersonRole_ROLE_INSTRUCTOR
+		} else {
+			log.WithFields(log.Fields{"loginReq": in}).
+				Error("Invalid password for instructor")
+			return &resp, errors.New("Invalid password for instructor")
+		}
+	} else if len(uList) > 0 {
+		if 0 == strings.Compare(in.PassWord, uList[0].PassWord) {
+			log.WithFields(log.Fields{"insLoginInfo": in}).
+				Debug("Authenticated user")
+			resp.User = &uList[0]
+			resp.PersonType = pb.PersonRole_ROLE_USER
+		} else {
+			log.WithFields(log.Fields{"loginReq": in}).
+				Error("Invalid password for user")
+			return &resp, errors.New("Invalid password for user")
+		}
+	} else {
+		err = errors.New("Couldn't find user/instructor in DB")
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to login")
 		return &resp, err

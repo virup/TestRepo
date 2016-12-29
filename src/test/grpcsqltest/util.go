@@ -16,10 +16,39 @@ import (
 var sessionID = 1
 
 var enrolledInstructorsID []int32
+var enrolledUsersID []int32
 
-func RegisterEnrolledInstructorID(instructorID int32) {
+var insMap = make(map[int32]*pb.InstructorInfo)
+var userMap = make(map[int32]*pb.UserInfo)
+
+func RegisterEnrolledInstructor(instructorID int32,
+	iInfo *pb.InstructorInfo) {
 
 	enrolledInstructorsID = append(enrolledInstructorsID, instructorID)
+	insMap[instructorID] = iInfo
+}
+
+func RegisterEnrolledUser(userID int32,
+	uInfo *pb.UserInfo) {
+
+	enrolledUsersID = append(enrolledUsersID, userID)
+	userMap[userID] = uInfo
+}
+
+func getEnrolledUser(uid int32) *pb.UserInfo {
+	uInfo, ok := userMap[uid]
+	if !ok {
+		panic("invalid user")
+	}
+	return uInfo
+}
+
+func getEnrolledIns(insID int32) *pb.InstructorInfo {
+	iInfo, ok := insMap[insID]
+	if !ok {
+		panic("invalid ins")
+	}
+	return iInfo
 }
 
 func getEnrolledInstructorID() (error, int32) {
@@ -28,6 +57,14 @@ func getEnrolledInstructorID() (error, int32) {
 		return errors.New("Instructors not registered"), 0
 	}
 	return nil, enrolledInstructorsID[rand.Intn(len(enrolledInstructorsID))]
+}
+
+func getEnrolledUsersID() (error, int32) {
+	numIns := len(enrolledUsersID)
+	if numIns == 0 {
+		return errors.New("Users not registered"), 0
+	}
+	return nil, enrolledUsersID[rand.Intn(len(enrolledUsersID))]
 }
 
 func GetNewSession() (error, pb.SessionInfo) {
@@ -70,6 +107,7 @@ func GetNewUser() pb.UserInfo {
 	ui.FirstName = randomdata.FirstName(randomdata.Male)
 	ui.LastName = randomdata.LastName()
 	ui.Email = randomdata.Email()
+	ui.PassWord = randomdata.LastName()
 	ui.City = randomdata.City()
 
 	return ui

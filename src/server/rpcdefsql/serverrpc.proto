@@ -14,33 +14,27 @@ service ServerSvc {
   }
 
   // Session handling
-
-  // DONE
   rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
-  // DONE
   rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
   rpc GetSessionsForInstructor(GetSessionsForInstructorReq) returns
      (GetSessionsForInstructorReply) {}
   rpc GetSessionsForFitnessType (GetSessionsForFitnessReq) returns
      (GetSessionsForFitnessReply) {}
-  // DONE
   rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
   
   // Instructor handling
-  // DONE
-  rpc EnrollInstructor(EnrollInstructorReq) returns (EnrollInstructorReply) {}
-  // DONE
+  rpc EnrollInstructor(EnrollInstructorReq) returns
+     (EnrollInstructorReply) {}
   rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
-  // DONE
   rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
 
   // User handling
-  // DONE
   rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
-  // DONE
   rpc GetUser(GetUserReq) returns (GetUserReply) {}
-  // DONE
   rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
+ 
+  // Subscribe to the pay plan TBD
+  rpc SubscribeUser(SubscribeUserReq) returns (SubscribeUserReply) {}
 
   rpc Login(LoginReq) returns (LoginReply) {}
 
@@ -72,6 +66,11 @@ message SessionInfo {
 
   // Maintained by server
   uint64 sessionUsersEnrolled = 101;
+}
+
+enum PersonRole {
+   ROLE_USER = 0;
+   ROLE_INSTRUCTOR = 1;
 }
 
 enum SessionDifficulty {
@@ -136,7 +135,6 @@ message InstructorInfo {
    string sex = 3;
    string location = 4;
    string email = 5;
-   string userName = 6; // optional
    string passWord = 7;
    
    string desc = 8;
@@ -166,7 +164,6 @@ message UserInfo {
    string city = 4;
    string country = 5;
    string email = 6;
-   string userName = 7;
    string passWord = 8;
    string lastName = 9;
    int32 ID = 10;
@@ -303,10 +300,25 @@ message RecordEventReply {
 
 message LoginReq {
    string email = 1;
-   string userName = 2; // Optional
-   string passWord = 3;
+   string passWord = 2;
 }
 
 message LoginReply {
-   string userOrInstructorID = 2;
+   string userOrInstructorID = 1;
+   PersonRole personType = 2;
+   UserInfo user = 3;
+   InstructorInfo instructor = 4;
 }
+
+message SubscribeUserReq {
+   int32 userID = 1;
+   CCInfo ccDetails = 2;
+}
+
+message SubscribeUserReply {
+}
+
+
+
+
+
