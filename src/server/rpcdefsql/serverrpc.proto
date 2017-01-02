@@ -67,12 +67,12 @@ message SessionInfo {
   int32 instructorInfoID = 3;
   //repeated FitnessCategory sessionType = 4;
    FitnessCategory sessionType = 4;
-  SessionDifficulty difficultyLevel = 5;
+   SessionDifficulty difficultyLevel = 5;
   //repeated SessionTag tagList = 6;
    SessionTag tagList = 6;
    int32 ID = 7;
    string instructorName = 8;
-   int32 previewVideoID = 9;
+   string previewVideoUrl = 9;
  
   // Maintained by server
   uint64 sessionUsersEnrolled = 101;
@@ -111,6 +111,8 @@ enum FitnessCategory {
     DANCE = 201;
     HIP_HOP = 202;
     ZUMBA = 203;
+
+    HIIT = 301;
 }
 
 message ReviewInfo {
@@ -155,7 +157,8 @@ message InstructorInfo {
    string city = 12;
    string country = 13;
    int32 ID = 14;
-   int32 displayImageID = 15;
+   //InstructorImage displayImage = 15;
+   bytes displayImage = 15; 
  
    // Internal to server
    string reviewInfoID = 101;
@@ -325,21 +328,24 @@ message SubscribeUserReq {
 message SubscribeUserReply {
 }
 
-message Image {
+message InstructorImage {
    string picDesc = 1;
-   string picUrl = 2;
+   int32 InstructorInfoID = 2;
    int32 ID = 3;
+   bytes blob = 4;
+   bool isDisplay = 5;
 }
 
 message PostInstructorDisplayImgReq {
    int32 instructorInfoID = 1;
-   Image img = 2;
+   //InstructorImage img = 2;
+   bytes blob = 2;
 }
 
 message PostInstructorDisplayImgReply {
 }
 
-message Video {
+message SessionVideo {
    string vidDesc = 1;
    string vidUrl = 2;
    int32 ID = 3;
@@ -347,7 +353,8 @@ message Video {
 
 message PostSessionPreviewVideoReq {
    int32 sessionID = 1;
-   Video vid = 2;
+   //SessionVideo vid = 2;
+   string vidUrl = 2;
 }
 
 message PostSessionPreviewVideoReply {

@@ -36,6 +36,16 @@ func testInstructors(numIns int) error {
 		}
 		log.WithFields(log.Fields{"instructor response": r}).Debug("Enrolled instructor with key")
 
+		log.WithFields(log.Fields{"instructor req": req}).Debug("Enrolling instructor")
+		r, err := client.PostInstructorDisplayImg(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to enroll instructor")
+			return err
+		}
+		log.WithFields(log.Fields{"instructor response": r}).Debug("Enrolled instructor with key")
+
 		ireq.InstructorKey = r.InstructorKey
 		gr, err := client.GetInstructor(context.Background(), &ireq)
 		if err != nil {

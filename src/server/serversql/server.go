@@ -102,19 +102,19 @@ func initDB() error {
 		}
 	}
 
-	if !db.HasTable(&pb.Image{}) {
-		err = db.CreateTable(&pb.Image{}).Error
-		if err != nil {
-			panic("Couldn't create image table")
-		}
-	}
+	//if !db.HasTable(&pb.InstructorImage{}) {
+	//	err = db.CreateTable(&pb.InstructorImage{}).Error
+	//	if err != nil {
+	//		panic("Couldn't create image table")
+	//	}
+	//}
 
-	if !db.HasTable(&pb.Video{}) {
-		err = db.CreateTable(&pb.Video{}).Error
-		if err != nil {
-			panic("Couldn't create video table")
-		}
-	}
+	//if !db.HasTable(&pb.SessionVideo{}) {
+	//	err = db.CreateTable(&pb.SessionVideo{}).Error
+	//	if err != nil {
+	//		panic("Couldn't create video table")
+	//	}
+	//}
 
 	log.Debug("Successfully opened  database and created tables")
 	return nil

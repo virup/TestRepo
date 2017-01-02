@@ -68,16 +68,24 @@ func (s *server) PostInstructorDisplayImg(ctx context.Context,
 	error) {
 
 	var err error
+	var ins pb.InstructorInfo
 	var resp pb.PostInstructorDisplayImgReply
 	log.Debug("post Instructor image request")
-	//err, in.Img.ID = getImageID()
+	//err = db.Save(&in.Img).Error
 	//if err != nil {
+	//	log.WithFields(log.Fields{"instructorImage": in,
+	//		"error": err}).Error("Failed to write image to DB")
 	//	return &resp, err
 	//}
-	err = db.Save(&in.Img).Error
+
+	//err = db.First(&ins, in.InstructorInfoID).
+	//	Update(pb.InstructorInfo{DisplayImageID: in.Img.ID}).Error
+
+	err = db.First(&ins, in.InstructorInfoID).
+		Update(pb.InstructorInfo{DisplayImage: in.Blob}).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorImage": in,
-			"error": err}).Error("Failed to write image to DB")
+			"error": err}).Error("Failed to update image ID to ins DB")
 		return &resp, err
 	}
 	log.WithFields(log.Fields{"postInsImgResponse": resp}).

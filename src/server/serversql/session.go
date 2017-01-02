@@ -162,17 +162,35 @@ func (ser *server) PostSessionPreviewVideo(ctx context.Context,
 
 	var err error
 	var resp pb.PostSessionPreviewVideoReply
-	log.WithFields(log.Fields{"previewVideoInfo": in.Vid}).
+	var session pb.SessionInfo
+
+	log.WithFields(log.Fields{"previewVideoInfo": in.VidUrl}).
 		Debug("Received post session preview videorequest")
 
-	err = db.Save(&in.Vid).Error
+	//log.WithFields(log.Fields{"previewVideoInfo": in.Vid}).
+	//	Debug("Received post session preview videorequest")
+
+	//err = db.Save(&in.Vid).Error
+	//if err != nil {
+	//	log.WithFields(log.Fields{"sessionVid": in,
+	//		"error": err}).Error("Failed to write video to DB")
+	//	return &resp, err
+	//}
+
+	//err = db.First(&session, in.SessionID).
+	//	Update(pb.SessionInfo{PreviewVideoID: in.Vid.ID}).Error
+	err = db.First(&session, in.SessionID).
+		Update(pb.SessionInfo{PreviewVideoUrl: in.VidUrl}).Error
 	if err != nil {
-		log.WithFields(log.Fields{"sessionVid": in,
-			"error": err}).Error("Failed to write video to DB")
+		log.WithFields(log.Fields{"instructorImage": in,
+			"error": err}).Error("Failed to update image ID to ins DB")
 		return &resp, err
 	}
 
-	log.WithFields(log.Fields{"session": in.Vid}).
+	//log.WithFields(log.Fields{"session": in.Vid}).
+	//	Debug("Post session preview video succeeded")
+
+	log.WithFields(log.Fields{"session": in.VidUrl}).
 		Debug("Post session preview video succeeded")
 	return &resp, nil
 }
