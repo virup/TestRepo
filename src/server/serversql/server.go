@@ -67,15 +67,10 @@ func initGprcServer() {
 }
 
 var db *gorm.DB
-var InsTable *gorm.DB
-var UserTable *gorm.DB
-var SessionTable *gorm.DB
 
 func initDB() error {
-	//db, _ := gorm.Open("sqlite3", "./gorm.db")
-	db, err := gorm.Open("sqlite3", "./gorm.db")
-	//db, err := gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
-
+	var err error
+	db, err = gorm.Open("sqlite3", "./gorm.db")
 	if err != nil {
 		log.Errorf("Opening of DB failed with error '%v'",
 			err)
@@ -86,18 +81,39 @@ func initDB() error {
 		panic(err)
 	}
 
-	InsTable = db.CreateTable(&pb.InstructorInfo{})
-	if InsTable == nil {
-		panic("Couldn't create ins table")
-	}
-	UserTable = db.CreateTable(&pb.UserInfo{})
-	if UserTable == nil {
-		panic("Couldn't create user table")
+	if !db.HasTable(&pb.InstructorInfo{}) {
+		err = db.CreateTable(&pb.InstructorInfo{}).Error
+		if err != nil {
+			panic("Couldn't create ins table")
+		}
 	}
 
-	SessionTable = db.CreateTable(&pb.SessionInfo{})
-	if SessionTable == nil {
-		panic("Couldn't create session table")
+	if !db.HasTable(&pb.UserInfo{}) {
+		err = db.CreateTable(&pb.UserInfo{}).Error
+		if err != nil {
+			panic("Couldn't create user table")
+		}
+	}
+
+	if !db.HasTable(&pb.SessionInfo{}) {
+		err = db.CreateTable(&pb.SessionInfo{}).Error
+		if err != nil {
+			panic("Couldn't create session table")
+		}
+	}
+
+	if !db.HasTable(&pb.Image{}) {
+		err = db.CreateTable(&pb.Image{}).Error
+		if err != nil {
+			panic("Couldn't create image table")
+		}
+	}
+
+	if !db.HasTable(&pb.Video{}) {
+		err = db.CreateTable(&pb.Video{}).Error
+		if err != nil {
+			panic("Couldn't create video table")
+		}
 	}
 
 	log.Debug("Successfully opened  database and created tables")

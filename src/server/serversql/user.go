@@ -10,22 +10,12 @@ import (
 	"golang.org/x/net/context"
 )
 
-var lastUserID int32 = 1
-
-// XXX Retrieve from persisted
-func getUserID() int32 {
-
-	ret := lastUserID
-	lastUserID++
-	return ret
-}
-
 // Given a userKey, return the UserInfo
 func getUserFromDB(uKey int32) (error, *pb.UserInfo) {
 	var err error
 	var u *pb.UserInfo = new(pb.UserInfo)
 
-	err = UserTable.First(u, uKey).Error
+	err = db.First(u, uKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get user from DB")
@@ -109,7 +99,8 @@ func (s *server) GetUsers(ctx context.Context,
 	var resp pb.GetUsersReply
 	var err error
 
-	err = UserTable.Find(&uList).Error
+	//err = UserTable.Find(&uList).Error
+	err = db.Find(&uList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get users from DB")
@@ -134,7 +125,8 @@ func (s *server) Login(ctx context.Context,
 	userFound := true
 	insFound := true
 
-	err = UserTable.
+	//err = UserTable.
+	err = db.
 		Where(pb.UserInfo{Email: in.Email}).
 		Find(&uList).Error
 	if err != nil {
@@ -143,7 +135,8 @@ func (s *server) Login(ctx context.Context,
 		userFound = false
 	}
 
-	err = InsTable.
+	//err = InsTable.
+	err = db.
 		Where(pb.InstructorInfo{Email: in.Email}).
 		Find(&iList).Error
 	if err != nil {
@@ -190,17 +183,17 @@ func (s *server) Login(ctx context.Context,
 	return &resp, nil
 }
 
+// XXX Return error if the same user posts again
 func postUserDB(in pb.UserInfo) (err error, uKey int32) {
 
 	log.WithFields(log.Fields{"userInfo": in}).Debug("Adding to DB")
-	uKey = getUserID()
-	in.ID = uKey
-	err = UserTable.Save(&in).Error
+	err = db.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"userinfo": in, "error": err}).
 			Error("Failed to write to DB")
 		return err, 0
 	}
+	uKey = in.ID
 	log.WithFields(log.Fields{"userInfo": in, "key": uKey}).
 		Debug("Added to DB")
 	return nil, uKey

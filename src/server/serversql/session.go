@@ -8,20 +8,12 @@ import (
 	"golang.org/x/net/context"
 )
 
-var lastSessionID int32 = 1
-
-func getSessionID() int32 {
-
-	ret := lastSessionID
-	lastSessionID++
-	return ret
-}
-
 // Given a sessionKey, return the SessionInfo
 func getSessionFromDB(sKey int32) (error, *pb.SessionInfo) {
 	var err error
 	var s *pb.SessionInfo = new(pb.SessionInfo)
-	err = SessionTable.First(s, sKey).Error
+	//err = SessionTable.First(s, sKey).Error
+	err = db.First(s, sKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -40,7 +32,8 @@ func (s *server) GetSessionsForInstructor(ctx context.Context,
 	var err error
 	var sList []pb.SessionInfo
 
-	err = SessionTable.
+	//err = SessionTable.
+	err = db.
 		Where(pb.SessionInfo{InstructorInfoID: in.InstructorInfoID}).
 		Find(&sList).Error
 	if err != nil {
@@ -64,7 +57,8 @@ func (s *server) GetSessionsForFitnessType(ctx context.Context,
 	var err error
 	var sList []pb.SessionInfo
 
-	err = SessionTable.
+	//err = SessionTable.
+	err = db.
 		Where(pb.SessionInfo{SessionType: in.FitCategory}).
 		Find(&sList).Error
 	if err != nil {
@@ -87,7 +81,8 @@ func (s *server) GetSessions(ctx context.Context,
 	var err error
 	var sList []pb.SessionInfo
 
-	err = SessionTable.Find(&sList).Error
+	//err = SessionTable.Find(&sList).Error
+	err = db.Find(&sList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get sessions from DB")
@@ -111,7 +106,8 @@ func (s *server) GetSessions(ctx context.Context,
 	log.WithFields(log.Fields{"insKeySlice": insKeySlice}).Debug("Query sessions with ins slice")
 
 	var iList []pb.InstructorInfo
-	err = InsTable.Where(insKeySlice).Find(&iList).Error
+	//err = InsTable.Where(insKeySlice).Find(&iList).Error
+	err = db.Where(insKeySlice).Find(&iList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructor rows from DB")
@@ -146,19 +142,40 @@ func (s *server) GetSession(ctx context.Context,
 func postSessionDB(in pb.SessionInfo) (err error, sKey int32) {
 
 	log.WithFields(log.Fields{"sessionInfo": in}).Debug("Adding to DB")
-	sKey = getSessionID()
-	in.ID = sKey
-	err = SessionTable.Save(&in).Error
+	//sKey = getSessionID()
+	//in.ID = sKey
+	//err = SessionTable.Save(&in).Error
+	err = db.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
 			Error("Failed to write to DB")
 		return err, 0
 	}
+	sKey = in.ID
 	log.WithFields(log.Fields{"sessionInfo": in, "key": sKey}).
 		Debug("Added to DB")
 	return nil, sKey
 }
 
+func (ser *server) PostSessionPreviewVideo(ctx context.Context,
+	in *pb.PostSessionPreviewVideoReq) (*pb.PostSessionPreviewVideoReply, error) {
+
+	var err error
+	var resp pb.PostSessionPreviewVideoReply
+	log.WithFields(log.Fields{"previewVideoInfo": in.Vid}).
+		Debug("Received post session preview videorequest")
+
+	err = db.Save(&in.Vid).Error
+	if err != nil {
+		log.WithFields(log.Fields{"sessionVid": in,
+			"error": err}).Error("Failed to write video to DB")
+		return &resp, err
+	}
+
+	log.WithFields(log.Fields{"session": in.Vid}).
+		Debug("Post session preview video succeeded")
+	return &resp, nil
+}
 func (ser *server) PostSession(ctx context.Context,
 	in *pb.PostSessionReq) (*pb.PostSessionReply, error) {
 

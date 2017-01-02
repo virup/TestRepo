@@ -8,21 +8,13 @@ import (
 	"golang.org/x/net/context"
 )
 
-var lastInsID int32 = 1
-
-func getInstructorID() int32 {
-
-	ret := lastInsID
-	lastInsID++
-	return ret
-}
-
 // Given a instructKey, return the UserInfo
 func GetInstructorFromDB(iKey int32) (error, *pb.InstructorInfo) {
 	var err error
 
 	var i *pb.InstructorInfo = new(pb.InstructorInfo)
-	err = InsTable.First(i, iKey).Error
+	//err = InsTable.First(i, iKey).Error
+	err = db.First(i, iKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructor from DB")
@@ -39,7 +31,8 @@ func (s *server) GetInstructors(ctx context.Context,
 	var iList []pb.InstructorInfo
 	var resp pb.GetInstructorsReply
 	var err error
-	err = InsTable.Find(&iList).Error
+	//err = InsTable.Find(&iList).Error
+	err = db.Find(&iList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructors from DB")
@@ -70,6 +63,28 @@ func (s *server) GetInstructor(ctx context.Context,
 	return &resp, nil
 }
 
+func (s *server) PostInstructorDisplayImg(ctx context.Context,
+	in *pb.PostInstructorDisplayImgReq) (*pb.PostInstructorDisplayImgReply,
+	error) {
+
+	var err error
+	var resp pb.PostInstructorDisplayImgReply
+	log.Debug("post Instructor image request")
+	//err, in.Img.ID = getImageID()
+	//if err != nil {
+	//	return &resp, err
+	//}
+	err = db.Save(&in.Img).Error
+	if err != nil {
+		log.WithFields(log.Fields{"instructorImage": in,
+			"error": err}).Error("Failed to write image to DB")
+		return &resp, err
+	}
+	log.WithFields(log.Fields{"postInsImgResponse": resp}).
+		Debug("instructor image add response")
+	return &resp, nil
+}
+
 func (s *server) EnrollInstructor(ctx context.Context,
 	in *pb.EnrollInstructorReq) (*pb.EnrollInstructorReply, error) {
 
@@ -90,14 +105,13 @@ func (s *server) EnrollInstructor(ctx context.Context,
 func postInstructorDB(in pb.InstructorInfo) (err error, iKey int32) {
 
 	log.WithFields(log.Fields{"instructorInfo": in}).Debug("Adding to DB")
-	iKey = getInstructorID()
-	in.ID = iKey
-	err = InsTable.Save(&in).Error
+	err = db.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorInfo": in, "error": err}).
 			Error("Failed to write to DB")
 		return err, 0
 	}
+	iKey = in.ID
 	log.WithFields(log.Fields{"instructorInfo": in}).
 		Debug("Added to DB")
 	return nil, iKey
