@@ -35,6 +35,35 @@ func (s *server) GetStatus(ctx context.Context,
 	return &pb.ServerSvcStatusReply{Message: "Hello " + in.Name}, nil
 }
 
+func (s *server) CleanupAllDBs(ctx context.Context,
+	in *pb.CleanupAllDBsReq) (*pb.CleanupAllDBsReply, error) {
+
+	var err error
+	var resp pb.CleanupAllDBsReply
+
+	err = db.DropTableIfExists(&pb.SessionInfo{}).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to delete session table")
+	}
+
+	err = db.DropTableIfExists(&pb.InstructorInfo{}).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to delete instructor table")
+	}
+
+	err = db.DropTableIfExists(&pb.UserInfo{}).Error
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Failed" +
+			" to delete user table")
+	}
+
+	log.Debugf("Cleaned up all tables")
+
+	return &resp, nil
+}
+
 func (s *server) RecordEvent(ctx context.Context,
 	in *pb.RecordEventReq) (*pb.RecordEventReply, error) {
 

@@ -49,6 +49,7 @@ service ServerSvc {
   // Used for analytics
   // Client will record much of the user interaction with the app
   rpc RecordEvent(RecordEventReq) returns (RecordEventReply) {}
+  rpc CleanupAllDBs(CleanupAllDBsReq) returns (CleanupAllDBsReply) {}
 }
 
 message ServerSvcStatusReq {
@@ -359,3 +360,6 @@ message PostSessionPreviewVideoReq {
 
 message PostSessionPreviewVideoReply {
 }
+
+message CleanupAllDBsReq {}
+message CleanupAllDBsReply{}
