@@ -351,6 +351,13 @@ func main() {
 	}
 	log.Printf("Greeting: %s", r.Message)
 
+	//var req pb.CleanupAllDBsReq
+	//_, err = client.CleanupAllDBs(context.Background(), &req)
+	//if err != nil {
+	//	log.Fatalf("could not cleanup DB: %v", err)
+	//}
+	//log.Printf("Cleaned up DB", r.Message)
+
 	err = testUsers(4)
 	if err != nil {
 		log.Error("Users test failed")
@@ -367,23 +374,23 @@ func main() {
 
 	log.Printf("\n\n")
 	log.Debug("INS TEST")
-	err = testInstructors(16)
+	err = testInstructors(5)
 	if err != nil {
 		log.Error("Instructor test failed")
 		return
 	}
 
-	log.Printf("\n\n")
-	log.Debug("LOGIN INS TEST")
-	err = testLoginIns(4)
-	if err != nil {
-		log.Error("user login test failed")
-		return
-	}
+	//log.Printf("\n\n")
+	//log.Debug("LOGIN INS TEST")
+	//err = testLoginIns(4)
+	//if err != nil {
+	//	log.Error("user login test failed")
+	//	return
+	//}
 
 	log.Printf("\n\n")
 	log.Debug("SESSIONS TEST")
-	err = testSessions(8)
+	err = testSessions(5)
 	if err != nil {
 		log.Error("Session test failed")
 		return

@@ -153,13 +153,14 @@ message InstructorInfo {
    string certification = 9;
    //repeated FitnessCategory fitnessSpecialties = 10;
 // XXX sqlite doesn't support array
-   FitnessCategory fitnessSpecialties = 10;
+   FitnessCategory fitnessType = 10;
    string lastName = 11;
    string city = 12;
    string country = 13;
    int32 ID = 14;
    //InstructorImage displayImage = 15;
    bytes displayImage = 15; 
+   string displayImageDesc = 16;
  
    // Internal to server
    string reviewInfoID = 101;
@@ -341,6 +342,7 @@ message PostInstructorDisplayImgReq {
    int32 instructorInfoID = 1;
    //InstructorImage img = 2;
    bytes blob = 2;
+   string picDesc = 3;
 }
 
 message PostInstructorDisplayImgReply {
