@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -14,6 +15,32 @@ import (
 )
 
 var client pb.ServerSvcClient
+
+func testInstructorImages(numIns int) error {
+
+	for i := 0; i < numIns; i++ {
+
+		log.WithFields(log.Fields{"IMG id ": i}).Debug("Pushing image")
+		var req pb.PostInstructorDisplayImgReq
+		req.InstructorInfoID = int32(i) + 1
+		imgData, err := ioutil.ReadFile(InsImages[i])
+		req.Blob = make([]byte, len(imgData))
+		copy(req.Blob, imgData)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to read jpeg")
+			return err
+		}
+		_, err = client.PostInstructorDisplayImg(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to push instructor image")
+			return err
+		}
+	}
+	return nil
+}
 
 func testInstructors(numIns int) error {
 
@@ -387,6 +414,12 @@ func main() {
 	//	log.Error("user login test failed")
 	//	return
 	//}
+
+	err = testInstructorImages(5)
+	if err != nil {
+		log.Error("Instructor image test failed")
+		return
+	}
 
 	log.Printf("\n\n")
 	log.Debug("SESSIONS TEST")

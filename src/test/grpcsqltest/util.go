@@ -133,7 +133,7 @@ var allSessions = []pb.SessionInfo{
 	{
 		SessionDesc: `This is a powerful guided self hypnosis trance experience designed to allow you to sweep away your own subconscious negativity and negative blocks. Clear out all of your subconscious or unconscious negative thoughts, old habits, and emotional baggage with your own positive mind control. 
 
-		Enjoy deep relaxation and improved focus, as you take this time to create your own most beneficial behaviours, by discovering new and empowering choices. With regular self hypnosis, you can truly allow your powerful, positive thinking self to emerge for your best present and brighter future.`,
+	With regular self hypnosis, you can truly allow your powerful, positive thinking self to emerge for your best present and brighter future.`,
 		DifficultyLevel: pb.SessionDifficulty_EASY,
 		PreviewVideoUrl: "https://www.youtube.com/watch?v=FiPDV9L5qpQ",
 		InstructorName:  "Michael Sealy",
@@ -180,20 +180,16 @@ var allIns = []pb.InstructorInfo{
 
 		"Hypnosis is a completely natural state of often deeply felt relaxation and focused attention, where positive suggestions can be more easily accepted by our subconscious minds. Imagine a fantastic and tranquil state of daydreaming, and that is very close to hypnosis! 
 
-		Hypnosis can bring us improved self control, clearer and empowered behavioural choices, and allow us to listen to our best inner resources. Many people experience a deep sense of calmness and serenity during hypnotic meditation and are often pleasantly surprised to see the ongoing, life enhancing results. 
-
-		Thank you greatly for your support, feel free to subscribe and comment on your great results, and I trust you will benefit from your time spent with positive hypnosis.
-
 		Peace & Enjoy`,
 	},
 }
 
 var InsImages = []string{
-	"sessionionimages/yoga1.jpg",
-	"sessionionimages/hiit1.jpeg",
-	"sessionionimages/yoga2.jpeg",
-	"sessionionimages/zumba.jpg",
-	"sessionionimages/meditation1.jpeg",
+	"/libera/bin/sessioninsimages/yoga1.jpg",
+	"/libera/bin/sessioninsimages/hiit1.jpeg",
+	"/libera/bin/sessioninsimages/yoga2.jpeg",
+	"/libera/bin/sessioninsimages/zumba.jpg",
+	"/libera/bin/sessioninsimages/meditation1.jpg",
 }
 
 //func GetNewInstructor() pb.InstructorInfo {
