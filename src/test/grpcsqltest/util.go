@@ -103,41 +103,46 @@ var certID = 1
 
 var allSessions = []pb.SessionInfo{
 	{
-		SessionDesc:     "Alright, lets be real. The winter months are coming to an end and it's time to transition from bears to gazelles! Whether you are looking to get comfortable in your swimwear or just more agile to move with the spring breeze let's start with this 20 min practice that moves us swiftly but mindfully. This 20 minute vinyasa practice is designed to help you build strength and endurance - mindfully. Yoga Tone invites strong breath to help tone the body! Invite your mind and body to start working for you instead of against you. Get strong with regular practice and comfortable in your beautiful body. Stay present. Let's move!",
-		DifficultyLevel: pb.SessionDifficulty_MODERATE,
-		PreviewVideoUrl: "https://www.youtube.com/watch?v=4O-b24WKdYA",
-		InstructorName:  "Adriene Smith",
-		SessionType:     pb.FitnessCategory_YOGA,
+		SessionDesc:      "Alright, lets be real. The winter months are coming to an end and it's time to transition from bears to gazelles! Whether you are looking to get comfortable in your swimwear or just more agile to move with the spring breeze let's start with this 20 min practice that moves us swiftly but mindfully. This 20 minute vinyasa practice is designed to help you build strength and endurance - mindfully. Yoga Tone invites strong breath to help tone the body! Invite your mind and body to start working for you instead of against you. Get strong with regular practice and comfortable in your beautiful body. Stay present. Let's move!",
+		DifficultyLevel:  pb.SessionDifficulty_MODERATE,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=4O-b24WKdYA",
+		InstructorName:   "Adriene Smith",
+		SessionType:      pb.FitnessCategory_YOGA,
+		InstructorInfoID: 1,
 	},
 	{
-		SessionDesc:     "This PURE, Cardio only workout will be intense right out of the gate! We are going to do 3 Tabata Intervals of easy to follow, effective but modifiable cardio exercises. Let's get our sweat ON!",
-		DifficultyLevel: pb.SessionDifficulty_DIFFICULT,
-		PreviewVideoUrl: "https://www.youtube.com/watch?v=TQPedXNPcBQ",
-		InstructorName:  "Shelly Dose",
-		SessionType:     pb.FitnessCategory_HIIT,
+		SessionDesc:      "This PURE, Cardio only workout will be intense right out of the gate! We are going to do 3 Tabata Intervals of easy to follow, effective but modifiable cardio exercises. Let's get our sweat ON!",
+		DifficultyLevel:  pb.SessionDifficulty_DIFFICULT,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=TQPedXNPcBQ",
+		InstructorName:   "Shelly Dose",
+		SessionType:      pb.FitnessCategory_CARDIO,
+		InstructorInfoID: 2,
 	},
 	{
-		SessionDesc:     "This is a thirty minute power yoga class. There are options for modifications throughout, so it's okay for people new to yoga (though I wouldn't say it's appropriate for absolute beginners). This is a vinyasa yoga class. Vinyasa means 'movemen't, so we will be constantly flowing and moving through the practice. If you're looking for a slower style with long holds I would recommend a hatha yoga practice. As always, honor your body, and work within a pain-free range.",
-		DifficultyLevel: pb.SessionDifficulty_MODERATE,
-		PreviewVideoUrl: "https://www.youtube.com/watch?v=qy_oIKf1ByM",
-		InstructorName:  "Carolina B",
-		SessionType:     pb.FitnessCategory_YOGA,
+		SessionDesc:      "This is a thirty minute power yoga class. There are options for modifications throughout, so it's okay for people new to yoga (though I wouldn't say it's appropriate for absolute beginners). This is a vinyasa yoga class. Vinyasa means 'movemen't, so we will be constantly flowing and moving through the practice. If you're looking for a slower style with long holds I would recommend a hatha yoga practice. As always, honor your body, and work within a pain-free range.",
+		DifficultyLevel:  pb.SessionDifficulty_MODERATE,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=qy_oIKf1ByM",
+		InstructorName:   "Carolina B",
+		SessionType:      pb.FitnessCategory_YOGA,
+		InstructorInfoID: 3,
 	},
 	{
-		SessionDesc:     "A 30 minutes zumba dance workout that you'll be able to do at home. Try this routine three times a week to keep in good shape and help you lose weight. Have fun dancing while you work out your whole body to the best zumba beats in this ultimate zumba tutorial!",
-		DifficultyLevel: pb.SessionDifficulty_MODERATE,
-		PreviewVideoUrl: "https://www.youtube.com/watch?v=qAJ6EQtGZ28",
-		InstructorName:  "Monica B",
-		SessionType:     pb.FitnessCategory_ZUMBA,
+		SessionDesc:      "A 30 minutes zumba dance workout that you'll be able to do at home. Try this routine three times a week to keep in good shape and help you lose weight. Have fun dancing while you work out your whole body to the best zumba beats in this ultimate zumba tutorial!",
+		DifficultyLevel:  pb.SessionDifficulty_MODERATE,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=qAJ6EQtGZ28",
+		InstructorName:   "Monica B",
+		SessionType:      pb.FitnessCategory_DANCE,
+		InstructorInfoID: 4,
 	},
 	{
 		SessionDesc: `This is a powerful guided self hypnosis trance experience designed to allow you to sweep away your own subconscious negativity and negative blocks. Clear out all of your subconscious or unconscious negative thoughts, old habits, and emotional baggage with your own positive mind control. 
 
 	With regular self hypnosis, you can truly allow your powerful, positive thinking self to emerge for your best present and brighter future.`,
-		DifficultyLevel: pb.SessionDifficulty_EASY,
-		PreviewVideoUrl: "https://www.youtube.com/watch?v=FiPDV9L5qpQ",
-		InstructorName:  "Michael Sealy",
-		SessionType:     pb.FitnessCategory_ZUMBA,
+		DifficultyLevel:  pb.SessionDifficulty_EASY,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=FiPDV9L5qpQ",
+		InstructorName:   "Michael Sealy",
+		SessionType:      pb.FitnessCategory_MEDITATION,
+		InstructorInfoID: 5,
 	},
 }
 
@@ -152,7 +157,7 @@ var allIns = []pb.InstructorInfo{
 	{
 		FirstName:   "Shelley",
 		LastName:    "Dose",
-		FitnessType: pb.FitnessCategory_HIIT,
+		FitnessType: pb.FitnessCategory_CARDIO,
 		Desc:        "Hi, my name is Shelly Dose and I want to move with you! My goal is to move you in as many ways as possible with athletic, low impact, high impact, HIIT, full body workouts, sculpt... you name it, I can teach it. I am a Certified Group Fitness Instructor with a long resume in the fitness industry. I have owned and operated a successful Outdoor Bootcamp Business, I teach Group Exercise/Fitness for Lifetime Fitness and much more. I enjoy teaching in the classroom immensely but my favorite place to sweat is in the comfort of my home.",
 	},
 
@@ -166,7 +171,7 @@ var allIns = []pb.InstructorInfo{
 	{
 		FirstName:   "Carolina",
 		LastName:    "B",
-		FitnessType: pb.FitnessCategory_ZUMBA,
+		FitnessType: pb.FitnessCategory_DANCE,
 		Desc:        "I feel blessed for being able to do what I love. Dance is my passion, and it has brought so many good things to my life, such as health, friends, and many good times. I hope I can share that with you thru my dancing and my favorite Dance Fitness and Zumba® routines. Thank you so much for the support and for watching these videos I make with so much love. Mwaaahhhh!",
 	},
 

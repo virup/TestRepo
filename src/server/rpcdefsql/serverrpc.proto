@@ -113,7 +113,8 @@ enum FitnessCategory {
     HIP_HOP = 202;
     ZUMBA = 203;
 
-    HIIT = 301;
+    CARDIO = 301;
+    HIIT = 302;
 }
 
 message ReviewInfo {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"pay"
 	pb "server/rpcdefsql"
 	"strings"
 
@@ -26,10 +25,8 @@ func getUserFromDB(uKey int32) (error, *pb.UserInfo) {
 	return err, u
 }
 
-func (s *server) SubscribeUser(ctx context.Context,
-	in *pb.SubscribeUserReq) (*pb.SubscribeUserReply, error) {
-
-	var resp pb.SubscribeUserReply
+/*
+func doSubscribe() error {
 	// Enable payment
 	if false {
 		err, customerPayID := pay.CreatePayingCustomer(
@@ -49,7 +46,15 @@ func (s *server) SubscribeUser(ctx context.Context,
 			return &resp, err
 		}
 	}
+}
+*/
 
+func (s *server) SubscribeUser(ctx context.Context,
+	in *pb.SubscribeUserReq) (*pb.SubscribeUserReply, error) {
+
+	var resp pb.SubscribeUserReply
+
+	//doSubscribe()
 	return &resp, nil
 }
 
