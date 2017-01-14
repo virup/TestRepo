@@ -1,62 +1,30 @@
-FROM golang:wheezy
-MAINTAINER Michele Bertasi
+FROM centos
+MAINTAINER flexconstructor@gmail.com
 
-ADD fs/ /
+ENV GOLANG_VERSION 1.7
+ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA256 702ad90f705365227e902b42d91dd1a40e48ca7f67a2f4b2fd052aaa4295cd95
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
-# install pagkages
-RUN apt-get update                                                      && \
-    apt-get install -y ncurses-dev libtolua-dev exuberant-ctags         && \
-    ln -s /usr/include/lua5.2/ /usr/include/lua                         && \
-    ln -s /usr/lib/x86_64-linux-gnu/liblua5.2.so /usr/lib/liblua.so     && \
-    cd /tmp                                                             && \
-# build and install vim
-    git clone https://github.com/vim/vim.git                            && \
-    cd vim                                                              && \
-    ./configure --with-features=huge --enable-luainterp                    \
-        --enable-gui=no --without-x --prefix=/usr                       && \
-    make VIMRUNTIMEDIR=/usr/share/vim/vim74                             && \
-    make install                                                        && \
-# get go tools
-    go get golang.org/x/tools/cmd/godoc                                 && \
-    go get github.com/nsf/gocode                                        && \
-    go get golang.org/x/tools/cmd/goimports                             && \
-    go get github.com/rogpeppe/godef                                    && \
-    go get golang.org/x/tools/cmd/gorename                              && \
-    go get github.com/golang/lint/golint                                && \
-    go get github.com/kisielk/errcheck                                  && \
-    go get github.com/jstemmer/gotags                                   && \
-    go get github.com/tools/godep                                       && \
-    mv /go/bin/* /usr/local/go/bin                                      && \
-# add dev user
-    adduser dev --disabled-password --gecos ""                          && \
-    echo "ALL            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers     && \
-    chown -R dev:dev /home/dev /go                                      && \
-# cleanup
-    rm -rf /go/src/* /go/pkg                                            && \
-    apt-get remove -y ncurses-dev                                       && \
-    apt-get autoremove -y                                               && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-USER dev
-ENV HOME /home/dev
-
-# install vim plugins
-RUN mkdir -p ~/.vim/bundle                                              && \
-    cd  ~/.vim/bundle                                                   && \
-    git clone --depth 1 https://github.com/gmarik/Vundle.vim.git        && \
-    git clone --depth 1 https://github.com/fatih/vim-go.git             && \
-    git clone --depth 1 https://github.com/majutsushi/tagbar.git        && \
-    git clone --depth 1 https://github.com/Shougo/neocomplete.vim.git   && \
-    git clone --depth 1 https://github.com/scrooloose/nerdtree.git      && \
-    git clone --depth 1 https://github.com/bling/vim-airline.git        && \
-    git clone --depth 1 https://github.com/tpope/vim-fugitive.git       && \
-    git clone --depth 1 https://github.com/jistr/vim-nerdtree-tabs.git  && \
-    git clone --depth 1 https://github.com/mbbill/undotree.git          && \
-    git clone --depth 1 https://github.com/Lokaltog/vim-easymotion.git  && \
-    git clone --depth 1 https://github.com/scrooloose/nerdcommenter.git && \
-    vim +PluginInstall +qall                                            && \
-# cleanup
-    rm -rf Vundle.vim/.git vim-go/.git tagbar/.git neocomplete.vim/.git    \
-        nerdtree/.git vim-airline/.git vim-fugitive/.git                   \
-        vim-nerdtree-tabs/.git undotree/.git vim-easymotion/.git           \
-        nerdcommenter/.git
+RUN yum update -y                                                  \
+ && yum install -y wget                                            \
+                  tar                                              \
+                  g++                                              \
+                  gcc                                              \
+                  libc6-dev                                        \
+                  make                                             \
+                  git                                              \
+                  python-setuptools                                \
+ && easy_install supervisor                                        \
+ && mkdir -p /var/log/supervisor                                   \
+ && echo_supervisord_conf > /etc/supervisord.conf                  \
+ && curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz             \
+ && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
+ && tar -C /usr/local -xzf golang.tar.gz                           \
+ && rm golang.tar.gz                                               \
+ && mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH" \
+ && git clone https://github.com/docker-library/golang.git         \
+ && cd golang                                                      \
+ && sh update.sh                                                   \
+ && cp go-wrapper /usr/local/bin/
