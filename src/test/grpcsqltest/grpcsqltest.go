@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -19,10 +20,51 @@ import (
 
 var client pb.ServerSvcClient
 
-func testInstructorImages() error {
+func testPostReview() error {
+
+	numSessions := 2
+	numIns := 2
+
+	for i := 0; i < numIns; i++ {
+
+		var r pb.UserInstructorReview
+		var req pb.PostInstructorReviewReq
+		req.Review = &r
+		req.Review.InstructorID = int32(i) + 1
+		req.Review.UserID = 1
+		req.Review.InstructorReview = "my review" + strconv.Itoa(numIns)
+		_, err := client.PostInstructorReview(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to push instructor review")
+			return err
+		}
+	}
+
+	for i := 0; i < numSessions; i++ {
+
+		var r pb.UserSessionReview
+		var req pb.PostSessionReviewReq
+		req.Review = &r
+		req.Review.SessionID = int32(i) + 1
+		req.Review.UserID = 1
+		req.Review.SessionReview = "my session review" +
+			strconv.Itoa(numSessions)
+		_, err := client.PostSessionReview(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to push session review")
+			return err
+		}
+	}
+	return nil
+}
+
+func testInstructorImages(numIns int) error {
 
 	numIns := GetNumInstructorImages()
-
 	for i := 0; i < numIns; i++ {
 
 		log.WithFields(log.Fields{"IMG id ": i}).Debug("Pushing image")
@@ -450,6 +492,12 @@ func main() {
 	err = testInstructorImages()
 	if err != nil {
 		log.Error("Instructor image test failed")
+		return
+	}
+
+	err = testPostReview()
+	if err != nil {
+		log.Error("review test FAILED")
 		return
 	}
 
