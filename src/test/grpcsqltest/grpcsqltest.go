@@ -16,7 +16,9 @@ import (
 
 var client pb.ServerSvcClient
 
-func testInstructorImages(numIns int) error {
+func testInstructorImages() error {
+
+	numIns := GetNumInstructorImages()
 
 	for i := 0; i < numIns; i++ {
 
@@ -42,8 +44,9 @@ func testInstructorImages(numIns int) error {
 	return nil
 }
 
-func testInstructors(numIns int) error {
+func testInstructors() error {
 
+	numIns := GetNumInstructors()
 	var allreq pb.GetInstructorsReq
 	for i := 0; i < numIns; i++ {
 
@@ -97,8 +100,9 @@ func testInstructors(numIns int) error {
 	return nil
 }
 
-func testLoginIns(numIns int) error {
+func testLoginIns() error {
 
+	numIns := GetNumInstructors()
 	for i := 0; i < numIns; i++ {
 
 		var req pb.LoginReq
@@ -292,8 +296,9 @@ func testUsers(numUsers int) error {
 	return nil
 }
 
-func testSessions(numSessions int) error {
+func testSessions() error {
 
+	numSessions := GetNumSessions()
 	var allreq pb.GetSessionsReq
 	for i := 0; i < numSessions; i++ {
 
@@ -401,7 +406,7 @@ func main() {
 
 	log.Printf("\n\n")
 	log.Debug("INS TEST")
-	err = testInstructors(5)
+	err = testInstructors()
 	if err != nil {
 		log.Error("Instructor test failed")
 		return
@@ -409,13 +414,13 @@ func main() {
 
 	//log.Printf("\n\n")
 	//log.Debug("LOGIN INS TEST")
-	//err = testLoginIns(4)
+	//err = testLoginIns()
 	//if err != nil {
 	//	log.Error("user login test failed")
 	//	return
 	//}
 
-	err = testInstructorImages(5)
+	err = testInstructorImages()
 	if err != nil {
 		log.Error("Instructor image test failed")
 		return
@@ -423,7 +428,7 @@ func main() {
 
 	log.Printf("\n\n")
 	log.Debug("SESSIONS TEST")
-	err = testSessions(5)
+	err = testSessions()
 	if err != nil {
 		log.Error("Session test failed")
 		return
