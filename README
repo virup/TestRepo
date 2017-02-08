@@ -6,10 +6,10 @@ mkdir soulfit
 cd soulfit
 git clone github.com/LiberaLabs/libera
 
--- Server runs in a rocksdb container, so lets build the container
+-- Server runs in a centos golang container, lets build it.
 
-# Build the image using rocksdb Dockerfile
-docker build -f ~/soulfit/libera/pkg/Dockerfile -t soulfit/libera ~/soulfit/libera/pkg/
+# Build the server image
+docker build -f ~/soulfit/libera/pkg/server/Dockerfile -t soulfit/libera ~/soulfit/libera/pkg/server
 
 # Run the container with an open port for the server and mounted repo
 docker run -p 8080:8080 --privileged -it -v ~/soulfit/libera:/libera soulfit/libera  /bin/bash
