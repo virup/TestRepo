@@ -291,6 +291,33 @@ By your own inner direction may you continue to find your greatest waking potent
 		SessionType:      pb.FitnessCategory_YOGA,
 		InstructorInfoID: 3,
 	},
+	{
+		SessionDesc: `If you're familiar with Bollywood culture, then we don't have to tell you that the music and dancing in these films are completely infectious. Bombay Jam takes the same energizing spirit of Bollywood, but gives it a fitness twist, creating a full-body cardio workout that keeps you moving and smiling the entire way though. Get ready to jump, squat, swivel, and pivot as Bombay Jam Master Trainer Janani Chalaka leads you through two different routines that will definitely get your heart pumping.`,
+
+		DifficultyLevel:  pb.SessionDifficulty_MODERATE,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=pzob_Br-IWQ",
+		InstructorName:   "BombayJam",
+		SessionType:      pb.FitnessCategory_DANCE,
+		InstructorInfoID: 9,
+	},
+	{
+		SessionDesc: `Are you curios to see what Bombay Jam® is all about? Take a look!
+		`,
+		DifficultyLevel:  pb.SessionDifficulty_MODERATE,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=I2Xz_9UTtRA",
+		InstructorName:   "BombayJam",
+		SessionType:      pb.FitnessCategory_DANCE,
+		InstructorInfoID: 9,
+	},
+	{
+		SessionDesc: `Watch our cardio dance routine to the party number, Saturday, Saturday! Have a blast while you melt away the calories with Bombay Jam Bollywood fitness classes!
+		`,
+		DifficultyLevel:  pb.SessionDifficulty_MODERATE,
+		PreviewVideoUrl:  "https://www.youtube.com/watch?v=NNFtD3nKqJU",
+		InstructorName:   "BombayJam",
+		SessionType:      pb.FitnessCategory_DANCE,
+		InstructorInfoID: 9,
+	},
 }
 
 var allIns = []pb.InstructorInfo{
@@ -364,6 +391,14 @@ By using your own resistance and muscle control, you'll leave with a stronger co
 
 		You can visit my website https://www.dancefitnesswithjessica.com for instructional dance fitness workout programs, available on DVD and MORE!`,
 	},
+
+	{
+		FirstName:   "BombayJam",
+		LastName:    "",
+		FitnessType: pb.FitnessCategory_DANCE,
+		Desc: `
+		Leave your inhibitions behind and join our action-packed Bollywood dance fitness program. Sign up for a class in your area with Bombay Jam today!`,
+	},
 }
 
 var InsImages = []string{
@@ -375,6 +410,7 @@ var InsImages = []string{
 	"/libera/bin/sessioninsimages/dancedoonya.jpg",
 	"/libera/bin/sessioninsimages/popsugar.jpg",
 	"/libera/bin/sessioninsimages/jessica.jpg",
+	"/libera/bin/sessioninsimages/bombayjam.jpg",
 }
 
 //func GetNewInstructor() pb.InstructorInfo {
