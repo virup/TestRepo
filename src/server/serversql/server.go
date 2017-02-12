@@ -163,6 +163,20 @@ func initDB() error {
 		}
 	}
 
+	if !db.HasTable(&pb.UserInstructorReview{}) {
+		err = db.CreateTable(&pb.UserInstructorReview{}).Error
+		if err != nil {
+			panic("Couldn't create ins review table")
+		}
+	}
+
+	if !db.HasTable(&pb.UserSessionReview{}) {
+		err = db.CreateTable(&pb.UserSessionReview{}).Error
+		if err != nil {
+			panic("Couldn't create session review table")
+		}
+	}
+
 	//if !db.HasTable(&pb.InstructorImage{}) {
 	//	err = db.CreateTable(&pb.InstructorImage{}).Error
 	//	if err != nil {

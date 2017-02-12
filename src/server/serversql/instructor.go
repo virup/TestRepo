@@ -63,6 +63,23 @@ func (s *server) GetInstructor(ctx context.Context,
 	return &resp, nil
 }
 
+func (s *server) PostInstructorReview(ctx context.Context,
+	in *pb.PostInstructorReviewReq) (*pb.PostInstructorReviewReply,
+	error) {
+
+	var resp pb.PostInstructorReviewReply
+	err := db.Save(&in.Review).Error
+	if err != nil {
+		log.WithFields(log.Fields{"instructorReview": in,
+			"error": err}).Error("Failed to write review to DB")
+		return nil, err
+	}
+	resp.ReviewID = in.Review.ID
+	log.WithFields(log.Fields{"instructorReview": in}).
+		Debug("Added to DB")
+	return &resp, nil
+}
+
 func (s *server) PostInstructorDisplayImg(ctx context.Context,
 	in *pb.PostInstructorDisplayImgReq) (*pb.PostInstructorDisplayImgReply,
 	error) {

@@ -212,3 +212,20 @@ func (ser *server) PostSession(ctx context.Context,
 		Debug("Post session succeeded")
 	return &resp, nil
 }
+
+func (s *server) PostSessionReview(ctx context.Context,
+	in *pb.PostSessionReviewReq) (*pb.PostSessionReviewReply,
+	error) {
+
+	var resp pb.PostSessionReviewReply
+	err := db.Save(&in.Review).Error
+	if err != nil {
+		log.WithFields(log.Fields{"sessionReview": in,
+			"error": err}).Error("Failed to write review to DB")
+		return nil, err
+	}
+	resp.ReviewID = in.Review.ID
+	log.WithFields(log.Fields{"sessionReview": in}).
+		Debug("Added to DB")
+	return &resp, nil
+}

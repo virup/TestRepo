@@ -21,6 +21,8 @@ service ServerSvc {
   rpc GetSessionsForFitnessType (GetSessionsForFitnessReq) returns
      (GetSessionsForFitnessReply) {}
   rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
+  rpc PostSessionReview(PostSessionReviewReq) returns (PostSessionReviewReply) {}
+  rpc PostInstructorReview(PostInstructorReviewReq) returns (PostInstructorReviewReply) {}
  
   // Post session preview
   rpc PostSessionPreviewVideo(PostSessionPreviewVideoReq) 
@@ -117,12 +119,38 @@ enum FitnessCategory {
     HIIT = 302;
 }
 
-message ReviewInfo {
-   message Review {
-      float rating = 1;
-      string review = 2;
-   } 
-   repeated Review reviewList = 1;
+// XXX Add foreign key constraint with ins and user table
+message UserInstructorReview {
+   float InstructorRating = 1;
+   string InstructorReview = 2;
+   int32 ID = 3;
+   int32 instructorID = 4;
+   int32 userID = 5;
+}
+
+message PostInstructorReviewReq {
+   UserInstructorReview review = 1;
+}
+
+message PostInstructorReviewReply {
+   int32 reviewID = 1;
+}
+
+// XXX Add foreign key constraint with session and user table
+message UserSessionReview {
+   float sessionRating = 1;
+   string sessionReview = 2;
+   int32 ID = 3;
+   int32 sessionID = 4;
+   int32 userID = 5;
+}
+
+message PostSessionReviewReq {
+   UserSessionReview review = 1;
+}
+
+message PostSessionReviewReply {
+   int32 reviewID = 1;
 }
 
 message CreditCard {
