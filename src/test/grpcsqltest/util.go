@@ -459,19 +459,15 @@ func randSeq(n int) string {
 	}
 	return string(b)
 }
-func GetUrl() string {
+func getUrl() string {
 	serv := os.Getenv("SERVERIP")
 	if serv == "" {
 		fmt.Printf("env var $SERVERIP not set\n")
 		os.Exit(-1)
 	}
-	return serv + ":8099"
+	return serv
 }
-func GetHttpUrl() string {
-	serv := os.Getenv("SERVERIP")
-	if serv == "" {
-		fmt.Printf("SERVERIP not set")
-		os.Exit(-1)
-	}
-	return "http://" + serv + ":8099"
+
+func getAddressAndPort() string {
+	return getUrl() + ":8099"
 }

@@ -14,6 +14,10 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
@@ -79,13 +83,41 @@ func (s *server) RecordEvent(ctx context.Context,
 }
 
 func initGprcServer() {
-	lis, err := net.Listen("tcp", port)
 
+	certificate, err := tls.LoadX509KeyPair(
+		"../cert/127.0.0.1.crt",
+		"../cert/127.0.0.1.key",
+	)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("failed to load cert: %s", err)
 	}
 
-	s := grpc.NewServer()
+	certPool := x509.NewCertPool()
+	bs, err := ioutil.ReadFile("../cert/My_Root_CA.crt")
+	if err != nil {
+		log.Fatalf("failed to read client ca cert: %s", err)
+	}
+
+	ok := certPool.AppendCertsFromPEM(bs)
+	if !ok {
+		log.Fatal("failed to append client certs")
+	}
+
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalf("failed to listen: %s", err)
+	}
+
+	tlsConfig := &tls.Config{
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		Certificates: []tls.Certificate{certificate},
+		ClientCAs:    certPool,
+	}
+
+	serverOption := grpc.Creds(credentials.NewTLS(tlsConfig))
+	s := grpc.NewServer(serverOption)
+
+
 	log.Debug("registering server...")
 	pb.RegisterServerSvcServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
@@ -151,7 +183,7 @@ func initDB() error {
 
 func main() {
 	// open a file
-	f, err := os.OpenFile("serversql.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	f, err := os.OpenFile("server.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("error opening file: %v", err)
 		return
