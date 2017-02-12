@@ -33,6 +33,10 @@ service ServerSvc {
      (EnrollInstructorReply) {}
   rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
   rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
+  rpc RegisterInstructorBankAcct(RegisterInstructorBankAcctReq)
+     returns (RegisterInstructorBankAcctReply) {}
+  rpc GetInstructorBankAcct(GetInstructorBankAcctReq)
+     returns (GetInstructorBankAcctReply) {}
 
   // Post a instructor pic
   rpc PostInstructorDisplayImg(PostInstructorDisplayImgReq)
@@ -45,6 +49,7 @@ service ServerSvc {
  
   // Subscribe to the pay plan TBD
   rpc SubscribeUser(SubscribeUserReq) returns (SubscribeUserReply) {}
+  rpc GetUserCC(GetUserCCReq) returns (GetUserCCReply) {}
 
   rpc Login(LoginReq) returns (LoginReply) {}
 
@@ -159,15 +164,16 @@ message CreditCard {
   string ExpiryMonth = 3;
   string ExpiryYear = 4;
   string CCV = 5;
-  bool isDefault = 6;
-  int32 userInfoID = 7;
+  int32 userID = 7;
+  int32 ID = 8; // Primary key
 }
 
-message BankInfo {
+message BankAcct {
      string RoutingNum = 1;
      string AcctNum = 2;
      string BankName = 3;
-     int32 instructorInfoID = 4;
+     int32 instructorID = 4;
+     int32 ID = 5; // Primary key
 }
 
 message InstructorInfo {
@@ -351,12 +357,40 @@ message LoginReply {
    InstructorInfo instructor = 4;
 }
 
+message RegisterInstructorBankAcctReq {
+   int32 instructorID = 1;
+   BankAcct bankAcct = 2;
+}
+
+message RegisterInstructorBankAcctReply {
+   int32 bankAcctID = 1;
+}
+
+message GetInstructorBankAcctReq {
+   int32 instructorID = 1;
+   int32 bankAcctID = 2; // optional
+}
+
+message GetInstructorBankAcctReply {
+   BankAcct bankAcct = 1;
+}
+
 message SubscribeUserReq {
    int32 userID = 1;
-   CreditCard paymentCard = 2;
+   CreditCard payCard = 2;
 }
 
 message SubscribeUserReply {
+   int32 ccID = 1;
+}
+
+message GetUserCCReq {
+   int32 userID = 1;
+   int32 ccID = 2; // optional
+}
+
+message GetUserCCReply {
+   CreditCard payCard = 1;
 }
 
 message InstructorImage {

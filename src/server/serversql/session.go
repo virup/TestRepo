@@ -32,7 +32,6 @@ func (s *server) GetSessionsForInstructor(ctx context.Context,
 	var err error
 	var sList []pb.SessionInfo
 
-	//err = SessionTable.
 	err = db.
 		Where(pb.SessionInfo{InstructorInfoID: in.InstructorInfoID}).
 		Find(&sList).Error

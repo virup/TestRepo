@@ -55,6 +55,13 @@ func (s *server) SubscribeUser(ctx context.Context,
 	var resp pb.SubscribeUserReply
 
 	//doSubscribe()
+	err := db.Save(&in.PayCard).Error
+	if err != nil {
+		log.WithFields(log.Fields{"userID": in.UserID,
+			"error": err}).Error("Failed to add cc to DB for user")
+		return nil, err
+	}
+	resp.CcID = in.PayCard.ID
 	return &resp, nil
 }
 
@@ -104,7 +111,6 @@ func (s *server) GetUsers(ctx context.Context,
 	var resp pb.GetUsersReply
 	var err error
 
-	//err = UserTable.Find(&uList).Error
 	err = db.Find(&uList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -130,7 +136,6 @@ func (s *server) Login(ctx context.Context,
 	userFound := true
 	insFound := true
 
-	//err = UserTable.
 	err = db.
 		Where(pb.UserInfo{Email: in.Email}).
 		Find(&uList).Error
@@ -140,7 +145,6 @@ func (s *server) Login(ctx context.Context,
 		userFound = false
 	}
 
-	//err = InsTable.
 	err = db.
 		Where(pb.InstructorInfo{Email: in.Email}).
 		Find(&iList).Error
@@ -202,4 +206,34 @@ func postUserDB(in pb.UserInfo) (err error, uKey int32) {
 	log.WithFields(log.Fields{"userInfo": in, "key": uKey}).
 		Debug("Added to DB")
 	return nil, uKey
+}
+
+func (s *server) GetUserCC(ctx context.Context,
+	in *pb.GetUserCCReq) (*pb.GetUserCCReply,
+	error) {
+
+	var resp pb.GetUserCCReply
+	var err error
+
+	var i *pb.CreditCard = new(pb.CreditCard)
+	if in.CcID > 0 {
+		err = db.First(i, in.CcID).Error
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get user CC from DB")
+			return &resp, err
+		}
+	} else if in.UserID > 0 {
+		err = db.
+			Where(pb.CreditCard{UserID: in.UserID}).
+			Find(i).Error
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get cc from DB using userID")
+			return &resp, err
+		}
+	}
+	resp.PayCard = i
+	log.Debug("Success read user cc from DB")
+	return &resp, nil
 }

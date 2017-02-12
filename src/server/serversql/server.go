@@ -11,12 +11,13 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -117,7 +118,6 @@ func initGprcServer() {
 	serverOption := grpc.Creds(credentials.NewTLS(tlsConfig))
 	s := grpc.NewServer(serverOption)
 
-
 	log.Debug("registering server...")
 	pb.RegisterServerSvcServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
@@ -177,19 +177,19 @@ func initDB() error {
 		}
 	}
 
-	//if !db.HasTable(&pb.InstructorImage{}) {
-	//	err = db.CreateTable(&pb.InstructorImage{}).Error
-	//	if err != nil {
-	//		panic("Couldn't create image table")
-	//	}
-	//}
+	if !db.HasTable(&pb.CreditCard{}) {
+		err = db.CreateTable(&pb.CreditCard{}).Error
+		if err != nil {
+			panic("Couldn't create cc table")
+		}
+	}
 
-	//if !db.HasTable(&pb.SessionVideo{}) {
-	//	err = db.CreateTable(&pb.SessionVideo{}).Error
-	//	if err != nil {
-	//		panic("Couldn't create video table")
-	//	}
-	//}
+	if !db.HasTable(&pb.BankAcct{}) {
+		err = db.CreateTable(&pb.BankAcct{}).Error
+		if err != nil {
+			panic("Couldn't create bank info table")
+		}
+	}
 
 	log.Debug("Successfully opened  database and created tables")
 	return nil

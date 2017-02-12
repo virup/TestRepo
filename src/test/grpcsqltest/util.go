@@ -413,11 +413,23 @@ var InsImages = []string{
 	"/libera/bin/sessioninsimages/bombayjam.jpg",
 }
 
-//func GetNewInstructor() pb.InstructorInfo {
-
-//}
-
 var nextIns = 0
+
+func GetNewBankAcct(insID int) pb.BankAcct {
+	var acct pb.BankAcct
+	acct.AcctNum = strconv.Itoa(insID)
+	acct.InstructorID = int32(insID)
+	acct.BankName = "Bank of America"
+	return acct
+}
+
+func GetNewCC(userID int) pb.CreditCard {
+	var cc pb.CreditCard
+	cc.Number = "1111-2222-3333-4444"
+	cc.CCV = "123"
+	cc.UserID = int32(userID)
+	return cc
+}
 
 func GetNewInstructor() pb.InstructorInfo {
 
