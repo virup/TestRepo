@@ -12,6 +12,9 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"crypto/tls"
+	"crypto/x509"
+	"google.golang.org/grpc/credentials"
 )
 
 var client pb.ServerSvcClient
@@ -367,13 +370,37 @@ func main() {
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
 
-	address := GetUrl()
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	url := getUrl()
+	addressAndPort := getAddressAndPort()
+	certificate, err := tls.LoadX509KeyPair(
+		"../cert/127.0.0.1.crt",
+		"../cert/127.0.0.1.key",
+	)
+
+	certPool := x509.NewCertPool()
+	bs, err := ioutil.ReadFile("../cert/My_Root_CA.crt")
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("failed to read ca cert: %s", err)
+	}
+
+	ok := certPool.AppendCertsFromPEM(bs)
+	if !ok {
+		log.Fatal("failed to append certs")
+	}
+
+	transportCreds := credentials.NewTLS(&tls.Config{
+		ServerName:   url,
+		Certificates: []tls.Certificate{certificate},
+		RootCAs:      certPool,
+	})
+
+	dialOption := grpc.WithTransportCredentials(transportCreds)
+	conn, err := grpc.Dial(addressAndPort, dialOption)
+	if err != nil {
+		log.Fatalf("failed to dial server: %s", err)
 	}
 	defer conn.Close()
+
 	client = pb.NewServerSvcClient(conn)
 
 	r, err := client.GetStatus(context.Background(),

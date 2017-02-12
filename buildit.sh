@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 go_back() {
  cd - > /dev/null
 }
@@ -37,13 +38,13 @@ build_clienttest() {
 }
 
 
-build_serversql() {
+build_server() {
  echo "Cleaning up old sql server..."
  rm -f $OUTDIR/serversql
  cd src/server/serversql
 
  echo "Building server sql..."
- go build -gcflags "-N -l" -o $OUTDIR/serversql
+ go build -gcflags "-N -l" -o $OUTDIR/server
  go_back
 }
 
@@ -51,7 +52,7 @@ build_serversql() {
 # build only specific things
 main() {
  build_protocsql
- build_serversql
+ build_server
  build_grpcsqltest
  #build_clienttest
 }
