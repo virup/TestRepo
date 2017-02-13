@@ -141,3 +141,50 @@ func postInstructorDB(in pb.InstructorInfo) (err error, iKey int32) {
 		Debug("Added to DB")
 	return nil, iKey
 }
+
+func (s *server) RegisterInstructorBankAcct(ctx context.Context,
+	in *pb.RegisterInstructorBankAcctReq) (*pb.RegisterInstructorBankAcctReply,
+	error) {
+
+	var resp pb.RegisterInstructorBankAcctReply
+	err := db.Save(&in.BankAcct).Error
+	if err != nil {
+		log.WithFields(log.Fields{"instructorBankAcct": in,
+			"error": err}).Error("Failed to write bank acct to DB")
+		return nil, err
+	}
+	resp.BankAcctID = in.BankAcct.ID
+	log.WithFields(log.Fields{"instructorBankAcct": in}).
+		Debug("Added to DB")
+	return &resp, nil
+}
+
+func (s *server) GetInstructorBankAcct(ctx context.Context,
+	in *pb.GetInstructorBankAcctReq) (*pb.GetInstructorBankAcctReply,
+	error) {
+
+	var resp pb.GetInstructorBankAcctReply
+	var err error
+
+	var i *pb.BankAcct = new(pb.BankAcct)
+	if in.BankAcctID > 0 {
+		err = db.First(i, in.BankAcctID).Error
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get instructor bank from DB")
+			return &resp, err
+		}
+	} else if in.InstructorID > 0 {
+		err = db.
+			Where(pb.BankAcct{InstructorID: in.InstructorID}).
+			Find(i).Error
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get bankAcct from DB using instructorID")
+			return &resp, err
+		}
+	}
+	resp.BankAcct = i
+	log.Debug("Success read back acct from DB")
+	return &resp, nil
+}

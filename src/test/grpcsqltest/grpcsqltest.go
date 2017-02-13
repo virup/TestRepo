@@ -11,10 +11,11 @@ import (
 
 	pb "server/rpcdefsql"
 
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"crypto/tls"
 	"crypto/x509"
+
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -62,7 +63,7 @@ func testPostReview() error {
 	return nil
 }
 
-func testInstructorImages(numIns int) error {
+func testInstructorImages() error {
 
 	numIns := GetNumInstructorImages()
 	for i := 0; i < numIns; i++ {
@@ -86,6 +87,100 @@ func testInstructorImages(numIns int) error {
 			return err
 		}
 	}
+	return nil
+}
+
+func testUserCC(numUsers int) error {
+
+	for i := 0; i < numUsers; i++ {
+
+		var req pb.SubscribeUserReq
+		var ireq pb.GetUserCCReq
+
+		cc := GetNewCC(i + 1)
+		req.PayCard = &cc
+
+		log.WithFields(log.Fields{"userCC req": req}).Debug("Adding user CC")
+		r, err := client.SubscribeUser(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to add user cc")
+			return err
+		}
+
+		ireq.CcID = r.CcID
+		gr, err := client.GetUserCC(
+			context.Background(), &ireq)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get user cc")
+			return err
+		}
+		log.WithFields(log.Fields{"userCC": gr}).
+			Debug("Received user cc with ccid")
+
+		ireq.CcID = 0
+		ireq.UserID = int32(i + 1)
+		gr, err = client.GetUserCC(
+			context.Background(), &ireq)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get user cc with userid")
+			return err
+		}
+		log.WithFields(log.Fields{"userCC": gr}).
+			Debug("Received user cc with userid")
+
+	}
+
+	return nil
+}
+
+func testInsBankAcct() error {
+
+	numIns := GetNumInstructors()
+	for i := 0; i < numIns; i++ {
+
+		var req pb.RegisterInstructorBankAcctReq
+		var ireq pb.GetInstructorBankAcctReq
+
+		bankAcct := GetNewBankAcct(i + 1)
+		req.BankAcct = &bankAcct
+
+		log.WithFields(log.Fields{"ins bank req": req}).Debug("Adding instructor bank")
+		r, err := client.RegisterInstructorBankAcct(context.Background(),
+			&req)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to add instructor bank")
+			return err
+		}
+
+		ireq.BankAcctID = r.BankAcctID
+		gr, err := client.GetInstructorBankAcct(
+			context.Background(), &ireq)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get instructor bank")
+			return err
+		}
+		log.WithFields(log.Fields{"insBank": gr}).
+			Debug("Received bank acct with bank ID")
+
+		ireq.BankAcctID = 0
+		ireq.InstructorID = int32(i + 1)
+		gr, err = client.GetInstructorBankAcct(
+			context.Background(), &ireq)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed" +
+				" to get instructor bank with instructor id")
+			return err
+		}
+		log.WithFields(log.Fields{"insBank": gr}).
+			Debug("Received bank acct with ins id")
+	}
+
 	return nil
 }
 
@@ -498,6 +593,18 @@ func main() {
 	err = testPostReview()
 	if err != nil {
 		log.Error("review test FAILED")
+		return
+	}
+
+	err = testInsBankAcct()
+	if err != nil {
+		log.Error("ins bank test FAILED")
+		return
+	}
+
+	err = testUserCC(4)
+	if err != nil {
+		log.Error("user cc test FAILED")
 		return
 	}
 
