@@ -2,9 +2,7 @@ package main
 
 import (
 	pb "server/rpcdefsql"
-
 	log "github.com/Sirupsen/logrus"
-
 	"golang.org/x/net/context"
 )
 
@@ -13,20 +11,17 @@ func GetInstructorFromDB(iKey int32) (error, *pb.InstructorInfo) {
 	var err error
 
 	var i *pb.InstructorInfo = new(pb.InstructorInfo)
-	//err = InsTable.First(i, iKey).Error
+
 	err = db.First(i, iKey).Error
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to get instructor from DB")
+		log.WithFields(log.Fields{"error": err}).Error("Failed to get instructor from DB")
 		return err, i
 	}
-	log.WithFields(log.Fields{"instructorInfo": i, "key": iKey}).
-		Debug("Read from DB")
+	log.WithFields(log.Fields{"instructorInfo": i, "key": iKey}).Debug("Read from DB")
 	return err, i
 }
 
-func (s *server) GetInstructors(ctx context.Context,
-	in *pb.GetInstructorsReq) (*pb.GetInstructorsReply, error) {
+func (s *server) GetInstructors(ctx context.Context, in *pb.GetInstructorsReq) (*pb.GetInstructorsReply, error) {
 
 	var iList []pb.InstructorInfo
 	var resp pb.GetInstructorsReply
@@ -39,7 +34,7 @@ func (s *server) GetInstructors(ctx context.Context,
 		return &resp, err
 	}
 
-	log.Printf("\n")
+
 	log.WithFields(log.Fields{"instructor": iList}).Debug("Get allinstructor success")
 	for i, _ := range iList {
 		resp.InstructorList = append(resp.InstructorList, &iList[i])
