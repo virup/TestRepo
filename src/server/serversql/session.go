@@ -5,34 +5,39 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
+	twilio "github.com/xaviiic/twilioGo"
 	"golang.org/x/net/context"
 )
 
-// Given a sessionKey, return the SessionInfo
+const (
+	TWILIO_ACCOUNT_ID = "ACcb259fbd219b08efc012786fb4e3fae9"
+	TWILLIO_KEY_ID    = "a3a2315244c7080d373422f8801eacd1"
+)
+
+// getSessionFromDB - Given a sessionKey, return the SessionInfo
 func getSessionFromDB(sKey int32) (error, *pb.SessionInfo) {
-	var err error
-	var s *pb.SessionInfo = new(pb.SessionInfo)
-	//err = SessionTable.First(s, sKey).Error
-	err = db.First(s, sKey).Error
+	var s pb.SessionInfo
+	err := db.First(&s, sKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
-		return err, s
+		return err, &s
 	}
 	log.WithFields(log.Fields{"sessionInfo": s, "key": sKey}).
 		Debug("Read from DB")
-	return err, s
+	return err, &s
 }
 
+// GetSessionsForInstructor - Find the sessions created by the specified instructor
 func (s *server) GetSessionsForInstructor(ctx context.Context,
 	in *pb.GetSessionsForInstructorReq) (*pb.GetSessionsForInstructorReply,
 	error) {
 
 	var resp pb.GetSessionsForInstructorReply
-	var err error
 	var sList []pb.SessionInfo
 
-	err = db.
+
+	err := db.
 		Where(pb.SessionInfo{InstructorInfoID: in.InstructorInfoID}).
 		Find(&sList).Error
 	if err != nil {
@@ -40,6 +45,7 @@ func (s *server) GetSessionsForInstructor(ctx context.Context,
 			" to get sessions from DB")
 		return &resp, err
 	}
+
 	for i, _ := range sList {
 		resp.SessionList = append(resp.SessionList, &sList[i])
 	}
@@ -48,6 +54,7 @@ func (s *server) GetSessionsForInstructor(ctx context.Context,
 	return &resp, err
 }
 
+// GetSessionsForFitnessType - Returns all sessions which are of the particular session type.
 func (s *server) GetSessionsForFitnessType(ctx context.Context,
 	in *pb.GetSessionsForFitnessReq) (*pb.GetSessionsForFitnessReply,
 	error) {
@@ -56,7 +63,6 @@ func (s *server) GetSessionsForFitnessType(ctx context.Context,
 	var err error
 	var sList []pb.SessionInfo
 
-	//err = SessionTable.
 	err = db.
 		Where(pb.SessionInfo{SessionType: in.FitCategory}).
 		Find(&sList).Error
@@ -166,18 +172,6 @@ func (ser *server) PostSessionPreviewVideo(ctx context.Context,
 	log.WithFields(log.Fields{"previewVideoInfo": in.VidUrl}).
 		Debug("Received post session preview videorequest")
 
-	//log.WithFields(log.Fields{"previewVideoInfo": in.Vid}).
-	//	Debug("Received post session preview videorequest")
-
-	//err = db.Save(&in.Vid).Error
-	//if err != nil {
-	//	log.WithFields(log.Fields{"sessionVid": in,
-	//		"error": err}).Error("Failed to write video to DB")
-	//	return &resp, err
-	//}
-
-	//err = db.First(&session, in.SessionID).
-	//	Update(pb.SessionInfo{PreviewVideoID: in.Vid.ID}).Error
 	err = db.First(&session, in.SessionID).
 		Update(pb.SessionInfo{PreviewVideoUrl: in.VidUrl}).Error
 	if err != nil {
@@ -186,45 +180,60 @@ func (ser *server) PostSessionPreviewVideo(ctx context.Context,
 		return &resp, err
 	}
 
-	//log.WithFields(log.Fields{"session": in.Vid}).
-	//	Debug("Post session preview video succeeded")
-
 	log.WithFields(log.Fields{"session": in.VidUrl}).
 		Debug("Post session preview video succeeded")
 	return &resp, nil
 }
-func (ser *server) PostSession(ctx context.Context,
-	in *pb.PostSessionReq) (*pb.PostSessionReply, error) {
 
-	var err error
-	var resp pb.PostSessionReply
-	log.WithFields(log.Fields{"sessionInfo": in.Info}).
-		Debug("Received post session request")
+func (ser *server) PostSession(ctx context.Context, in *pb.PostSessionReq) (*pb.PostSessionReply, error) {
 
-	err, resp.SessionKey = postSessionDB(*in.Info)
+	log.WithFields(log.Fields{"sessionInfo": in.Info}).Debug("Received post session request")
+
+	err, sessionKey := postSessionDB(*in.Info)
 	if err != nil {
 		log.WithFields(log.Fields{"session": in.Info, "error": err}).
 			Error("Failed to write to DB")
-		return &resp, err
+		return nil, err
 	}
 	log.WithFields(log.Fields{"session": in.Info}).
 		Debug("Post session succeeded")
-	return &resp, nil
+
+	return &pb.PostSessionReply{SessionKey: sessionKey}, nil
 }
 
 func (s *server) PostSessionReview(ctx context.Context,
 	in *pb.PostSessionReviewReq) (*pb.PostSessionReviewReply,
 	error) {
 
-	var resp pb.PostSessionReviewReply
 	err := db.Save(&in.Review).Error
 	if err != nil {
-		log.WithFields(log.Fields{"sessionReview": in,
-			"error": err}).Error("Failed to write review to DB")
+		log.WithFields(log.Fields{"sessionReview": in, "error": err}).
+			Error("Failed to write review to DB")
 		return nil, err
 	}
-	resp.ReviewID = in.Review.ID
-	log.WithFields(log.Fields{"sessionReview": in}).
-		Debug("Added to DB")
-	return &resp, nil
+	log.WithFields(log.Fields{"sessionReview": in}).Debug("Added to DB")
+
+	return &pb.PostSessionReviewReply{ReviewID: in.Review.ID}, nil
+}
+
+func (s *server) GetTwillioJwtToken(ctx context.Context, in *pb.TwillioJwtReq) (*pb.TwillioJwtReply, error) {
+
+	secret := in.Secret
+	identity := in.Identity
+	// first create token with twilio api configurations
+	token := twilio.NewAccessToken(TWILIO_ACCOUNT_ID, TWILLIO_KEY_ID, secret)
+	// setup token identity
+	token.SetIdentity(identity)
+
+	// grant token access to progammable video API
+	configurationProfileID := "profile-sid"
+	grant := twilio.NewConversationGrant(configurationProfileID)
+	token.AddGrant(grant)
+
+	jwt, err := token.ToJWT()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.TwillioJwtReply{string(jwt)}, nil
 }

@@ -14,6 +14,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
+	"reflect"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -22,8 +23,7 @@ import (
 )
 
 const (
-	port      = ":8099"
-	soulFitDB = "SoulFitDB"
+	port = ":8099"
 )
 
 var lastUserUserID uint64
@@ -69,8 +69,7 @@ func (s *server) CleanupAllDBs(ctx context.Context,
 	return &resp, nil
 }
 
-func (s *server) RecordEvent(ctx context.Context,
-	in *pb.RecordEventReq) (*pb.RecordEventReply, error) {
+func (s *server) RecordEvent(ctx context.Context, in *pb.RecordEventReq) (*pb.RecordEventReply, error) {
 
 	var resp pb.RecordEventReply
 	var err error
@@ -84,7 +83,6 @@ func (s *server) RecordEvent(ctx context.Context,
 }
 
 func initGprcServer() {
-
 	certificate, err := tls.LoadX509KeyPair(
 		"../cert/127.0.0.1.crt",
 		"../cert/127.0.0.1.key",
@@ -118,64 +116,55 @@ func initGprcServer() {
 	serverOption := grpc.Creds(credentials.NewTLS(tlsConfig))
 	s := grpc.NewServer(serverOption)
 
-	log.Debug("registering server...")
+	log.Debug("Registering server...")
 	pb.RegisterServerSvcServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-	log.Debug("registered server...")
-
+	log.Debug("Registered server...")
 }
 
 var db *gorm.DB
+
+func getType(myvar interface{}) string {
+	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
+		return "*" + t.Elem().Name()
+	} else {
+		return t.Name()
+	}
+}
+
+func createTableIfNotExists(tableType interface{}) {
+	if !db.HasTable(tableType) {
+		err := db.CreateTable(tableType).Error
+		if err != nil {
+			panic("Couldn't create table " + getType(tableType))
+		}
+	}
+}
 
 func initDB() error {
 	var err error
 	db, err = gorm.Open("sqlite3", "./gorm.db")
 	if err != nil {
-		log.Errorf("Opening of DB failed with error '%v'",
-			err)
+		log.Errorf("Opening of DB failed with error '%v'", err)
 		return err
 	}
+
 	err = db.DB().Ping()
 	if err != nil {
 		panic(err)
 	}
 
-	if !db.HasTable(&pb.InstructorInfo{}) {
-		err = db.CreateTable(&pb.InstructorInfo{}).Error
-		if err != nil {
-			panic("Couldn't create ins table")
-		}
-	}
+	createTableIfNotExists(&pb.InstructorInfo{})
 
-	if !db.HasTable(&pb.UserInfo{}) {
-		err = db.CreateTable(&pb.UserInfo{}).Error
-		if err != nil {
-			panic("Couldn't create user table")
-		}
-	}
+	createTableIfNotExists(&pb.UserInfo{})
 
-	if !db.HasTable(&pb.SessionInfo{}) {
-		err = db.CreateTable(&pb.SessionInfo{}).Error
-		if err != nil {
-			panic("Couldn't create session table")
-		}
-	}
+	createTableIfNotExists(&pb.SessionInfo{})
 
-	if !db.HasTable(&pb.UserInstructorReview{}) {
-		err = db.CreateTable(&pb.UserInstructorReview{}).Error
-		if err != nil {
-			panic("Couldn't create ins review table")
-		}
-	}
+	createTableIfNotExists(&pb.UserInstructorReview{})
 
-	if !db.HasTable(&pb.UserSessionReview{}) {
-		err = db.CreateTable(&pb.UserSessionReview{}).Error
-		if err != nil {
-			panic("Couldn't create session review table")
-		}
-	}
+	createTableIfNotExists(&pb.UserSessionReview{})
 
 	if !db.HasTable(&pb.CreditCard{}) {
 		err = db.CreateTable(&pb.CreditCard{}).Error
@@ -195,11 +184,11 @@ func initDB() error {
 	return nil
 }
 
-func main() {
+func startLogging() {
 	// open a file
-	f, err := os.OpenFile("server.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	f, err := os.OpenFile("server.log", os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
-		fmt.Printf("error opening file: %v", err)
+		fmt.Printf("Error opening file: %v", err)
 		return
 	}
 
@@ -210,19 +199,21 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 
 	// Output to stderr instead of stdout, could also be a file.
-	//log.SetOutput(os.Stdout)
 	log.SetOutput(f)
 
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
+}
 
-	err = initDB()
+func main() {
+	startLogging()
+
+	err := initDB()
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Failed" +
-			" to init DB")
+		log.WithFields(log.Fields{"error": err}).Error("Failed to init DB")
 		return
 	}
-	//err = pay.InitPayPlan()
+
 	initGprcServer()
 	db.Close()
 }

@@ -486,6 +486,16 @@ func testSessions() error {
 	return nil
 }
 
+func testTwillioJwT() error {
+	req := &pb.TwillioJwtReq{"10", "secret"}
+ 	reply, err := client.GetTwillioJwtToken(context.Background(), req)
+	if err != nil {
+		return err
+	}
+	log.Printf("JWT token %s", reply.JwToken)
+	return nil
+}
+
 func main() {
 
 	// open a file
@@ -613,6 +623,12 @@ func main() {
 	err = testSessions()
 	if err != nil {
 		log.Error("Session test failed")
+		return
+	}
+
+	err = testTwillioJwT()
+	if err != nil {
+		log.Error("Failed getting Twillio JWT")
 		return
 	}
 }
