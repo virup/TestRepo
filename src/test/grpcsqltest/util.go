@@ -322,36 +322,36 @@ By your own inner direction may you continue to find your greatest waking potent
 
 var allIns = []pb.InstructorInfo{
 	{
-		FirstName:   "Adriene",
-		LastName:    "Smith",
+		Firstname:   "Adriene",
+		Lastname:    "Smith",
 		FitnessType: pb.FitnessCategory_YOGA,
 		Desc:        "Welcome all levels, all bodies, all genders, all souls! Find a practice that suits your mood or start a journey toward healing. Work up a sweat, or calm and relieve a tired mind and body. Create space. Tone and trim. Cultivate self love. Make time for you. Go deeper, have fun. Connect. Fall off the horse and then get back on. Reconnect. Do your best, be authentic and FIND WHAT FEELS GOOD.I got your back and this community rocks. Jump on in! You don't even have to leave your house.",
 	},
 
 	{
-		FirstName:   "Shelley",
-		LastName:    "Dose",
+		Firstname:   "Shelley",
+		Lastname:    "Dose",
 		FitnessType: pb.FitnessCategory_CARDIO,
 		Desc:        "Hi, my name is Shelly Dose and I want to move with you! My goal is to move you in as many ways as possible with athletic, low impact, high impact, HIIT, full body workouts, sculpt... you name it, I can teach it. I am a Certified Group Fitness Instructor with a long resume in the fitness industry. I have owned and operated a successful Outdoor Bootcamp Business, I teach Group Exercise/Fitness for Lifetime Fitness and much more. I enjoy teaching in the classroom immensely but my favorite place to sweat is in the comfort of my home.",
 	},
 
 	{
-		FirstName:   "Candace",
-		LastName:    "Rose",
+		Firstname:   "Candace",
+		Lastname:    "Rose",
 		FitnessType: pb.FitnessCategory_YOGA,
 		Desc:        "Candace is an international yoga instructor and the writer behind the popular yoga lifestyle blog http://www.yogabycandace.com. These videos range from 15 minutes to 60 minutes, and cover a wide variety of themes. All video content published after June 13, 2014 is available for purchase for those of you who travel often or just want the content on your device when you don't have internet connection. Purchase at http://www.yogabycandace.com/dvds",
 	},
 
 	{
-		FirstName:   "Carolina",
-		LastName:    "B",
+		Firstname:   "Carolina",
+		Lastname:    "B",
 		FitnessType: pb.FitnessCategory_DANCE,
 		Desc:        "I feel blessed for being able to do what I love. Dance is my passion, and it has brought so many good things to my life, such as health, friends, and many good times. I hope I can share that with you thru my dancing and my favorite Dance Fitness and Zumba® routines. Thank you so much for the support and for watching these videos I make with so much love. Mwaaahhhh!",
 	},
 
 	{
-		FirstName:   "Michael",
-		LastName:    "Sealy",
+		Firstname:   "Michael",
+		Lastname:    "Sealy",
 		FitnessType: pb.FitnessCategory_MEDITATION,
 		Desc: `Hypnosis - Hypnotherapy - Guided Meditation - Sleep Relaxation
 
@@ -363,8 +363,8 @@ var allIns = []pb.InstructorInfo{
 	},
 
 	{
-		FirstName:   "Doonya",
-		LastName:    "",
+		Firstname:   "Doonya",
+		Lastname:    "",
 		FitnessType: pb.FitnessCategory_DANCE,
 		Desc: `
 Celebrate your body, mind, and one of the most festive cultures of the world through Doonya*!
@@ -375,16 +375,16 @@ By using your own resistance and muscle control, you'll leave with a stronger co
 	},
 
 	{
-		FirstName:   "Popsugar fitness",
-		LastName:    "",
+		Firstname:   "Popsugar fitness",
+		Lastname:    "",
 		FitnessType: pb.FitnessCategory_CARDIO,
 		Desc: `
 By using your own resistance and muscle control, you'll leave with a stronger core, lengthened limbs and increased stamina to keep you invigorated for the rest of your day. Doonya is your happy workout.`,
 	},
 
 	{
-		FirstName:   "Jessica",
-		LastName:    "",
+		Firstname:   "Jessica",
+		Lastname:    "",
 		FitnessType: pb.FitnessCategory_DANCE,
 		Desc: `
 		Hey Ya'll! my name is Jessica! I have been teaching dance classes for over 5 years now. My goal is to help inspire and motivate people to make positive changes in their lives. Everyone deserves to feel beautiful and live a healthy and active lifestyle. My community is so supportive and while we may be a little crazy, we make working out TONS OF FUN! 
@@ -393,8 +393,8 @@ By using your own resistance and muscle control, you'll leave with a stronger co
 	},
 
 	{
-		FirstName:   "BombayJam",
-		LastName:    "",
+		Firstname:   "BombayJam",
+		Lastname:    "",
 		FitnessType: pb.FitnessCategory_DANCE,
 		Desc: `
 		Leave your inhibitions behind and join our action-packed Bollywood dance fitness program. Sign up for a class in your area with Bombay Jam today!`,
@@ -435,8 +435,8 @@ func GetNewInstructor() pb.InstructorInfo {
 
 	if false {
 		var ui pb.InstructorInfo
-		ui.FirstName = randomdata.FirstName(randomdata.Female)
-		ui.LastName = randomdata.LastName()
+		ui.Firstname = randomdata.FirstName(randomdata.Female)
+		ui.Lastname = randomdata.LastName()
 		ui.Email = randomdata.Email()
 		ui.City = randomdata.City()
 		ui.Certification = "FitnessCert" + strconv.Itoa(certID)
@@ -454,11 +454,14 @@ func GetNewInstructor() pb.InstructorInfo {
 func GetNewUser() pb.UserInfo {
 
 	var ui pb.UserInfo
-	ui.FirstName = randomdata.FirstName(randomdata.Male)
-	ui.LastName = randomdata.LastName()
+	ui.Firstname = randomdata.FirstName(randomdata.Male)
+	ui.Lastname = randomdata.LastName()
 	ui.Email = randomdata.Email()
-	ui.PassWord = randomdata.LastName()
+	ui.Password = randomdata.LastName()
 	ui.City = randomdata.City()
+	ui.Country = randomdata.Country(randomdata.ThreeCharCountry)
+	ui.Sex = "F"
+	ui.Age = 32
 
 	return ui
 }
@@ -474,7 +477,7 @@ func randSeq(n int) string {
 func getUrl() string {
 	serv := os.Getenv("SERVERIP")
 	if serv == "" {
-		fmt.Printf("env var $SERVERIP not set\n")
+		fmt.Println("env var $SERVERIP not set")
 		os.Exit(-1)
 	}
 	return serv

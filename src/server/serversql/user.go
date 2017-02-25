@@ -5,6 +5,8 @@ import (
 	pb "server/rpcdefsql"
 	"strings"
 
+	"server/db"
+
 	log "github.com/Sirupsen/logrus"
 	"golang.org/x/net/context"
 )
@@ -12,17 +14,17 @@ import (
 // Given a userKey, return the UserInfo
 func getUserFromDB(uKey int32) (error, *pb.UserInfo) {
 	var err error
-	var u *pb.UserInfo = new(pb.UserInfo)
+	var u *db.UserInfo = new(db.UserInfo)
 
-	err = db.First(u, uKey).Error
+	err = dbConn.First(u, uKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get user from DB")
-		return err, u
+		return err, db.ConvertUserInfoToRPC(u)
 	}
 	log.WithFields(log.Fields{"userInfo": u, "key": uKey}).
 		Debug("Read from DB")
-	return err, u
+	return err, db.ConvertUserInfoToRPC(u)
 }
 
 /*
@@ -55,7 +57,7 @@ func (s *server) SubscribeUser(ctx context.Context,
 	var resp pb.SubscribeUserReply
 
 	//doSubscribe()
-	err := db.Save(&in.PayCard).Error
+	err := dbConn.Save(&in.PayCard).Error
 	if err != nil {
 		log.WithFields(log.Fields{"userID": in.UserID,
 			"error": err}).Error("Failed to add cc to DB for user")
@@ -72,7 +74,7 @@ func (s *server) EnrollUser(ctx context.Context,
 	var resp pb.EnrollUserReply
 	log.Debug("Enroll User request")
 
-	if in.User.Email == "" || in.User.PassWord == "" {
+	if in.User.Email == "" || in.User.Password == "" {
 		log.WithFields(log.Fields{"user": in.User, "error": err}).
 			Error("Invalid email/password for user")
 		return &resp, errors.New("Invalid email/password")
@@ -107,11 +109,11 @@ func (s *server) GetUser(ctx context.Context,
 func (s *server) GetUsers(ctx context.Context,
 	in *pb.GetUsersReq) (*pb.GetUsersReply, error) {
 
-	var uList []pb.UserInfo
+	var userList []db.UserInfo
 	var resp pb.GetUsersReply
 	var err error
 
-	err = db.Find(&uList).Error
+	err = dbConn.Find(&userList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get users from DB")
@@ -119,9 +121,9 @@ func (s *server) GetUsers(ctx context.Context,
 	}
 
 	log.Printf("\n")
-	log.WithFields(log.Fields{"users": uList}).Debug("Get alluser success")
-	for i, _ := range uList {
-		resp.UserList = append(resp.UserList, &uList[i])
+	log.WithFields(log.Fields{"users": userList}).Debug("Get alluser success")
+	for i, _ := range userList {
+		resp.UserList = append(resp.UserList, db.ConvertUserInfoToRPC(&userList[i]))
 	}
 	return &resp, nil
 }
@@ -131,13 +133,13 @@ func (s *server) Login(ctx context.Context,
 
 	var resp pb.LoginReply
 	var err error
-	var uList []pb.UserInfo
-	var iList []pb.InstructorInfo
+	var uList []db.UserInfo
+	var iList []db.InstructorInfo
 	userFound := true
 	insFound := true
 
-	err = db.
-		Where(pb.UserInfo{Email: in.Email}).
+	err = dbConn.
+		Where(db.UserInfo{Email: in.Email}).
 		Find(&uList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -145,8 +147,8 @@ func (s *server) Login(ctx context.Context,
 		userFound = false
 	}
 
-	err = db.
-		Where(pb.InstructorInfo{Email: in.Email}).
+	err = dbConn.
+		Where(db.InstructorInfo{Email: in.Email}).
 		Find(&iList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -162,10 +164,10 @@ func (s *server) Login(ctx context.Context,
 	}
 
 	if len(iList) > 0 {
-		if 0 == strings.Compare(in.PassWord, iList[0].PassWord) {
+		if 0 == strings.Compare(in.Password, iList[0].Password) {
 			log.WithFields(log.Fields{"insLoginInfo": in}).
 				Debug("Authenticated instructor")
-			resp.Instructor = &iList[0]
+			resp.Instructor = db.ConvertInstructorInfoToRPC(&iList[0])
 			resp.PersonType = pb.PersonRole_ROLE_INSTRUCTOR
 		} else {
 			log.WithFields(log.Fields{"loginReq": in}).
@@ -173,10 +175,10 @@ func (s *server) Login(ctx context.Context,
 			return &resp, errors.New("Invalid password for instructor")
 		}
 	} else if len(uList) > 0 {
-		if 0 == strings.Compare(in.PassWord, uList[0].PassWord) {
+		if 0 == strings.Compare(in.Password, uList[0].Password) {
 			log.WithFields(log.Fields{"insLoginInfo": in}).
 				Debug("Authenticated user")
-			resp.User = &uList[0]
+			resp.User = db.ConvertUserInfoToRPC(&uList[0])
 			resp.PersonType = pb.PersonRole_ROLE_USER
 		} else {
 			log.WithFields(log.Fields{"loginReq": in}).
@@ -194,15 +196,15 @@ func (s *server) Login(ctx context.Context,
 
 // XXX Return error if the same user posts again
 func postUserDB(in pb.UserInfo) (err error, uKey int32) {
-
 	log.WithFields(log.Fields{"userInfo": in}).Debug("Adding to DB")
-	err = db.Save(&in).Error
-	if err != nil {
+	res := dbConn.Save(db.Convert(&in))
+	if res.Error != nil {
 		log.WithFields(log.Fields{"userinfo": in, "error": err}).
 			Error("Failed to write to DB")
 		return err, 0
 	}
-	uKey = in.ID
+
+	uKey = res.Value.(*db.UserInfo).ID
 	log.WithFields(log.Fields{"userInfo": in, "key": uKey}).
 		Debug("Added to DB")
 	return nil, uKey
@@ -215,17 +217,17 @@ func (s *server) GetUserCC(ctx context.Context,
 	var resp pb.GetUserCCReply
 	var err error
 
-	var i *pb.CreditCard = new(pb.CreditCard)
+	var i *db.CreditCard = new(db.CreditCard)
 	if in.CcID > 0 {
-		err = db.First(i, in.CcID).Error
+		err = dbConn.First(i, in.CcID).Error
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed" +
 				" to get user CC from DB")
 			return &resp, err
 		}
 	} else if in.UserID > 0 {
-		err = db.
-			Where(pb.CreditCard{UserID: in.UserID}).
+		err = dbConn.
+			Where(db.CreditCard{UserID: in.UserID}).
 			Find(i).Error
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed" +
@@ -233,7 +235,7 @@ func (s *server) GetUserCC(ctx context.Context,
 			return &resp, err
 		}
 	}
-	resp.PayCard = i
+	resp.PayCard = db.ConvertCreditCardToRPC(i)
 	log.Debug("Success read user cc from DB")
 	return &resp, nil
 }

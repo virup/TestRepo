@@ -3,3 +3,4 @@
 .idea/*
 bin/*
 libera.iml
+src/server/rpcdefsql/serverrpc.pb.go

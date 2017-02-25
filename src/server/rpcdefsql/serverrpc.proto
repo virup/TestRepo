@@ -1,95 +1,113 @@
 syntax = "proto3";
 
-package serversvc;
+package SFServer;
 
 //import "google/protobuf/any.proto";
 //import "google/protobuf/timestamp.proto";
 
-service ServerSvc {
-  // GetStatus - Is the server running ?
-  rpc GetStatus (ServerSvcStatusReq) returns (ServerSvcStatusReply) {}
+service SFServer {
+    // GetStatus - Is the server running ?
+    rpc GetStatus (SFServerStatusReq) returns (SFServerStatusReply) {
+    }
 
-  // Session handling
+    // Session handling
 
 
-  rpc PostSession(PostSessionReq) returns (PostSessionReply) {}
-  rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {}
-  rpc GetSessionsForInstructor(GetSessionsForInstructorReq) returns
-     (GetSessionsForInstructorReply) {}
-  rpc GetSessionsForFitnessType (GetSessionsForFitnessReq) returns
-     (GetSessionsForFitnessReply) {}
-  rpc GetSession(GetSessionReq) returns (GetSessionReply) {}
-  rpc PostSessionReview(PostSessionReviewReq) returns (PostSessionReviewReply) {}
-  rpc PostInstructorReview(PostInstructorReviewReq) returns (PostInstructorReviewReply) {}
- 
-  // Post session preview
-  rpc PostSessionPreviewVideo(PostSessionPreviewVideoReq) 
-    returns (PostSessionPreviewVideoReply) {}
- 
-  // Instructor handling
-  rpc EnrollInstructor(EnrollInstructorReq) returns
-     (EnrollInstructorReply) {}
-  rpc GetInstructor(GetInstructorReq) returns (GetInstructorReply) {}
-  rpc GetInstructors(GetInstructorsReq) returns (GetInstructorsReply) {}
-  rpc RegisterInstructorBankAcct(RegisterInstructorBankAcctReq)
-     returns (RegisterInstructorBankAcctReply) {}
-  rpc GetInstructorBankAcct(GetInstructorBankAcctReq)
-     returns (GetInstructorBankAcctReply) {}
+    rpc PostSession (PostSessionReq) returns (PostSessionReply) {
+    }
+    rpc GetSessions (GetSessionsReq) returns (GetSessionsReply) {
+    }
+    rpc GetSessionsForInstructor (GetSessionsForInstructorReq) returns (GetSessionsForInstructorReply) {
+    }
+    rpc GetSessionsForFitnessType (GetSessionsForFitnessReq) returns (GetSessionsForFitnessReply) {
+    }
+    rpc GetSession (GetSessionReq) returns (GetSessionReply) {
+    }
+    rpc PostSessionReview (PostSessionReviewReq) returns (PostSessionReviewReply) {
+    }
+    rpc PostInstructorReview (PostInstructorReviewReq) returns (PostInstructorReviewReply) {
+    }
 
-  // Post a instructor pic
-  rpc PostInstructorDisplayImg(PostInstructorDisplayImgReq)
-     returns (PostInstructorDisplayImgReply) {}
+    // Post session preview
+    rpc PostSessionPreviewVideo (PostSessionPreviewVideoReq) returns (PostSessionPreviewVideoReply) {
+    }
 
-  // User handling
-  rpc EnrollUser(EnrollUserReq) returns (EnrollUserReply) {}
-  rpc GetUser(GetUserReq) returns (GetUserReply) {}
-  rpc GetUsers(GetUsersReq) returns (GetUsersReply) {}
- 
-  // Subscribe to the pay plan TBD
-  rpc SubscribeUser(SubscribeUserReq) returns (SubscribeUserReply) {}
-  rpc GetUserCC(GetUserCCReq) returns (GetUserCCReply) {}
+    // Instructor handling
+    rpc EnrollInstructor (EnrollInstructorReq) returns (EnrollInstructorReply) {
+    }
+    rpc GetInstructor (GetInstructorReq) returns (GetInstructorReply) {
+    }
+    rpc GetInstructors (GetInstructorsReq) returns (GetInstructorsReply) {
+    }
+    rpc RegisterInstructorBankAcct (RegisterInstructorBankAcctReq) returns (RegisterInstructorBankAcctReply) {
+    }
+    rpc GetInstructorBankAcct (GetInstructorBankAcctReq) returns (GetInstructorBankAcctReply) {
+    }
 
-  rpc Login(LoginReq) returns (LoginReply) {}
+    // Post a instructor pic
+    rpc PostInstructorDisplayImg (PostInstructorDisplayImgReq) returns (PostInstructorDisplayImgReply) {
+    }
 
-  // Used for analytics
-  // Client will record much of the user interaction with the app
-  rpc RecordEvent(RecordEventReq) returns (RecordEventReply) {}
-  rpc CleanupAllDBs(CleanupAllDBsReq) returns (CleanupAllDBsReply) {}
+    // User handling
+    rpc EnrollUser (EnrollUserReq) returns (EnrollUserReply) {
+    }
+    rpc GetUser (GetUserReq) returns (GetUserReply) {
+    }
+    rpc GetUsers (GetUsersReq) returns (GetUsersReply) {
+    }
 
-  // Twillio related
-  rpc GetTwillioJwtToken(TwillioJwtReq) returns (TwillioJwtReply) {}
+    // Subscribe to the pay plan TBD
+    rpc SubscribeUser (SubscribeUserReq) returns (SubscribeUserReply) {
+    }
+    rpc GetUserCC (GetUserCCReq) returns (GetUserCCReply) {
+    }
+
+    rpc Login (LoginReq) returns (LoginReply) {
+    }
+
+    // Used for analytics
+    // Client will record much of the user interaction with the app
+    rpc RecordEvent (RecordEventReq) returns (RecordEventReply) {
+    }
+    rpc CleanupAllDBs (CleanupAllDBsReq) returns (CleanupAllDBsReply) {
+    }
+
+    // Twilio related
+    rpc GetTwilioJwtToken (TwilioJwtReq) returns (TwilioJwtReply) {
+    }
 }
 
-message ServerSvcStatusReq {
-  string name = 1;
+message SFServerStatusReq {
+    string name = 1;
 }
 
-message ServerSvcStatusReply {
-  //ErrorData errData = 1;
-  string message = 1;
+message SFServerStatusReply {
+    //ErrorData errData = 1;
+    string message = 1;
 }
 
 message SessionInfo {
-  //Timestamp sessionTime = 1;
-  string sessionTime = 1;
-  string sessionDesc = 2;
-  int32 instructorInfoID = 3;
-  //repeated FitnessCategory sessionType = 4;
-   FitnessCategory sessionType = 4;
-   SessionDifficulty difficultyLevel = 5;
-  //repeated SessionTag tagList = 6;
-   SessionTag tagList = 6;
-   int32 ID = 7;
-   string instructorName = 8;
-   string previewVideoUrl = 9;
- 
-  // Maintained by server
-  uint64 sessionUsersEnrolled = 101;
+    //Timestamp sessionTime = 1;
+    string sessionTime = 1;
+    string sessionDesc = 2;
+    int32 instructorInfoID = 3;
+    //repeated FitnessCategory sessionType = 4;
+    FitnessCategory sessionType = 4;
+    SessionDifficulty difficultyLevel = 5;
+    //repeated SessionTag tagList = 6;
+    SessionTag tagList = 6;
+    int32 ID = 7;
+    string instructorName = 8;
+    string previewVideoUrl = 9;
+    int32 durationInMins = 10;
+
+    // Maintained by server
+    uint32 sessionUsersEnrolled = 101;
 }
 
 enum PersonRole {
-   ROLE_USER = 0;
-   ROLE_INSTRUCTOR = 1;
+    ROLE_USER = 0;
+    ROLE_INSTRUCTOR = 1;
 }
 
 enum SessionDifficulty {
@@ -127,186 +145,186 @@ enum FitnessCategory {
 
 // XXX Add foreign key constraint with ins and user table
 message UserInstructorReview {
-   float InstructorRating = 1;
-   string InstructorReview = 2;
-   int32 ID = 3;
-   int32 instructorID = 4;
-   int32 userID = 5;
+    float InstructorRating = 1;
+    string InstructorReview = 2;
+    int32 ID = 3;
+    int32 instructorID = 4;
+    int32 userID = 5;
 }
 
 message PostInstructorReviewReq {
-   UserInstructorReview review = 1;
+    UserInstructorReview review = 1;
 }
 
 message PostInstructorReviewReply {
-   int32 reviewID = 1;
+    int32 reviewID = 1;
 }
 
 // XXX Add foreign key constraint with session and user table
 message UserSessionReview {
-   float sessionRating = 1;
-   string sessionReview = 2;
-   int32 ID = 3;
-   int32 sessionID = 4;
-   int32 userID = 5;
+    float sessionRating = 1;
+    string sessionReview = 2;
+    int32 ID = 3;
+    int32 sessionID = 4;
+    int32 userID = 5;
 }
 
 message PostSessionReviewReq {
-   UserSessionReview review = 1;
+    UserSessionReview review = 1;
 }
 
 message PostSessionReviewReply {
-   int32 reviewID = 1;
+    int32 reviewID = 1;
 }
 
 message CreditCard {
-  string Name = 1;
-  string Number = 2;
-  string ExpiryMonth = 3;
-  string ExpiryYear = 4;
-  string CCV = 5;
-  int32 userID = 7;
-  int32 ID = 8; // Primary key
+    string Name = 1;
+    string Number = 2;
+    string ExpiryMonth = 3;
+    string ExpiryYear = 4;
+    string CCV = 5;
+    int32 userID = 7;
+    int32 ID = 8; // Primary key
 }
 
 message BankAcct {
-     string RoutingNum = 1;
-     string AcctNum = 2;
-     string BankName = 3;
-     int32 instructorID = 4;
-     int32 ID = 5; // Primary key
+    string RoutingNum = 1;
+    string AcctNum = 2;
+    string BankName = 3;
+    int32 instructorID = 4;
+    int32 ID = 5; // Primary key
 }
 
 message InstructorInfo {
-   string firstName = 1;
-   string age = 2;
-   string sex = 3;
-   string location = 4;
-   string email = 5;
-   string passWord = 7;
-   
-   string desc = 8;
-   string certification = 9;
-   //repeated FitnessCategory fitnessSpecialties = 10;
-// XXX sqlite doesn't support array
-   FitnessCategory fitnessType = 10;
-   string lastName = 11;
-   string city = 12;
-   string country = 13;
-   int32 ID = 14;
-   //InstructorImage displayImage = 15;
-   bytes displayImage = 15; 
-   string displayImageDesc = 16;
- 
-   // Internal to server
-   string reviewInfoID = 101;
-   string bankInfoID = 102;
+    string firstname = 1;
+    int32 age = 2;
+    string sex = 3;
+    string location = 4;
+    string email = 5;
+    string password = 7;
+
+    string desc = 8;
+    string certification = 9;
+    //repeated FitnessCategory fitnessSpecialties = 10;
+    // XXX sqlite doesn't support array
+    FitnessCategory fitnessType = 10;
+    string lastname = 11;
+    string city = 12;
+    string country = 13;
+    int32 ID = 14;
+    //InstructorImage displayImage = 15;
+    bytes displayImage = 15;
+    string displayImageDesc = 16;
+
+    // Internal to server
+    string reviewInfoID = 101;
+    string bankInfoID = 102;
 }
 
 message Device {
-   string deviceID = 1;
-   string deviceDesc = 2;
+    string deviceID = 1;
+    string deviceDesc = 2;
 }
 
 message UserInfo {
-   string firstName = 1;
-   string age = 2;
-   string sex = 3;
-   string city = 4;
-   string country = 5;
-   string email = 6;
-   string passWord = 8;
-   string lastName = 9;
-   int32 ID = 10;
+    string firstname = 1;
+    int32 age = 2;
+    string sex = 3;
+    string city = 4;
+    string country = 5;
+    string email = 6;
+    string password = 8;
+    string lastname = 9;
+    int32 ID = 10;
 
-   // Internal to server
-   //repeated string friendsIDs = 101;
-   //repeated string followIDs =102; 
-   // Pointer to event activity in DB
-   string RecordActivityID = 103;
+    // Internal to server
+    //repeated string friendsIDs = 101;
+    //repeated string followIDs =102;
+    // Pointer to event activity in DB
+    int32 RecordActivityID = 103;
 }
 
 message GetSessionsReq {
 }
 
 message GetSessionsReply {
-  repeated SessionInfo sessionList = 1;
-  repeated InstructorInfo instructorList = 2;
+    repeated SessionInfo sessionList = 1;
+    repeated InstructorInfo instructorList = 2;
 }
 
 message GetSessionsForInstructorReq {
-  int32 instructorInfoID = 1;
+    int32 instructorInfoID = 1;
 }
 
 message GetSessionsForInstructorReply {
-  repeated SessionInfo sessionList = 1;
+    repeated SessionInfo sessionList = 1;
 }
 
 message GetSessionsForFitnessReq {
-  FitnessCategory fitCategory = 1;
+    FitnessCategory fitCategory = 1;
 }
 
 message GetSessionsForFitnessReply {
-  repeated SessionInfo sessionList = 1;
+    repeated SessionInfo sessionList = 1;
 }
 
 message GetSessionReply {
-  SessionInfo info = 1;
+    SessionInfo info = 1;
 }
 
 message GetSessionReq {
-   int32 sessionKey = 1;
+    int32 sessionKey = 1;
 }
 
 
 message PostSessionReq {
-  SessionInfo info = 1;
+    SessionInfo info = 1;
 }
 
 message PostSessionReply {
-   int32 sessionKey = 1;
+    int32 sessionKey = 1;
 }
 
 message EnrollInstructorReq {
-  InstructorInfo instructor = 1;
+    InstructorInfo instructor = 1;
 }
 
 message EnrollInstructorReply {
-   int32 instructorKey = 1;
+    int32 instructorKey = 1;
 }
 
 message GetInstructorReq {
-   int32 instructorKey = 1;
+    int32 instructorKey = 1;
 }
 
 message GetInstructorReply {
-   InstructorInfo info = 1;
+    InstructorInfo info = 1;
 }
 
 message GetInstructorsReq {
-  // If specified, return instructors by fitness category
-  // else return all
-  //FitnessCategory category = 1;
+    // If specified, return instructors by fitness category
+    // else return all
+    //FitnessCategory category = 1;
 }
 
 message GetInstructorsReply {
-   repeated InstructorInfo instructorList = 1;
+    repeated InstructorInfo instructorList = 1;
 }
 
 message GetUserReq {
-   int32 userKey = 1;
+    int32 userKey = 1;
 }
 
 message GetUserReply {
-   UserInfo info = 1;
+    UserInfo info = 1;
 }
 
 message EnrollUserReq {
-  UserInfo user = 1;
+    UserInfo user = 1;
 }
 
 message EnrollUserReply {
-   int32 userKey = 1;
+    int32 userKey = 1;
 }
 
 message GetUsersReq {
@@ -314,7 +332,7 @@ message GetUsersReq {
 }
 
 message GetUsersReply {
-   repeated UserInfo userList = 1;
+    repeated UserInfo userList = 1;
 }
 
 enum EventType {
@@ -329,112 +347,114 @@ enum EventType {
 }
 
 message Event {
-   EventType eventType = 1;
-   //Duration eventDuration = 2;
-   //google.protobuf.Timestamp eventTS = 3;
-   string eventDesc = 4;
+    EventType eventType = 1;
+    //Duration eventDuration = 2;
+    //google.protobuf.Timestamp eventTS = 3;
+    string eventDesc = 4;
 }
- 
+
 message RecordActivity {
-  repeated Event eventList = 1;
+    repeated Event eventList = 1;
 }
 
 message RecordEventReq {
-   Event event = 1;
+    Event event = 1;
 }
 
 message RecordEventReply {
 }
 
 message LoginReq {
-   string email = 1;
-   string passWord = 2;
+    string email = 1;
+    string password = 2;
 }
 
 message LoginReply {
-   string userOrInstructorID = 1;
-   PersonRole personType = 2;
-   UserInfo user = 3;
-   InstructorInfo instructor = 4;
+    string userOrInstructorID = 1;
+    PersonRole personType = 2;
+    UserInfo user = 3;
+    InstructorInfo instructor = 4;
 }
 
 message RegisterInstructorBankAcctReq {
-   int32 instructorID = 1;
-   BankAcct bankAcct = 2;
+    int32 instructorID = 1;
+    BankAcct bankAcct = 2;
 }
 
 message RegisterInstructorBankAcctReply {
-   int32 bankAcctID = 1;
+    int32 bankAcctID = 1;
 }
 
 message GetInstructorBankAcctReq {
-   int32 instructorID = 1;
-   int32 bankAcctID = 2; // optional
+    int32 instructorID = 1;
+    int32 bankAcctID = 2; // optional
 }
 
 message GetInstructorBankAcctReply {
-   BankAcct bankAcct = 1;
+    BankAcct bankAcct = 1;
 }
 
 message SubscribeUserReq {
-   int32 userID = 1;
-   CreditCard payCard = 2;
+    int32 userID = 1;
+    CreditCard payCard = 2;
 }
 
 message SubscribeUserReply {
-   int32 ccID = 1;
+    int32 ccID = 1;
 }
 
 message GetUserCCReq {
-   int32 userID = 1;
-   int32 ccID = 2; // optional
+    int32 userID = 1;
+    int32 ccID = 2; // optional
 }
 
 message GetUserCCReply {
-   CreditCard payCard = 1;
+    CreditCard payCard = 1;
 }
 
 message InstructorImage {
-   string picDesc = 1;
-   int32 InstructorInfoID = 2;
-   int32 ID = 3;
-   bytes blob = 4;
-   bool isDisplay = 5;
+    string picDesc = 1;
+    int32 InstructorInfoID = 2;
+    int32 ID = 3;
+    bytes blob = 4;
+    bool isDisplay = 5;
 }
 
 message PostInstructorDisplayImgReq {
-   int32 instructorInfoID = 1;
-   //InstructorImage img = 2;
-   bytes blob = 2;
-   string picDesc = 3;
+    int32 instructorInfoID = 1;
+    //InstructorImage img = 2;
+    bytes blob = 2;
+    string picDesc = 3;
 }
 
 message PostInstructorDisplayImgReply {
 }
 
 message SessionVideo {
-   string vidDesc = 1;
-   string vidUrl = 2;
-   int32 ID = 3;
+    string vidDesc = 1;
+    string vidUrl = 2;
+    int32 ID = 3;
 }
 
 message PostSessionPreviewVideoReq {
-   int32 sessionID = 1;
-   //SessionVideo vid = 2;
-   string vidUrl = 2;
+    int32 sessionID = 1;
+    //SessionVideo vid = 2;
+    string vidUrl = 2;
 }
 
 message PostSessionPreviewVideoReply {
 }
 
-message CleanupAllDBsReq {}
-message CleanupAllDBsReply{}
+message CleanupAllDBsReq {
+}
+message CleanupAllDBsReply {
+}
 
-message TwillioJwtReq {
+message TwilioJwtReq {
     string identity = 1;
     string secret = 2;
 }
 
-message TwillioJwtReply {
+message TwilioJwtReply {
     string jwToken = 1;
 }
