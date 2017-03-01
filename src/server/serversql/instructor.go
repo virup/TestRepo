@@ -12,7 +12,7 @@ func GetInstructorFromDB(iKey int32) (error, *pb.InstructorInfo) {
 
 	var i *pb.InstructorInfo = new(pb.InstructorInfo)
 
-	err = db.First(i, iKey).Error
+	err = dbConn.First(i, iKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed to get instructor from DB")
 		return err, i
@@ -27,7 +27,7 @@ func (s *server) GetInstructors(ctx context.Context, in *pb.GetInstructorsReq) (
 	var resp pb.GetInstructorsReply
 	var err error
 	//err = InsTable.Find(&iList).Error
-	err = db.Find(&iList).Error
+	err = dbConn.Find(&iList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructors from DB")
@@ -63,7 +63,7 @@ func (s *server) PostInstructorReview(ctx context.Context,
 	error) {
 
 	var resp pb.PostInstructorReviewReply
-	err := db.Save(&in.Review).Error
+	err := dbConn.Save(&in.Review).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorReview": in,
 			"error": err}).Error("Failed to write review to DB")
@@ -83,17 +83,17 @@ func (s *server) PostInstructorDisplayImg(ctx context.Context,
 	var ins pb.InstructorInfo
 	var resp pb.PostInstructorDisplayImgReply
 	log.Debug("post Instructor image request")
-	//err = db.Save(&in.Img).Error
+	//err = dbConn.Save(&in.Img).Error
 	//if err != nil {
 	//	log.WithFields(log.Fields{"instructorImage": in,
 	//		"error": err}).Error("Failed to write image to DB")
 	//	return &resp, err
 	//}
 
-	//err = db.First(&ins, in.InstructorInfoID).
+	//err = dbConn.First(&ins, in.InstructorInfoID).
 	//	Update(pb.InstructorInfo{DisplayImageID: in.Img.ID}).Error
 
-	err = db.First(&ins, in.InstructorInfoID).
+	err = dbConn.First(&ins, in.InstructorInfoID).
 		Update(pb.InstructorInfo{DisplayImage: in.Blob}).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorImage": in,
@@ -125,7 +125,7 @@ func (s *server) EnrollInstructor(ctx context.Context,
 func postInstructorDB(in pb.InstructorInfo) (err error, iKey int32) {
 
 	log.WithFields(log.Fields{"instructorInfo": in}).Debug("Adding to DB")
-	err = db.Save(&in).Error
+	err = dbConn.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorInfo": in, "error": err}).
 			Error("Failed to write to DB")
@@ -142,7 +142,7 @@ func (s *server) RegisterInstructorBankAcct(ctx context.Context,
 	error) {
 
 	var resp pb.RegisterInstructorBankAcctReply
-	err := db.Save(&in.BankAcct).Error
+	err := dbConn.Save(&in.BankAcct).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorBankAcct": in,
 			"error": err}).Error("Failed to write bank acct to DB")
@@ -163,14 +163,14 @@ func (s *server) GetInstructorBankAcct(ctx context.Context,
 
 	var i *pb.BankAcct = new(pb.BankAcct)
 	if in.BankAcctID > 0 {
-		err = db.First(i, in.BankAcctID).Error
+		err = dbConn.First(i, in.BankAcctID).Error
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed" +
 				" to get instructor bank from DB")
 			return &resp, err
 		}
 	} else if in.InstructorID > 0 {
-		err = db.
+		err = dbConn.
 			Where(pb.BankAcct{InstructorID: in.InstructorID}).
 			Find(i).Error
 		if err != nil {

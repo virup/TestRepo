@@ -1,6 +1,7 @@
 package main
 
 import (
+	"server/db"
 	"fmt"
 	"net"
 	"os"
@@ -18,15 +19,22 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"google.golang.org/grpc/credentials"
+	"strconv"
+	"time"
+	"errors"
 )
 
 const (
 	port = ":8099"
 )
 
-var lastUserUserID uint64
+var DATABASE_IP = os.Getenv("SF_DB_PORT_3306_TCP_ADDR")
+
+const DATABASE_PORT = 3306
+const DATABASE_NAME = "soulfitdb"
+const DATABASE_USER = "root"
+const DATABASE_PASSWORD = "password"
 
 // XXX Consolidate user, instructor and session info object
 // handling and DB handling through a common interface
@@ -36,8 +44,8 @@ type server struct{}
 
 //  Send hello
 func (s *server) GetStatus(ctx context.Context,
-	in *pb.ServerSvcStatusReq) (*pb.ServerSvcStatusReply, error) {
-	return &pb.ServerSvcStatusReply{Message: "Hello " + in.Name}, nil
+	in *pb.SFServerStatusReq) (*pb.SFServerStatusReply, error) {
+	return &pb.SFServerStatusReply{Message: "Hello " + in.Name}, nil
 }
 
 func (s *server) CleanupAllDBs(ctx context.Context,
@@ -46,19 +54,19 @@ func (s *server) CleanupAllDBs(ctx context.Context,
 	var err error
 	var resp pb.CleanupAllDBsReply
 
-	err = db.DropTableIfExists(&pb.SessionInfo{}).Error
+	err = dbConn.DropTableIfExists(&pb.SessionInfo{}).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to delete session table")
 	}
 
-	err = db.DropTableIfExists(&pb.InstructorInfo{}).Error
+	err = dbConn.DropTableIfExists(&pb.InstructorInfo{}).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to delete instructor table")
 	}
 
-	err = db.DropTableIfExists(&pb.UserInfo{}).Error
+	err = dbConn.DropTableIfExists(&pb.UserInfo{}).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to delete user table")
@@ -117,14 +125,14 @@ func initGprcServer() {
 	s := grpc.NewServer(serverOption)
 
 	log.Debug("Registering server...")
-	pb.RegisterServerSvcServer(s, &server{})
+	pb.RegisterSFServerServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 	log.Debug("Registered server...")
 }
 
-var db *gorm.DB
+var dbConn *gorm.DB
 
 func getType(myvar interface{}) string {
 	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
@@ -135,65 +143,81 @@ func getType(myvar interface{}) string {
 }
 
 func createTableIfNotExists(tableType interface{}) {
-	if !db.HasTable(tableType) {
-		err := db.CreateTable(tableType).Error
+	if !dbConn.HasTable(tableType) {
+		err := dbConn.CreateTable(tableType).Error
 		if err != nil {
 			panic("Couldn't create table " + getType(tableType))
 		}
 	}
 }
 
+func getDatabaseConnectionString() string {
+	return DATABASE_USER + ":" + DATABASE_PASSWORD +
+		"@tcp(" + DATABASE_IP + ":" + strconv.Itoa(DATABASE_PORT) + ")/" +
+		DATABASE_NAME + "?charset=utf8&parseTime=True&loc=Local"
+}
+
+func validate() {
+	if DATABASE_IP == "" {
+		fmt.Println("Specify the environment variable DATABASE_IP")
+		os.Exit(1)
+	}
+}
+
 func initDB() error {
-	var err error
-	db, err = gorm.Open("sqlite3", "./gorm.db")
-	if err != nil {
-		log.Errorf("Opening of DB failed with error '%v'", err)
-		return err
+	log.Debugf("Getting DB connections ...")
+
+	validate()
+	dbConnectionString := getDatabaseConnectionString()
+	fmt.Println(dbConnectionString)
+
+	err := errors.New("First Start")
+	for err != nil {
+		dbConn, err = gorm.Open("mysql", dbConnectionString)
+		if err != nil {
+			fmt.Println("Waiting for DB connection ...")
+			log.Errorf("Opening of DB failed with error '%v'", err)
+			time.Sleep(3 * time.Second)
+		} else {
+			fmt.Println("Connected!")
+			log.Debug("Connected to the DB")
+		}
 	}
 
-	err = db.DB().Ping()
+
+	dbConn.LogMode(true)
+	log.Errorf("DB connection made successfully...")
+
+	err = dbConn.DB().Ping()
 	if err != nil {
 		panic(err)
 	}
 
-	createTableIfNotExists(&pb.InstructorInfo{})
+	createTableIfNotExists(&db.InstructorInfo{})
 
-	createTableIfNotExists(&pb.UserInfo{})
+	createTableIfNotExists(&db.UserInfo{})
 
-	createTableIfNotExists(&pb.SessionInfo{})
+	createTableIfNotExists(&db.SessionInfo{})
 
-	createTableIfNotExists(&pb.UserInstructorReview{})
+	createTableIfNotExists(&db.UserInstructorReview{})
 
-	createTableIfNotExists(&pb.UserSessionReview{})
+	createTableIfNotExists(&db.UserSessionReview{})
 
-	if !db.HasTable(&pb.CreditCard{}) {
-		err = db.CreateTable(&pb.CreditCard{}).Error
-		if err != nil {
-			panic("Couldn't create cc table")
-		}
-	}
+	createTableIfNotExists(&db.CreditCard{})
 
-	if !db.HasTable(&pb.BankAcct{}) {
-		err = db.CreateTable(&pb.BankAcct{}).Error
-		if err != nil {
-			panic("Couldn't create bank info table")
-		}
-	}
+	createTableIfNotExists(&db.BankAcct{})
 
 	log.Debug("Successfully opened  database and created tables")
 	return nil
 }
 
-func startLogging() {
+func startLogging() (*os.File, bool) {
 	// open a file
 	f, err := os.OpenFile("server.log", os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		fmt.Printf("Error opening file: %v", err)
-		return
+		return nil, false
 	}
-
-	// don't forget to close it
-	defer f.Close()
 
 	// Log as JSON instead of the default ASCII formatter.
 	log.SetFormatter(&log.JSONFormatter{})
@@ -203,10 +227,14 @@ func startLogging() {
 
 	// Only log the warning severity or above.
 	log.SetLevel(log.DebugLevel)
+	return f, true
 }
 
 func main() {
-	startLogging()
+	logfile, ok := startLogging()
+	if ok {
+		defer logfile.Close()
+	}
 
 	err := initDB()
 	if err != nil {
@@ -215,5 +243,5 @@ func main() {
 	}
 
 	initGprcServer()
-	db.Close()
+	dbConn.Close()
 }

@@ -17,7 +17,7 @@ const (
 // getSessionFromDB - Given a sessionKey, return the SessionInfo
 func getSessionFromDB(sKey int32) (error, *pb.SessionInfo) {
 	var s pb.SessionInfo
-	err := db.First(&s, sKey).Error
+	err := dbConn.First(&s, sKey).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get session from DB")
@@ -37,7 +37,7 @@ func (s *server) GetSessionsForInstructor(ctx context.Context,
 	var sList []pb.SessionInfo
 
 
-	err := db.
+	err := dbConn.
 		Where(pb.SessionInfo{InstructorInfoID: in.InstructorInfoID}).
 		Find(&sList).Error
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *server) GetSessionsForFitnessType(ctx context.Context,
 	var err error
 	var sList []pb.SessionInfo
 
-	err = db.
+	err = dbConn.
 		Where(pb.SessionInfo{SessionType: in.FitCategory}).
 		Find(&sList).Error
 	if err != nil {
@@ -87,7 +87,7 @@ func (s *server) GetSessions(ctx context.Context,
 	var sList []pb.SessionInfo
 
 	//err = SessionTable.Find(&sList).Error
-	err = db.Find(&sList).Error
+	err = dbConn.Find(&sList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get sessions from DB")
@@ -112,7 +112,7 @@ func (s *server) GetSessions(ctx context.Context,
 
 	var iList []pb.InstructorInfo
 	//err = InsTable.Where(insKeySlice).Find(&iList).Error
-	err = db.Where(insKeySlice).Find(&iList).Error
+	err = dbConn.Where(insKeySlice).Find(&iList).Error
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Failed" +
 			" to get instructor rows from DB")
@@ -150,7 +150,7 @@ func postSessionDB(in pb.SessionInfo) (err error, sKey int32) {
 	//sKey = getSessionID()
 	//in.ID = sKey
 	//err = SessionTable.Save(&in).Error
-	err = db.Save(&in).Error
+	err = dbConn.Save(&in).Error
 	if err != nil {
 		log.WithFields(log.Fields{"sessionInfo": in, "error": err}).
 			Error("Failed to write to DB")
@@ -172,7 +172,7 @@ func (ser *server) PostSessionPreviewVideo(ctx context.Context,
 	log.WithFields(log.Fields{"previewVideoInfo": in.VidUrl}).
 		Debug("Received post session preview videorequest")
 
-	err = db.First(&session, in.SessionID).
+	err = dbConn.First(&session, in.SessionID).
 		Update(pb.SessionInfo{PreviewVideoUrl: in.VidUrl}).Error
 	if err != nil {
 		log.WithFields(log.Fields{"instructorImage": in,
@@ -205,7 +205,7 @@ func (s *server) PostSessionReview(ctx context.Context,
 	in *pb.PostSessionReviewReq) (*pb.PostSessionReviewReply,
 	error) {
 
-	err := db.Save(&in.Review).Error
+	err := dbConn.Save(&in.Review).Error
 	if err != nil {
 		log.WithFields(log.Fields{"sessionReview": in, "error": err}).
 			Error("Failed to write review to DB")
@@ -216,7 +216,7 @@ func (s *server) PostSessionReview(ctx context.Context,
 	return &pb.PostSessionReviewReply{ReviewID: in.Review.ID}, nil
 }
 
-func (s *server) GetTwillioJwtToken(ctx context.Context, in *pb.TwillioJwtReq) (*pb.TwillioJwtReply, error) {
+func (s *server) GetTwilioJwtToken(ctx context.Context, in *pb.TwilioJwtReq) (*pb.TwilioJwtReply, error) {
 
 	secret := in.Secret
 	identity := in.Identity
@@ -235,5 +235,5 @@ func (s *server) GetTwillioJwtToken(ctx context.Context, in *pb.TwillioJwtReq) (
 		return nil, err
 	}
 
-	return &pb.TwillioJwtReply{string(jwt)}, nil
+	return &pb.TwilioJwtReply{string(jwt)}, nil
 }

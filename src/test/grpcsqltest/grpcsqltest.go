@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-var client pb.ServerSvcClient
+var client pb.SFServerClient
 
 func testPostReview() error {
 
@@ -253,7 +253,7 @@ func testLoginIns() error {
 
 		i := getEnrolledIns(uid)
 		req.Email = i.Email
-		req.PassWord = i.PassWord
+		req.Password = i.Password
 
 		log.WithFields(log.Fields{"user req": req}).
 			Debug("loggin in user")
@@ -279,7 +279,7 @@ func testLoginIns() error {
 
 		u := getEnrolledIns(uid)
 		req.Email = u.Email
-		req.PassWord = "incorrectpwd"
+		req.Password = "incorrectpwd"
 
 		log.WithFields(log.Fields{"ins req": req}).
 			Debug("loggin in user")
@@ -299,7 +299,7 @@ func testLoginIns() error {
 
 		var req pb.LoginReq
 		req.Email = "aa@bcac.come"
-		req.PassWord = "incorrectpwd"
+		req.Password = "incorrectpwd"
 
 		log.WithFields(log.Fields{"user req": req}).
 			Debug("loggin in user")
@@ -328,7 +328,7 @@ func testLoginUser(numUsers int) error {
 
 		u := getEnrolledUser(uid)
 		req.Email = u.Email
-		req.PassWord = u.PassWord
+		req.Password = u.Password
 
 		log.WithFields(log.Fields{"user req": req}).
 			Debug("loggin in user")
@@ -354,7 +354,7 @@ func testLoginUser(numUsers int) error {
 
 		u := getEnrolledUser(uid)
 		req.Email = u.Email
-		req.PassWord = "incorrectpwd"
+		req.Password = "incorrectpwd"
 
 		log.WithFields(log.Fields{"user req": req}).
 			Debug("loggin in user")
@@ -374,7 +374,7 @@ func testLoginUser(numUsers int) error {
 
 		var req pb.LoginReq
 		req.Email = "aa@bcac.come"
-		req.PassWord = "incorrectpwd"
+		req.Password = "incorrectpwd"
 
 		log.WithFields(log.Fields{"user req": req}).
 			Debug("loggin in user")
@@ -486,9 +486,9 @@ func testSessions() error {
 	return nil
 }
 
-func testTwillioJwT() error {
-	req := &pb.TwillioJwtReq{"10", "secret"}
- 	reply, err := client.GetTwillioJwtToken(context.Background(), req)
+func testTwilioJwT() error {
+	req := &pb.TwilioJwtReq{"10", "secret"}
+	reply, err := client.GetTwilioJwtToken(context.Background(), req)
 	if err != nil {
 		return err
 	}
@@ -548,10 +548,10 @@ func main() {
 	}
 	defer conn.Close()
 
-	client = pb.NewServerSvcClient(conn)
+	client = pb.NewSFServerClient(conn)
 
 	r, err := client.GetStatus(context.Background(),
-		&pb.ServerSvcStatusReq{Name: "grpctest"})
+		&pb.SFServerStatusReq{Name: "grpctest"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
@@ -626,7 +626,7 @@ func main() {
 		return
 	}
 
-	err = testTwillioJwT()
+	err = testTwilioJwT()
 	if err != nil {
 		log.Error("Failed getting Twillio JWT")
 		return
