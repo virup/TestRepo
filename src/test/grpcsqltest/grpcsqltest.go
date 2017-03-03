@@ -496,6 +496,12 @@ func testTwilioJwT() error {
 	return nil
 }
 
+func testSendWecomeEmail() error {
+	req := &pb.SendWelcomeEmailReq{"v.kanjilal@gmail.com"}
+	_, err := client.SendWelcomeEmailToUser(context.Background(), req)
+	return err
+}
+
 func main() {
 
 	// open a file
@@ -629,6 +635,12 @@ func main() {
 	err = testTwilioJwT()
 	if err != nil {
 		log.Error("Failed getting Twillio JWT")
+		return
+	}
+
+	err = testSendWecomeEmail()
+	if err != nil {
+		log.Error("Failed in sending wecome email")
 		return
 	}
 }

@@ -2,9 +2,6 @@ syntax = "proto3";
 
 package SFServer;
 
-//import "google/protobuf/any.proto";
-//import "google/protobuf/timestamp.proto";
-
 service SFServer {
     // GetStatus - Is the server running ?
     rpc GetStatus (SFServerStatusReq) returns (SFServerStatusReply) {
@@ -74,6 +71,10 @@ service SFServer {
 
     // Twilio related
     rpc GetTwilioJwtToken (TwilioJwtReq) returns (TwilioJwtReply) {
+    }
+
+    // Send email
+    rpc SendWelcomeEmailToUser (SendWelcomeEmailReq) returns (SendWelcomeEmailReply) {
     }
 }
 
@@ -457,4 +458,11 @@ message TwilioJwtReq {
 
 message TwilioJwtReply {
     string jwToken = 1;
+}
+
+message SendWelcomeEmailReq {
+    string toEmail = 1;
+}
+
+message SendWelcomeEmailReply {
 }

@@ -27,29 +27,6 @@ func getUserFromDB(uKey int32) (error, *pb.UserInfo) {
 	return err, db.ConvertUserInfoToRPC(u)
 }
 
-/*
-func doSubscribe() error {
-	// Enable payment
-	if false {
-		err, customerPayID := pay.CreatePayingCustomer(
-			"mycustomer@gmail.com", "1234-xxxx-xxxx", "06", "19")
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to set up customer payment")
-			return &resp, err
-		}
-		log.WithFields(log.Fields{"customerPayID": customerPayID}).
-			Debug("Got new customer payment ID")
-
-		err = pay.StartSubscription(customerPayID)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Failed" +
-				" to start subscription")
-			return &resp, err
-		}
-	}
-}
-*/
 
 func (s *server) SubscribeUser(ctx context.Context,
 	in *pb.SubscribeUserReq) (*pb.SubscribeUserReply, error) {
@@ -204,6 +181,8 @@ func postUserDB(in pb.UserInfo) (err error, uKey int32) {
 		return err, 0
 	}
 
+	SendWelcomeEmail(in.Email)
+
 	uKey = res.Value.(*db.UserInfo).ID
 	log.WithFields(log.Fields{"userInfo": in, "key": uKey}).
 		Debug("Added to DB")
@@ -239,3 +218,4 @@ func (s *server) GetUserCC(ctx context.Context,
 	log.Debug("Success read user cc from DB")
 	return &resp, nil
 }
+

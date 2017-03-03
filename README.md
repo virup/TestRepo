@@ -9,12 +9,14 @@ git clone github.com/LiberaLabs/libera
 -- Server runs in a centos golang container, lets build it.
 
 # Build the developer image
-docker build -f ~/soulfit/libera/pkg/developer/Dockerfile -t soulfit/developer ~/soulfit/libera/pkg/developer
+`docker build -f ~/soulfit/libera/pkg/developer/Dockerfile -t soulfit/developer ~/soulfit/libera/pkg/developer`
 
 # Run the developer image
-sudo mkdir -p /opt/soulfit/db
-docker run -d --name soulfit-db -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=soulfitdb -v /opt/soulfit/db:/var/lib/mysql/ soulfit/db
-docker run --name soulfit-developer --link soulfit-db:sf-db -it -v ~/soulfit/libera:/libera soulfit/developer  /bin/bash
+`sudo mkdir -p /opt/soulfit/db`
+
+`docker run -d --name soulfit-db -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=soulfitdb -v /opt/soulfit/db:/var/lib/mysql/ soulfit/db`
+
+`docker run --name soulfit-developer --link soulfit-db:sf-db -it -v ~/soulfit/libera:/libera soulfit/developer  /bin/bash`
 
 # Inside the developer container, run the server
 cd /libera/bin
