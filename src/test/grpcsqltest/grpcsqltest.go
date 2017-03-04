@@ -526,8 +526,8 @@ func main() {
 	url := getUrl()
 	addressAndPort := getAddressAndPort()
 	certificate, err := tls.LoadX509KeyPair(
-		"../cert/127.0.0.1.crt",
-		"../cert/127.0.0.1.key",
+		"../cert/SFDemo.crt",
+		"../cert/SFDemo.key",
 	)
 
 	certPool := x509.NewCertPool()
