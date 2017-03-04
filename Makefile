@@ -43,6 +43,12 @@ clean: stop
 
 	${DRUN} -v ${BASEDIR}:${INT_DIR}:z -e OP=CLEAN ${COMPILER_IMAGE}
 
+removeall: clean developerreset
+
+developerreset :
+
+    rm -rf ${DATA_DIR}/*
+
 
 compile:
 
