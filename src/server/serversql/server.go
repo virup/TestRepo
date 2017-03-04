@@ -90,10 +90,10 @@ func (s *server) RecordEvent(ctx context.Context, in *pb.RecordEventReq) (*pb.Re
 	return &resp, nil
 }
 
-func initGprcServer() {
+func  initGprcServer() {
 	certificate, err := tls.LoadX509KeyPair(
-		"../cert/127.0.0.1.crt",
-		"../cert/127.0.0.1.key",
+		"../cert/SFDemo.crt",
+		"../cert/SFDemo.key",
 	)
 	if err != nil {
 		log.Fatalf("failed to load cert: %s", err)

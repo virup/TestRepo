@@ -24,7 +24,7 @@ func NewSender(Username, Password string) Sender {
 }
 
 var subject string = "Welcome to Soulfit!"
-var content string = "Thanks for joining Soulfit! Please check www.soulfit.com for details."
+var content string = "Thanks for joining Soulfit! We will follow up with more information."
 
 func (sender Sender) SendMail(Dest []string, Subject, bodyMessage string) error {
 

@@ -69,5 +69,5 @@ start: startcontainers
 startcontainers:
 
 	docker run -d --name ${DATABASE_CONTAINER} -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=soulfitdb -v ${DATA_DIR}:${INT_DATA_DIR} ${DATABASE_IMAGE}
-	docker run -p 8080:8080 -d --name ${SERVER_CONTAINER} --link soulfit-db:sf-db -v ${BASEDIR}:${INT_DIR} ${SERVER_IMAGE}
+	docker run -p 8099:8099 -d --name ${SERVER_CONTAINER} --link soulfit-db:sf-db -v ${BASEDIR}:${INT_DIR} ${SERVER_IMAGE}
 
